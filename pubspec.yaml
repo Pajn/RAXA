@@ -1,6 +1,7 @@
 name: raxa
 dependencies:
   browser: any
+  di: ">=0.0.39 <0.1.0"
   mongo_dart: ">=0.1.41 <0.2.0"
   RestLibrary:
     git: https://github.com/Pajn/RestLibrary.git

@@ -6,7 +6,7 @@ part of raxa.configuration;
 class Settings {
     static const COLLECTION = 'Settings';
 
-    Db db;
+    Database db;
 
     Settings(this.db);
 
@@ -63,17 +63,15 @@ class Settings {
     Future<Map<String, Map>> readAll() =>
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
-            
+
             var settings = {};
 
-            collection.find().forEach((group) {
+            return collection.find().forEach((group) {
                 settings[group['group']] = {
                     'version': group['version'],
                     'settings': group['settings'],
                 };
-            });
-            
-            return settings;
+            }).then((_) => settings);
         }).whenComplete(db.close);
 
     /**
