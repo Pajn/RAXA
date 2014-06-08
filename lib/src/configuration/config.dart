@@ -1,4 +1,4 @@
-part of raxa;
+part of raxa.configuration;
 
 /**
  * Handles configuration values stored in config file.
