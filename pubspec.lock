@@ -44,6 +44,10 @@ packages:
     description: di
     source: hosted
     version: "0.0.40"
+  guinness:
+    description: guinness
+    source: hosted
+    version: "0.1.7"
   http_server:
     description: http_server
     source: hosted
@@ -52,10 +56,18 @@ packages:
     description: logging
     source: hosted
     version: "0.9.1+1"
+  matcher:
+    description: matcher
+    source: hosted
+    version: "0.10.0+3"
   mime:
     description: mime
     source: hosted
     version: "0.9.0+3"
+  mock:
+    description: mock
+    source: hosted
+    version: "0.11.0+1"
   mongo_dart:
     description: mongo_dart
     source: hosted
@@ -88,6 +100,10 @@ packages:
     description: string_scanner
     source: hosted
     version: "0.0.2"
+  unittest:
+    description: unittest
+    source: hosted
+    version: "0.11.0+1"
   yaml:
     description: yaml
     source: hosted
