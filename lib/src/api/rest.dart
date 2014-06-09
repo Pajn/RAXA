@@ -1,15 +1,16 @@
 part of raxa.api;
 
 class RestApi {
+    Config config;
     RestServer restServer;
     SettingsApi settingsApi;
 
-    RestApi(this.restServer, this.settingsApi);
+    RestApi(this.config, this.restServer, this.settingsApi);
 
     initialize() {
         settingsApi.initialize();
 
-        restServer.start(port: 8080);
+        restServer.start(address: config.restHostname, port: config.restPort);
     }
 }
 

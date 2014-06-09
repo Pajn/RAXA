@@ -38,15 +38,31 @@ class Config {
                 _configValues['database'] = database;
             } else if (database is YamlMap) {
                 _createDbString(database['name'],
-                                database['host'],
+                                database['hostname'],
                                 database['user'],
                                 database['password'],
-                                database['password']);
+                                database['port']);
             } else {
                 _createDbString();
             }
         } else {
             _createDbString();
+        }
+
+        _configValues['rest'] = {};
+        _configValues['rest']['hostname'] = '127.0.0.1';
+        _configValues['rest']['port'] = 80;
+
+        if (configuration.containsKey('rest')) {
+            var rest = configuration['rest'];
+
+            if (rest.containsKey('hostname')) {
+                _configValues['rest']['hostname'] = rest['hostname'];
+            }
+
+            if (rest.containsKey('port')) {
+                _configValues['rest']['port'] = rest['port'];
+            }
         }
     }
 
@@ -67,11 +83,11 @@ class Config {
     /**
      * Generates a mongodb connection string.
      *
-     * Default values is a dbname of RAXA, host as localhost on default port and no authentication.
+     * Default values is a dbname of RAXA, hostname as localhost on default port and no authentication.
      */
-    _createDbString([name, host, user, password, port]) {
+    _createDbString([name, hostname, user, password, port]) {
         name = name != null ? name : 'RAXA';
-        host = host != null ? host : 'localhost';
+        hostname = hostname != null ? hostname : 'localhost';
         user = user != null ? user : '';
 
         if (user == null && password != null) {
@@ -85,7 +101,7 @@ class Config {
         if (user != null) {
             connectionString.write('@');
         }
-        connectionString.write(host);
+        connectionString.write(hostname);
         if (port != null) {
             connectionString.write(':$port');
         }
@@ -95,4 +111,7 @@ class Config {
     }
 
     String get dbString => _configValues['database'];
+
+    String get restHostname => _configValues['rest']['hostname'];
+    int get restPort => _configValues['rest']['port'];
 }
