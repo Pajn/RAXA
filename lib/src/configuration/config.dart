@@ -2,28 +2,20 @@ part of raxa.configuration;
 
 /**
  * Handles configuration values stored in config file.
- *
- * This class is a singleton, it will load the configuration
- * on creation and will then keep it for the whole lifetime.
  */
 class Config {
     static const CONFIG_FILE = 'configuration.yaml';
-    static var _instance;
 
     var _configValues = {};
 
-    factory Config() {
-        if (_instance == null) {
-            _instance = new Config._load();
-        }
-
-        return _instance;
+    Config() {
+        _load();
     }
 
     /**
      * Loads the configuration from the file
      */
-    Config._load() {
+    _load() {
         var configFile = _readConfigFile();
         var configuration = {};
 

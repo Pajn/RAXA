@@ -14,7 +14,7 @@ part 'src/configuration/settings.dart';
 class ConfigurationModule extends Module {
 
     ConfigurationModule() {
-        bind(Config, toValue: new Config());
+        bind(Config);
         bind(Database);
         bind(Settings);
     }

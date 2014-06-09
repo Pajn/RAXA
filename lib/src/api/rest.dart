@@ -17,7 +17,7 @@ class RestApi {
 class RestModule extends Module {
 
     RestModule() {
-        bind(RestServer, toValue: new RestServer());
+        bind(RestServer);
         bind(SettingsApi);
         bind(RestApi);
     }
