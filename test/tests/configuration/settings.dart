@@ -100,7 +100,7 @@ main() {
                 }));
             });
 
-            it('should query with core as default group', () {
+            it('should query for core as default group', () {
                 var future = settings.read();
 
                 return future.then(expectAsync((_) {
@@ -111,7 +111,7 @@ main() {
                 }));
             });
 
-            it('should query with specified group', () {
+            it('should query for specified group', () {
                 var future = settings.read('Plugin');
 
                 return future.then(expectAsync((_) {
@@ -227,7 +227,7 @@ main() {
                 }));
             });
 
-            it('should query with core as default group', () {
+            it('should query for core as default group', () {
                 var future = settings.save({});
 
                 return future.then(expectAsync((_) {
@@ -238,7 +238,7 @@ main() {
                 }));
             });
 
-            it('should query with specified group', () {
+            it('should query for specified group', () {
                 var future = settings.save({}, 'Plugin');
 
                 return future.then(expectAsync((_) {

@@ -3,11 +3,13 @@ part of raxa.api;
 class RestApi {
     Config config;
     RestServer restServer;
+    PluginManagerApi pluginManagerApi;
     SettingsApi settingsApi;
 
-    RestApi(this.config, this.restServer, this.settingsApi);
+    RestApi(this.config, this.restServer, this.pluginManagerApi, this.settingsApi);
 
     initialize() {
+        pluginManagerApi.initialize();
         settingsApi.initialize();
 
         restServer.start(address: config.restHostname, port: config.restPort);
@@ -18,6 +20,8 @@ class RestModule extends Module {
 
     RestModule() {
         bind(RestServer);
+        bind(PluginManager);
+        bind(PluginManagerApi);
         bind(SettingsApi);
         bind(RestApi);
     }

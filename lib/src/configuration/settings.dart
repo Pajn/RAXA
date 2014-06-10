@@ -75,7 +75,7 @@ class Settings {
         }).whenComplete(db.close);
 
     /**
-     * Saves settings from the database.
+     * Saves settings to the database.
      *
      * Specify [group] to use other settings group than core.
      */

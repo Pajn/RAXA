@@ -11,36 +11,46 @@ class PluginManager {
      * Reads all information of a plugin from the database.
      */
     Future<Map> read(String plugin) =>
-    db.open().then((_) {
-        var collection = db.collection(COLLECTION);
+        db.open().then((_) {
+            var collection = db.collection(COLLECTION);
 
-        return collection.findOne({'name': plugin}).then((dbObject) {
+            return collection.findOne({'name': plugin}).then((dbObject) {
 
-            if (dbObject == null) {
-                return null;
-            }
+                if (dbObject == null) {
+                    return null;
+                }
 
-            return dbObject;
-        });
-    }).whenComplete(db.close);
+                return dbObject;
+            });
+        }).whenComplete(db.close);
 
     /**
      * Reads all available plugins from the database.
      */
     Future<List<Map>> readAll() =>
-    db.open().then((_) {
-        var collection = db.collection(COLLECTION);
+        db.open().then((_) {
+            var collection = db.collection(COLLECTION);
 
-        var plugins = [];
+            var plugins = [];
 
-        return collection.find().forEach((plugin) {
-            plugins.add({
-                'name': plugin['name'],
-                'version': plugin['version'],
-                'apiVersion': plugin['apiVersion'],
-                'enabled': plugin['enabled'],
-                'descriptionSummary': plugin['descriptionSummary'],
-            });
-        }).then((_) => plugins);
-    }).whenComplete(db.close);
+            return collection.find().forEach((plugin) {
+                plugins.add({
+                    'name': plugin['name'],
+                    'version': plugin['version'],
+                    'apiVersion': plugin['apiVersion'],
+                    'enabled': plugin['enabled'],
+                    'descriptionSummary': plugin['descriptionSummary'],
+                });
+            }).then((_) => plugins);
+        }).whenComplete(db.close);
+
+    /**
+     * Saves plugin settings to the database.
+     */
+    Future save(Map settings, String plugin) =>
+        db.open().then((_) {
+            var collection = db.collection(COLLECTION);
+
+            return collection.update({'name': plugin}, {r'$set': settings});
+        }).whenComplete(db.close);
 }

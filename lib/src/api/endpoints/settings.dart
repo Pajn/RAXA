@@ -21,12 +21,10 @@ class SettingsApi {
                 ..put = putSettings);
     }
 
-    getAllSettings(Request request) {
-        return settings.readAll().then((data) {
-            print(data);
+    getAllSettings(Request request) =>
+        settings.readAll().then((data) {
             return new RestResponse(data);
         });
-    }
 
     getSettings(Request request) {
         var group = request.urlParameters['group'];

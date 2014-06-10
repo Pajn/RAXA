@@ -28,7 +28,7 @@ main() {
                 }));
             });
 
-            it('should query with specified plugin', () {
+            it('should query for specified plugin', () {
                 var future = pluginManager.read('PluginName');
 
                 return future.then(expectAsync((_) {
@@ -51,8 +51,8 @@ main() {
 
                 var future = pluginManager.read('PluginName');
 
-                return future.then(expectAsync((group) {
-                    expect(group).toEqual(db.mockCollection.fakedFind);
+                return future.then(expectAsync((plugin) {
+                    expect(plugin).toEqual(db.mockCollection.fakedFind);
 
                     expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
@@ -61,8 +61,8 @@ main() {
             it("should return null when plugin isn't found", () {
                 var future = pluginManager.read('PluginName');
 
-                return future.then(expectAsync((group) {
-                    expect(group).toBeNull();
+                return future.then(expectAsync((plugin) {
+                    expect(plugin).toBeNull();
 
                     expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
@@ -91,7 +91,7 @@ main() {
                 }));
             });
 
-            it('should return found groups', () {
+            it('should return found plugins', () {
                 db.mockCollection.mockCursor.fakedFind = [
                     {
                         'name': 'PluginName',
@@ -130,8 +130,44 @@ main() {
 
                 var future = pluginManager.readAll();
 
-                return future.then(expectAsync((groups) {
-                    expect(groups).toEqual(expected);
+                return future.then(expectAsync((plugins) {
+                    expect(plugins).toEqual(expected);
+
+                    expect(db.closeSpy).toHaveBeenCalledOnce();
+                }));
+            });
+        });
+
+        describe('save', () {
+            it('should use the Plugins collection', () {
+                var future = pluginManager.save({'enabled': true}, 'PluginName');
+
+                return future.then(expectAsync((_) {
+                    expect(db.collectionSpy).toHaveBeenCalledOnceWith('Plugins');
+
+                    expect(db.closeSpy).toHaveBeenCalledOnce();
+                }));
+            });
+
+            it('should query for specified plugin', () {
+                var future = pluginManager.save({'enabled': true}, 'PluginName');
+
+                return future.then(expectAsync((_) {
+                    var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
+                    expect(arguments.first).toEqual({'name': 'PluginName'});
+
+                    expect(db.closeSpy).toHaveBeenCalledOnce();
+                }));
+            });
+
+            it('should update the plugin info', () {
+                var updatedInfo = {'enabled': true};
+
+                var future = pluginManager.save(updatedInfo, 'PluginName');
+
+                return future.then(expectAsync((_) {
+                    var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
+                    expect(arguments[1]).toEqual({r'$set': updatedInfo});
 
                     expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
