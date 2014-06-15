@@ -66,10 +66,10 @@ class Settings {
 
             var settings = {};
 
-            return collection.find().forEach((group) {
-                settings[group['group']] = {
-                    'version': group['version'],
-                    'settings': group['settings'],
+            return collection.find().forEach((dbObject) {
+                settings[dbObject['group']] = {
+                    'version': dbObject['version'],
+                    'settings': dbObject['settings'],
                 };
             }).then((_) => settings);
         }).whenComplete(db.close);
@@ -83,6 +83,6 @@ class Settings {
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
 
-            return collection.update({'group': group}, {r'$set': settings}, upsert: true);
+            return collection.update({'group': group}, {r'$set': settings});
         }).whenComplete(db.close);
 }

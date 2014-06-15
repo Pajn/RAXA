@@ -75,7 +75,8 @@ class Config {
     /**
      * Generates a mongodb connection string.
      *
-     * Default values is a dbname of RAXA, hostname as localhost on default port and no authentication.
+     * Default values is a a database name of RAXA, hostname as localhost on default port
+     * and no authentication.
      */
     _createDbString([name, hostname, user, password, port]) {
         name = name != null ? name : 'RAXA';
