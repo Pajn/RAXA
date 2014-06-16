@@ -16,7 +16,9 @@ main() {
                     'someParameter': 'someValue'
                 },
                 'implementedInterfaces': ['SomeInterface'],
-                'requiredInterfaces': ['SomeOtherInterface'],
+                'variables': {
+                    'SomeInterface': 'someValue'
+                },
             });
 
             expect(deviceClass.name).toEqual('SomeName');
@@ -24,7 +26,7 @@ main() {
 
             expect(deviceClass.config).toEqual({'someParameter': 'someValue'});
             expect(deviceClass.implementedInterfaces).toEqual(['SomeInterface']);
-            expect(deviceClass.requiredInterfaces).toEqual(['SomeOtherInterface']);
+            expect(deviceClass.variables).toEqual({'SomeInterface': 'someValue'});
         });
 
         it('should support undeclared attributes', () {

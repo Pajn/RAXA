@@ -1,23 +1,46 @@
 library manager_test;
 
+import 'dart:async';
 import 'package:guinness/guinness.dart';
+import 'package:mock/mock.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
+
+class MockDeviceClassManager extends Mock implements DeviceClassManager {
+    DeviceClass fakedRead;
+
+    Future<DeviceClass> read(String plugin, String name, {bool closeDb: true}) =>
+        new Future.value(fakedRead);
+
+    noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 main() {
     unittestConfiguration.timeout = new Duration(seconds: 3);
 
     describe('Manager', () {
         MockDb db;
+        MockDeviceClassManager deviceClassManager;
         DeviceManager deviceManager;
         ObjectId id;
 
         beforeEach(() {
             db = new MockDb();
-            deviceManager = new DeviceManager(db, new DeviceClassManager(db));
+            deviceClassManager = new MockDeviceClassManager();
+            deviceManager = new DeviceManager(db, deviceClassManager);
             id = new ObjectId();
+
+            deviceClassManager.fakedRead = new DeviceClass.from({
+                'name': 'DeviceClassName',
+                'plugin': 'PluginName',
+                'config': {
+                    'someParameter': 'someValue'
+                },
+                'implementedInterfaces': ['SomeInterface'],
+                'requiredInterfaces': ['SomeOtherInterface'],
+            });
         });
 
         describe('create', () {
@@ -67,6 +90,18 @@ main() {
 
                 return future.catchError(expectAsync((error) {
                     expect(error).toEqual('Name already exist');
+
+                    expect(db.closeSpy).toHaveBeenCalledOnce();
+                }));
+            });
+
+            it('should throw if device class is not found', () {
+                deviceClassManager.fakedRead = null;
+
+                var future = deviceManager.create(new Device.from(testDevice));
+
+                return future.catchError(expectAsync((error) {
+                    expect(error).toEqual('Specified DeviceClass does not exist');
 
                     expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
@@ -226,6 +261,7 @@ main() {
                         'status': {
                             'Switch': {
                                 'on': true,
+                                'off': false,
                             },
                             'DimLevel': {
                                 'level': 7,

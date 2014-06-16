@@ -4,13 +4,55 @@ class PluginManager {
     static const COLLECTION = 'Plugins';
 
     Database db;
+    InterfaceManager interfaceManager;
 
-    PluginManager(this.db);
+    Map<String, PluginInstance> enabledPlugins = {};
+
+    PluginManager(this.db, this.interfaceManager);
+
+    Future install(String pluginName) =>
+        Plugin.fromManifest(pluginName).then((plugin) =>
+            db.open().then((_) {
+                var collection = db.collection(COLLECTION);
+
+                return collection.insert(plugin);
+            }).whenComplete(db.close)
+        );
+
+    Future enable(String pluginName) {
+        if (enabledPlugins.containsKey(pluginName)) {
+            throw 'Plugin already enabled';
+        }
+
+        return read(pluginName).then((plugin) {
+            if (plugin == null) {
+                update({'enabled': true}, plugin.name);
+
+                throw 'Plugin is not installed';
+            }
+
+            var pluginDirectory = new PluginDirectory(plugin);
+
+            pluginDirectory.isValid()
+                .then((_) => pluginDirectory.getProvidedInterfaces())
+                .then((providedInterfaces) => Future.wait(providedInterfaces.map((interface) =>
+                        interfaceManager
+                            .install(interface)
+                            .catchError((_) {}, test: (e) => e == 'Interface already installed')
+                     )))
+                .then((_) => update({'enabled': true}, plugin.name))
+                .then((_) => enabledPlugins['plugin'] = new PluginInstance(plugin));
+        });
+    }
+
+    Future disable(String pluginName) {
+        // TODO disable plugin
+    }
 
     /**
      * Reads all information of a plugin from the database.
      */
-    Future<Map> read(String plugin) =>
+    Future<Plugin> read(String plugin) =>
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
 
@@ -20,37 +62,31 @@ class PluginManager {
                     return null;
                 }
 
-                return dbObject;
+                return new Plugin.from(dbObject);
             });
         }).whenComplete(db.close);
 
     /**
      * Reads all available plugins from the database.
      */
-    Future<List<Map>> readAll() =>
+    Future<List<Plugin>> readAll() =>
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
 
             var plugins = [];
 
-            return collection.find().forEach((plugin) {
-                plugins.add({
-                    'name': plugin['name'],
-                    'version': plugin['version'],
-                    'apiVersion': plugin['apiVersion'],
-                    'enabled': plugin['enabled'],
-                    'descriptionSummary': plugin['descriptionSummary'],
-                });
+            return collection.find().forEach((dbObject) {
+                plugins.add(new Plugin.from(dbObject));
             }).then((_) => plugins);
         }).whenComplete(db.close);
 
     /**
-     * Saves plugin settings to the database.
+     * Updates plugin settings in the database.
      */
-    Future save(Map settings, String plugin) =>
+    Future update(Map settings, String pluginName) =>
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
 
-            return collection.update({'name': plugin}, {r'$set': settings});
+            return collection.update({'name': pluginName}, {r'$set': settings});
         }).whenComplete(db.close);
 }

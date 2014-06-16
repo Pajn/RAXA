@@ -1,6 +1,7 @@
 library plugin_manager_test;
 
 import 'package:guinness/guinness.dart';
+import 'package:raxa/interface.dart';
 import 'package:raxa/plugin.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
@@ -14,7 +15,7 @@ main() {
 
         beforeEach(() {
             db = new MockDb();
-            pluginManager = new PluginManager(db);
+            pluginManager = new PluginManager(db, new InterfaceManager(db));
         });
 
         describe('read', () {
@@ -111,36 +112,19 @@ main() {
                     }
                 ];
 
-                var expected = [
-                    {
-                        'name': 'PluginName',
-                        'version': '0.1.2',
-                        'apiVersion': '0.1.1',
-                        'enabled': true,
-                        'descriptionSummary': 'Plugin for testing',
-                    },
-                    {
-                        'name': 'Plugin',
-                        'version': '2.1.0',
-                        'apiVersion': '0.1.1',
-                        'enabled': false,
-                        'descriptionSummary': 'Plugin for testing',
-                    }
-                ];
-
                 var future = pluginManager.readAll();
 
                 return future.then(expectAsync((plugins) {
-                    expect(plugins).toEqual(expected);
+                    expect(plugins).toEqual(db.mockCollection.mockCursor.fakedFind);
 
                     expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
 
-        describe('save', () {
+        describe('update', () {
             it('should use the Plugins collection', () {
-                var future = pluginManager.save({'enabled': true}, 'PluginName');
+                var future = pluginManager.update({'enabled': true}, 'PluginName');
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Plugins');
@@ -150,7 +134,7 @@ main() {
             });
 
             it('should query for specified plugin', () {
-                var future = pluginManager.save({'enabled': true}, 'PluginName');
+                var future = pluginManager.update({'enabled': true}, 'PluginName');
 
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
@@ -163,7 +147,7 @@ main() {
             it('should update the plugin info', () {
                 var updatedInfo = {'enabled': true};
 
-                var future = pluginManager.save(updatedInfo, 'PluginName');
+                var future = pluginManager.update(updatedInfo, 'PluginName');
 
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
