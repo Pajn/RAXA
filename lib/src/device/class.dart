@@ -19,9 +19,22 @@ class DeviceClass extends ModelBase {
 
     /// A list of the [Interface]s (names) that the [Device] created from this class implements.
     List<String> get implementedInterfaces => getValue('implementedInterfaces', []);
-
-    /// A list of the [Interface]s (names) that the [Device] created from this class requires.
-    List<String> get requiredInterfaces => getValue('requiredInterfaces', []);
+    /// The variables of the device as required by the implemented interfaces. Every implemented
+    /// interface with status have its own map with its variables.
+    Map<String, dynamic> get variables => getValue('variables', {});
 
     DeviceClass.from(Map<String, dynamic> other) : super.from(other);
+
+    /**
+     * Validate that the [device] matches this [DeviceClass].
+     *
+     * Will overwrite fields that should be copied and throws if the [device]
+     * have any errors.
+     */
+    validate(Device device) {
+        device.implementedInterfaces = implementedInterfaces;
+        device.variables = variables;
+
+        // TODO Validate config
+    }
 }

@@ -17,13 +17,17 @@ class Device extends ModelBase {
 
     /// A list of the [Interface]s (names) that the [Device] created from this class implements.
     List<String> get implementedInterfaces => getValue('implementedInterfaces', []);
+    set implementedInterfaces(List<String> value) =>
+        this['implementedInterfaces'] = value;
 
     /// The status of the device as required by the implemented interfaces. Every implemented
     /// interface with status have its own map with its status values.
     Map<String, Map<String, dynamic>> get status => getValue('status', {});
+
     /// The variables of the device as required by the implemented interfaces. Every implemented
     /// interface with status have its own map with its variables.
     Map<String, dynamic> get variables => getValue('variables', {});
+    set variables(Map<String, dynamic> value) => this['variables'] = value;
 
     Device.from(Map<String, dynamic> other) : super.from(other, removeId: false) {
         if (this['_id'] is ObjectId) {

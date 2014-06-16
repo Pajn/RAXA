@@ -1,6 +1,7 @@
 library manager_test;
 
 import 'package:guinness/guinness.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
@@ -11,10 +12,12 @@ main() {
     describe('Manager', () {
         MockDb db;
         DeviceManager deviceManager;
+        ObjectId id;
 
         beforeEach(() {
             db = new MockDb();
-            deviceManager = new DeviceManager(db);
+            deviceManager = new DeviceManager(db, new DeviceClassManager(db));
+            id = new ObjectId();
         });
 
         describe('create', () {
@@ -81,9 +84,33 @@ main() {
             });
         });
 
+        describe('delete', () {
+
+            it('should use the Devices collection', () {
+                var future = deviceManager.delete(id.toHexString());
+
+                return future.then(expectAsync((_) {
+                    expect(db.collectionSpy).toHaveBeenCalledOnceWith('Devices');
+
+                    expect(db.closeSpy).toHaveBeenCalledOnce();
+                }));
+            });
+
+            it('should remove the device by id', () {
+                var future = deviceManager.delete(id.toHexString());
+
+                return future.then(expectAsync((_) {
+                    var arguments = db.mockCollection.removeSpy.mostRecentCall.positionalArguments;
+                    expect(arguments).toEqual([{'_id': id}]);
+
+                    expect(db.closeSpy).toHaveBeenCalledOnce();
+                }));
+            });
+        });
+
         describe('read', () {
             it('should use the Devices collection', () {
-                var future = deviceManager.read('DeviceId');
+                var future = deviceManager.read(id.toHexString());
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Devices');
@@ -93,11 +120,11 @@ main() {
             });
 
             it('should query for specified device', () {
-                var future = deviceManager.read('DeviceId');
+                var future = deviceManager.read(id.toHexString());
 
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
-                    expect(arguments).toEqual([{'_id': 'DeviceId'}]);
+                    expect(arguments).toEqual([{'_id': id}]);
 
                     expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
@@ -122,7 +149,7 @@ main() {
                     },
                 };
 
-                var future = deviceManager.read('DeviceId');
+                var future = deviceManager.read(id.toHexString());
 
                 return future.then(expectAsync((device) {
                     expect(device).toBeA(Device);
@@ -133,7 +160,7 @@ main() {
             });
 
             it("should return null when device isn't found", () {
-                var future = deviceManager.read('DeviceId');
+                var future = deviceManager.read(id.toHexString());
 
                 return future.then(expectAsync((device) {
                     expect(device).toBeNull();
@@ -166,64 +193,48 @@ main() {
             });
 
             it('should return found devices', () {
+                var id2 = new ObjectId();
+
                 db.mockCollection.mockCursor.fakedFind = [
                     {
-                        'name': 'DimLevel',
-                        'methods': {
-                            'level': {
-                                'arguments': {
-                                    'level': {
-                                        'type': 'integer',
-                                        'max': 'max',
-                                        'min': 'min',
-                                    }
-                                }
-                            },
+                        '_id': id.toHexString(),
+                        'name': 'SomeName',
+                        'plugin': 'SomePlugin',
+                        'deviceClass': 'SomeClass',
+                        'config': {
+                            'someParameter': 'someValue'
                         },
+                        'types': ['SomeType'],
+                        'implementedInterfaces': ['SomeInterface'],
                         'status': {
-                            'level': {
-                                'type': 'integer',
-                                'max': 'max',
-                                'min': 'min',
-                            }
+                            'someStatus': 'someValue'
                         },
                         'variables': {
-                            'max': {
-                                'type': 'integer',
-                            },
-                            'min': {
-                                'type': 'integer',
-                            }
-                        }
+                            'someVariable': 'someValue'
+                        },
                     },
                     {
-                        'name': 'Thermometer',
-                        'methods': {},
+                        '_id': id2.toHexString(),
+                        'name': 'TestNexaSL',
+                        'plugin': 'Nexa',
+                        'deviceClass': 'NexaDimmableSelfLearning',
+                        'config': {
+                            'id': 'someValue'
+                        },
+                        'types': ['DimmableLamp', 'Lamp', 'Output'],
+                        'implementedInterfaces': ['DimLevel', 'Switch'],
                         'status': {
-                            'temperature': {
-                                'type': 'number',
-                                'description': 'Temperature in celsius',
-                                'max': 'max',
-                                'min': 'min',
+                            'Switch': {
+                                'on': true,
+                            },
+                            'DimLevel': {
+                                'level': 7,
                             }
                         },
                         'variables': {
-                            'resolution': {
-                                'type': 'number',
-                                'optional': true,
-                            },
-                            'updateFrequency': {
-                                'type': 'number',
-                                'description': 'Time between updates in minutes',
-                                'optional': true
-                            },
-                            'max': {
-                                'type': 'number',
-                            },
-                            'min': {
-                                'type': 'number',
-                            },
-                        }
+                            'min': 0,
+                            'max': 15,
+                        },
                     }
                 ];
 

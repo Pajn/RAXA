@@ -29,7 +29,7 @@ class MockDb extends Mock implements Database {
 
 class MockCollection extends Mock implements DbCollection {
     MockCursor mockCursor;
-    
+
     var fakedFind = null;
     var insertCallback = (_) => null;
     var updateCallback = (_, __) => null;
@@ -37,20 +37,23 @@ class MockCollection extends Mock implements DbCollection {
     SpyFunction findSpy;
     SpyFunction findOneSpy;
     SpyFunction insertSpy;
+    SpyFunction removeSpy;
     SpyFunction updateSpy;
 
     MockCollection() {
         mockCursor = new MockCursor();
-        
+
         findSpy = guinness.createSpy('findSpy').andCallFake((_) => mockCursor);
         findOneSpy = guinness.createSpy('findOneSpy').andCallFake((_) => new Future.sync(() => fakedFind));
         insertSpy = guinness.createSpy('insertSpy').andCallFake((o) => new Future.sync(() => insertCallback(o)));
+        removeSpy = guinness.createSpy('removeSpy');
         updateSpy = guinness.createSpy('updateSpy').andCallFake((q, o) => new Future.sync(() => updateCallback(q, o)));
     }
 
     find([selector]) => findSpy(selector);
     findOne([query]) => findOneSpy(query);
     insert(object, {writeConcern: null}) => insertSpy(object);
+    remove([selector, writeConcern]) => removeSpy(selector);
     update(query, object, {writeConcern: null, upsert: false, multiUpdate: false}) => updateSpy(query, object);
 
     // Ignore warnings about unimplemented methods

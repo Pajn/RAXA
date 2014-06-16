@@ -15,7 +15,8 @@ class DeviceManagerApi {
     initialize() {
         restServer
             ..route(new Route('/devices')
-                ..get = getAllDevices)
+                ..get = getAllDevices
+                ..post = postDevice)
             ..route(new Route('/devices/{id}')
                 ..delete = deleteDevice
                 ..get = getDevice
@@ -26,6 +27,18 @@ class DeviceManagerApi {
         deviceManager.readAll().then((data) {
             return new RestResponse(data);
         });
+
+    postDevice(Request request) {
+        var device = new Device.from(request.json);
+
+        return deviceManager.create(device).then((data) {
+            if (data['err'] != null) {
+                return new RestResponse('Creation of device failed', status: Status.FAIL);
+            }
+
+            return new RestResponse('Creation of device succeeded');
+        });
+    }
 
     deleteDevice(Request request) {
         var device = request.urlParameters['id'];

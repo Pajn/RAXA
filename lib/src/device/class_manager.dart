@@ -35,7 +35,7 @@ class DeviceClassManager {
      *
      * Returns null if not found.
      */
-    Future<DeviceClass> read(String plugin, String name) =>
+    Future<DeviceClass> read(String plugin, String name, {bool closeDb: true}) =>
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
 
@@ -50,7 +50,11 @@ class DeviceClassManager {
 
                 return new DeviceClass.from(dbObject);
             });
-        }).whenComplete(db.close);
+        }).whenComplete(() {
+            if (closeDb) {
+                db.close();
+            }
+        });
 
     /**
      * Reads all [DeviceClass]s from the database, or limited if [query] is specified.

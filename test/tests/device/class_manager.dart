@@ -152,62 +152,22 @@ main() {
             it('should return found deviceClasses', () {
                 db.mockCollection.mockCursor.fakedFind = [
                     {
-                        'name': 'DimLevel',
-                        'methods': {
-                            'level': {
-                                'arguments': {
-                                    'level': {
-                                        'type': 'integer',
-                                        'max': 'max',
-                                        'min': 'min',
-                                    }
-                                }
-                            },
-                        },
-                        'status': {
-                            'level': {
-                                'type': 'integer',
-                                'max': 'max',
-                                'min': 'min',
-                            }
-                        },
+                        'name': 'NexaDimmableSelfLearning',
+                        'plugin': 'Nexa',
+                        'types': ['DimmableLamp', 'Lamp', 'Output'],
+                        'implementedInterfaces': ['DimLevel', 'Switch'],
                         'variables': {
-                            'max': {
-                                'type': 'integer',
+                            'DimLevel': {
+                                'min': 0,
+                                'max': 15,
                             },
-                            'min': {
-                                'type': 'integer',
-                            }
-                        }
+                        },
                     },
                     {
-                        'name': 'Thermometer',
-                        'methods': {},
-                        'status': {
-                            'temperature': {
-                                'type': 'number',
-                                'description': 'Temperature in celsius',
-                                'max': 'max',
-                                'min': 'min',
-                            }
-                        },
-                        'variables': {
-                            'resolution': {
-                                'type': 'number',
-                                'optional': true,
-                            },
-                            'updateFrequency': {
-                                'type': 'number',
-                                'description': 'Time between updates in minutes',
-                                'optional': true
-                            },
-                            'max': {
-                                'type': 'number',
-                            },
-                            'min': {
-                                'type': 'number',
-                            },
-                        }
+                        'name': 'NexaOnOffSelfLearning',
+                        'plugin': 'Nexa',
+                        'types': ['Lamp', 'Output'],
+                        'implementedInterfaces': ['Switch'],
                     }
                 ];
 

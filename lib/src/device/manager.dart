@@ -4,18 +4,25 @@ class DeviceManager {
     static const COLLECTION = 'Devices';
 
     Database db;
+    DeviceClassManager classManager;
 
-    DeviceManager(this.db);
+    DeviceManager(this.db, this.classManager);
 
     Future create(Device device) =>
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': device.name}).then((dbObject) {
-
                 if (dbObject != null) {
                     throw 'Name already exist';
                 }
+            }).then((_) => classManager.read(device.plugin, device.deviceClass,
+                                             closeDb: false)
+            ).then((deviceClass) {
+                if (deviceClass == null) {
+                    throw 'Specified DeviceClass does not exist';
+                }
+                deviceClass.validate(device);
 
                 return collection.insert(device);
             });
@@ -38,14 +45,15 @@ class DeviceManager {
         db.open().then((_) {
             var collection = db.collection(COLLECTION);
 
-            return collection.findOne({'_id': new ObjectId.fromHexString(id)}).then((dbObject) {
+            return collection.findOne({'_id': new ObjectId.fromHexString(id)})
+                .then((dbObject) {
 
-                if (dbObject == null) {
-                    return null;
-                }
+                    if (dbObject == null) {
+                        return null;
+                    }
 
-                return new Device.from(dbObject);
-            });
+                    return new Device.from(dbObject);
+                });
         }).whenComplete(db.close);
 
     /**
@@ -63,7 +71,7 @@ class DeviceManager {
         }).whenComplete(db.close);
 
     /**
-     * Updates plugin settings in the database.
+     * Updates a [Device] in the database.
      */
     Future update(Map device, String id) =>
         db.open().then((_) {
