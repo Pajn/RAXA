@@ -4,11 +4,19 @@ class PluginManager {
     static const COLLECTION = 'Plugins';
 
     Database db;
+    DeviceClassManager deviceClassManager;
     InterfaceManager interfaceManager;
 
     Map<String, PluginInstance> enabledPlugins = {};
 
-    PluginManager(this.db, this.interfaceManager);
+    PluginManager(this.db, this.deviceClassManager, this.interfaceManager) {
+        new Directory.fromUri(new Uri.file('plugins')).list().listen((file) {
+            if (file is Directory) {
+                var pluginName = new Uri.file(file.path).pathSegments.last;
+                install(pluginName).then((_) => enable(pluginName));
+            }
+        });
+    }
 
     Future install(String pluginName) =>
         Plugin.fromManifest(pluginName).then((plugin) =>
@@ -40,8 +48,14 @@ class PluginManager {
                             .install(interface)
                             .catchError((_) {}, test: (e) => e == 'Interface already installed')
                      )))
+                .then((_) => pluginDirectory.getDeviceClasses())
+                .then((deviceClasses) => Future.wait(deviceClasses.map((deviceClass) =>
+                        deviceClassManager
+                            .install(deviceClass)
+                            .catchError((_) {}, test: (e) => e == 'DeviceClass already installed')
+                     )))
                 .then((_) => update({'enabled': true}, plugin.name))
-                .then((_) => enabledPlugins['plugin'] = new PluginInstance(plugin));
+                .then((_) => enabledPlugins['plugin'] = new PluginInstance(plugin.name));
         });
     }
 

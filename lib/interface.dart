@@ -6,7 +6,8 @@ import 'package:raxa/common.dart';
 import 'package:raxa/configuration.dart';
 import 'package:raxa/device.dart';
 
-part 'src/interface/call.dart';
+export 'package:raxa/common.dart' show Call;
+
 part 'src/interface/interface.dart';
 part 'src/interface/manager.dart';
 

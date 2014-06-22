@@ -1,4 +1,4 @@
-part of raxa.interface;
+part of raxa.common;
 
 /**
  * A [Call] to a [Interface] method.

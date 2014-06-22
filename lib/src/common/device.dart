@@ -1,4 +1,4 @@
-part of raxa.device;
+part of raxa.common;
 
 class Device extends ModelBase {
     /// A unique, auto generated id of the device.
@@ -30,7 +30,7 @@ class Device extends ModelBase {
     set variables(Map<String, dynamic> value) => this['variables'] = value;
 
     Device.from(Map<String, dynamic> other) : super.from(other, removeId: false) {
-        if (this['_id'] is ObjectId) {
+        if (this['_id'].runtimeType.toString() == 'ObjectId') {
             this['_id'] = this['_id'].toHexString();
         }
     }

@@ -1,6 +1,7 @@
 library plugin_manager_test;
 
 import 'package:guinness/guinness.dart';
+import 'package:raxa/device.dart';
 import 'package:raxa/interface.dart';
 import 'package:raxa/plugin.dart';
 import 'package:unittest/unittest.dart' hide expect;
@@ -15,7 +16,8 @@ main() {
 
         beforeEach(() {
             db = new MockDb();
-            pluginManager = new PluginManager(db, new InterfaceManager(db));
+            pluginManager = new PluginManager(db, new DeviceClassManager(db),
+                            new InterfaceManager(db));
         });
 
         describe('read', () {

@@ -14,6 +14,8 @@ class Plugin extends ModelBase {
     List<String> get providedInterfaces => getValue('providedInterfaces', []);
     List<String> get requiredInterfaces => getValue('requiredInterfaces', []);
 
+    List<String> get deviceClasses => getValue('deviceClasses', []);
+
     Plugin.from(Map<String, dynamic> other) : super.from(other);
 
     static Future<Plugin> fromManifest(String name) =>

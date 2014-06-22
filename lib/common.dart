@@ -2,6 +2,9 @@ library raxa.common;
 
 import 'dart:collection';
 
+part 'src/common/call.dart';
+part 'src/common/device.dart';
+
 /**
  * A base class for models that extends [MapBase] as all models is JSON based.
  */
@@ -19,7 +22,7 @@ abstract class ModelBase extends MapBase<String, dynamic> {
     ModelBase.from(Map<String, dynamic> other, {bool removeId: true}) {
         _map = other;
 
-        if (removeId) {
+        if (removeId && _map.containsKey('_id')) {
             _map.remove('_id');
         }
     }
