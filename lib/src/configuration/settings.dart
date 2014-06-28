@@ -17,7 +17,7 @@ class Settings {
      * Specify [group] to use other settings group than core.
      */
     Future<Map> load(Map defaultSettings, [String group = 'core']) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'group': group}).then((dbObject) {
@@ -32,7 +32,7 @@ class Settings {
                     }).then((_) => defaultSettings);
                 }
             });
-        }).whenComplete(db.close);
+        });
 
     /**
      * Reads settings from the database.
@@ -40,7 +40,7 @@ class Settings {
      * Specify [group] to use other settings group than core.
      */
     Future<Map> read([String group = 'core']) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'group': group}).then((dbObject) {
@@ -55,13 +55,13 @@ class Settings {
                     'settings': dbObject['settings']
                 };
             });
-        }).whenComplete(db.close);
+        });
 
     /**
      * Reads all settings from the database.
      */
     Future<Map<String, Map>> readAll() =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             var settings = {};
@@ -72,7 +72,7 @@ class Settings {
                     'settings': dbObject['settings'],
                 };
             }).then((_) => settings);
-        }).whenComplete(db.close);
+        });
 
     /**
      * Saves settings to the database.
@@ -80,9 +80,9 @@ class Settings {
      * Specify [group] to use other settings group than core.
      */
     Future save(Map settings, [String group = 'core']) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.update({'group': group}, {r'$set': settings});
-        }).whenComplete(db.close);
+        });
 }

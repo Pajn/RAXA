@@ -3,15 +3,18 @@ part of raxa.api;
 class RestApi {
     Config config;
     RestServer restServer;
+
+    CallApi callApi;
     DeviceClassManagerApi deviceClassManagerApi;
     DeviceManagerApi deviceManagerApi;
     PluginManagerApi pluginManagerApi;
     SettingsApi settingsApi;
 
-    RestApi(this.config, this.restServer, this.deviceClassManagerApi,
+    RestApi(this.config, this.restServer, this.callApi, this.deviceClassManagerApi,
             this.deviceManagerApi, this.pluginManagerApi, this.settingsApi);
 
     initialize() {
+        callApi.initialize();
         deviceClassManagerApi.initialize();
         deviceManagerApi.initialize();
         pluginManagerApi.initialize();
@@ -27,6 +30,7 @@ class RestModule extends Module {
         install(new DeviceModule());
         install(new PluginModule());
         bind(RestServer);
+        bind(CallApi);
         bind(DeviceClassManagerApi);
         bind(DeviceManagerApi);
         bind(PluginManagerApi);

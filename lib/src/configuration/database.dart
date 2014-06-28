@@ -1,9 +1,13 @@
 part of raxa.configuration;
 
-/**
- * A wrapper for mongo_darts [Db] that connects to the database
- * as specified in the [Config].
- */
-class Database extends Db {
-    Database(Config config) : super(config.dbString);
+class Database {
+    Config config;
+
+    Database(this.config);
+
+    Future connect(Function fn) {
+        var db = new Db(config.dbString);
+
+        return db.open().then((_) => fn(db)).whenComplete(db.close);
+    }
 }

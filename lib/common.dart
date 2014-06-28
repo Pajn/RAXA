@@ -13,6 +13,7 @@ abstract class ModelBase extends MapBase<String, dynamic> {
 
     Iterable<String> get keys => _map.keys;
 
+    ModelBase() : this.from({});
     /**
      * Create an instance from a JSON object.
      *

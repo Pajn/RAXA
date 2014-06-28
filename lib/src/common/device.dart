@@ -5,15 +5,17 @@ class Device extends ModelBase {
     String get id => this['_id'];
     /// A unique name of the device. The name may change and thus can't be used as identification.
     String get name => this['name'];
+    set name(String value) => this['name'] = value;
+
     String get plugin => this['plugin'];
+    set plugin(String value) => this['plugin'] = value;
+
     String get deviceClass => this['deviceClass'];
+    set deviceClass(String value) => this['deviceClass'] = value;
 
     /// Configuration values for the plugin. May be a network id or similar.
-    Map<String, Map<String, dynamic>> get config => getValue('config', {});
-
-    /// A list of types the device identifies itself as, for example Thermometer and Sensor.
-    /// This is only used for clients to know how to present the device.
-    List<String> get types => getValue('types', []);
+    Map<String, dynamic> get config => getValue('config', {});
+    set config(Map<String, dynamic> value) => this['config'] = value;
 
     /// A list of the [Interface]s (names) that the [Device] created from this class implements.
     List<String> get implementedInterfaces => getValue('implementedInterfaces', []);
@@ -29,6 +31,7 @@ class Device extends ModelBase {
     Map<String, dynamic> get variables => getValue('variables', {});
     set variables(Map<String, dynamic> value) => this['variables'] = value;
 
+    Device();
     Device.from(Map<String, dynamic> other) : super.from(other, removeId: false) {
         if (this['_id'].runtimeType.toString() == 'ObjectId') {
             this['_id'] = this['_id'].toHexString();

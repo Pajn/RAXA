@@ -13,28 +13,50 @@ class PluginManager {
         new Directory.fromUri(new Uri.file('plugins')).list().listen((file) {
             if (file is Directory) {
                 var pluginName = new Uri.file(file.path).pathSegments.last;
-                install(pluginName).then((_) => enable(pluginName));
+
+                read(pluginName).then((plugin) {
+                    if (plugin == null) {
+                        install(pluginName).then((_) => enable(pluginName));
+                    }
+                });
             }
         });
+
+        readAll({'enabled': true}).then((plugins) {
+            plugins.forEach((plugin) {
+                enable(plugin.name);
+            });
+        });
+    }
+
+    call(Call call, Device device) {
+        var plugin = enabledPlugins[device.plugin];
+        print(call);
+        print(device);
+
+        if (plugin is PluginInstance) {
+            plugin.sendPort.send(new CallMessage(call, device));
+        }
     }
 
     Future install(String pluginName) =>
         Plugin.fromManifest(pluginName).then((plugin) =>
-            db.open().then((_) {
+            db.connect((db) {
                 var collection = db.collection(COLLECTION);
 
                 return collection.insert(plugin);
-            }).whenComplete(db.close)
+            })
         );
 
     Future enable(String pluginName) {
         if (enabledPlugins.containsKey(pluginName)) {
+            update({'enabled': true}, pluginName);
+
             throw 'Plugin already enabled';
         }
 
         return read(pluginName).then((plugin) {
             if (plugin == null) {
-                update({'enabled': true}, plugin.name);
 
                 throw 'Plugin is not installed';
             }
@@ -55,7 +77,7 @@ class PluginManager {
                             .catchError((_) {}, test: (e) => e == 'DeviceClass already installed')
                      )))
                 .then((_) => update({'enabled': true}, plugin.name))
-                .then((_) => enabledPlugins['plugin'] = new PluginInstance(plugin.name));
+                .then((_) => enabledPlugins[plugin.name] = new PluginInstance(plugin.name));
         });
     }
 
@@ -67,7 +89,7 @@ class PluginManager {
      * Reads all information of a plugin from the database.
      */
     Future<Plugin> read(String plugin) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': plugin}).then((dbObject) {
@@ -78,29 +100,29 @@ class PluginManager {
 
                 return new Plugin.from(dbObject);
             });
-        }).whenComplete(db.close);
+        });
 
     /**
      * Reads all available plugins from the database.
      */
-    Future<List<Plugin>> readAll() =>
-        db.open().then((_) {
+    Future<List<Plugin>> readAll([Map query = const {}]) =>
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             var plugins = [];
 
-            return collection.find().forEach((dbObject) {
+            return collection.find(query).forEach((dbObject) {
                 plugins.add(new Plugin.from(dbObject));
             }).then((_) => plugins);
-        }).whenComplete(db.close);
+        });
 
     /**
      * Updates plugin settings in the database.
      */
     Future update(Map settings, String pluginName) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.update({'name': pluginName}, {r'$set': settings});
-        }).whenComplete(db.close);
+        });
 }

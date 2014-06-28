@@ -8,7 +8,7 @@ class InterfaceManager {
     InterfaceManager(this.db);
 
     Future install(Interface interface) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': interface.name}).then((dbObject) {
@@ -19,13 +19,13 @@ class InterfaceManager {
 
                 return collection.insert(interface);
             });
-        }).whenComplete(db.close);
+        });
 
     /**
      * Reads an [Interface] from the database.
      */
     Future<Interface> read(String interface) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': interface}).then((dbObject) {
@@ -36,13 +36,13 @@ class InterfaceManager {
 
                 return new Interface.from(dbObject);
             });
-        }).whenComplete(db.close);
+        });
 
     /**
      * Reads all [Interface]s from the database.
      */
     Future<List<Interface>> readAll() =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             var interfaces = [];
@@ -50,7 +50,7 @@ class InterfaceManager {
             return collection.find().forEach((dbObject) {
                 interfaces.add(new Interface.from(dbObject));
             }).then((_) => interfaces);
-        }).whenComplete(db.close);
+        });
 
     /**
      * Validates a [Call] accordance to it's [Interface].
@@ -58,7 +58,7 @@ class InterfaceManager {
      * Throws on error.
      */
     Future validateCall(Call call, Device device) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': call.interface}).then((dbObject) {
@@ -69,5 +69,5 @@ class InterfaceManager {
 
                 new Interface.from(dbObject, device).validate(call);
             });
-        }).whenComplete(db.close);
+        });
 }

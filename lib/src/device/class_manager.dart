@@ -11,7 +11,7 @@ class DeviceClassManager {
      * Installs a new [DeviceClass].
      */
     Future install(DeviceClass deviceClass) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({
@@ -25,7 +25,7 @@ class DeviceClassManager {
 
                 return collection.insert(deviceClass);
             });
-        }).whenComplete(db.close);
+        });
 
     /**
      * Reads a [DeviceClass] from the database.
@@ -35,8 +35,8 @@ class DeviceClassManager {
      *
      * Returns null if not found.
      */
-    Future<DeviceClass> read(String plugin, String name, {bool closeDb: true}) =>
-        db.open().then((_) {
+    Future<DeviceClass> read(String plugin, String name) =>
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({
@@ -50,10 +50,6 @@ class DeviceClassManager {
 
                 return new DeviceClass.from(dbObject);
             });
-        }).whenComplete(() {
-            if (closeDb) {
-                db.close();
-            }
         });
 
     /**
@@ -62,7 +58,7 @@ class DeviceClassManager {
      * [query]: An optional mongodb query to limit the search ,
      */
     Future<List<DeviceClass>> readAll([Map query = const {}]) =>
-        db.open().then((_) {
+        db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             var deviceClasses = [];
@@ -70,5 +66,5 @@ class DeviceClassManager {
             return collection.find(query).forEach((dbObject) {
                 deviceClasses.add(new DeviceClass.from(dbObject));
             }).then((_) => deviceClasses);
-        }).whenComplete(db.close);
+        });
 }

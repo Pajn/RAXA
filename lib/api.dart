@@ -12,6 +12,7 @@ import 'package:RestLibrary/restlibrary.dart';
 
 part 'src/api/version.dart';
 part 'src/api/rest.dart';
+part 'src/api/endpoints/call.dart';
 part 'src/api/endpoints/device_class_manager.dart';
 part 'src/api/endpoints/device_manager.dart';
 part 'src/api/endpoints/plugin_manager.dart';

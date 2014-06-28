@@ -2,11 +2,12 @@ part of raxa.plugin_helper;
 
 class Plugin {
     ReceivePort receivePort = new ReceivePort();
+    SendPort sendPort;
 
     var _onCalled = new StreamController();
     Stream<CallMessage> get onCalled => _onCalled.stream;
 
-    Plugin(List<String> args, SendPort sendPort) {
+    Plugin(List<String> args, this.sendPort) {
         receivePort.listen((message) {
             message = new Message.from(message);
 
@@ -19,4 +20,6 @@ class Plugin {
 
         sendPort.send(receivePort.sendPort);
     }
+
+    send(Message message) => sendPort.send(message);
 }

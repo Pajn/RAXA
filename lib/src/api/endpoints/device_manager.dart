@@ -23,10 +23,14 @@ class DeviceManagerApi {
                 ..put = putDevice);
     }
 
-    getAllDevices(Request request) =>
-        deviceManager.readAll().then((data) {
+    getAllDevices(Request request) {
+        var query = request.httpRequest.uri.queryParameters['query'];
+        query = query != null ? JSON.decode(query) : {};
+        
+        return deviceManager.readAll(query).then((data) {
             return new RestResponse(data);
         });
+    }
 
     postDevice(Request request) {
         var device = new Device.from(request.json);

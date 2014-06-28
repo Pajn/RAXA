@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 import 'package:di/di.dart';
+import 'package:raxa/api.dart';
 import 'package:raxa/common.dart';
 import 'package:raxa/configuration.dart';
 import 'package:raxa/device.dart';
@@ -20,6 +21,7 @@ part 'src/plugin/plugin.dart';
 class PluginModule extends Module {
 
     PluginModule() {
+        install(new ConfigurationModule());
         bind(PluginManager);
     }
 }
