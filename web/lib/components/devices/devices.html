@@ -1,0 +1,10 @@
+Hej
+<ul>
+    <li ng-repeat="device in cmp.devices | filter:cmp.supported">
+        <span>{{ device.name }}</span>
+        <interface name="lamp" ng-if="device.implementedInterfaces.contains('Lamp')"
+                   device="device"></interface>
+        <interface name="dimlevel" ng-if="device.implementedInterfaces.contains('DimLevel')"
+                   device="device"></interface>
+    </li>
+</ul>
