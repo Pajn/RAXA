@@ -12,7 +12,7 @@ class CallApi {
 
     initialize() {
         restServer
-            ..route(new Route('/call')
+            ..route(new Route('/rest/call')
                 ..post = call);
     }
 

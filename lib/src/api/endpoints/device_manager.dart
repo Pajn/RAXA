@@ -14,10 +14,10 @@ class DeviceManagerApi {
      */
     initialize() {
         restServer
-            ..route(new Route('/devices')
+            ..route(new Route('/rest/devices')
                 ..get = getAllDevices
                 ..post = postDevice)
-            ..route(new Route('/devices/{id}')
+            ..route(new Route('/rest/devices/{id}')
                 ..delete = deleteDevice
                 ..get = getDevice
                 ..put = putDevice);
@@ -26,7 +26,7 @@ class DeviceManagerApi {
     getAllDevices(Request request) {
         var query = request.httpRequest.uri.queryParameters['query'];
         query = query != null ? JSON.decode(query) : {};
-        
+
         return deviceManager.readAll(query).then((data) {
             return new RestResponse(data);
         });
@@ -72,7 +72,7 @@ class DeviceManagerApi {
     putDevice(Request request) {
         var device = request.urlParameters['id'];
 
-        return deviceManager.update(request.json, device).then((data) {
+        return deviceManager.update(new Device.from(request.json, removeId: true), device).then((data) {
             if (data['err'] != null) {
                 return new RestResponse('Update of device failed', status: Status.FAIL);
             }

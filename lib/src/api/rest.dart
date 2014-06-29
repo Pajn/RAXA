@@ -20,6 +20,10 @@ class RestApi {
         pluginManagerApi.initialize();
         settingsApi.initialize();
 
+        restServer.static('../web', jailRoot: false);
+        restServer.clientRoutes = [
+            '/settings/devices', '/settings'
+        ];
         restServer.start(address: config.restHostname, port: config.restPort);
     }
 }

@@ -1,0 +1,13 @@
+<span ng-click="cmp.show = !cmp.show">{{ cmp.device.name }}</span>
+<div ng-if="cmp.show">
+    <label>Name
+        <input ng-model="cmp.device.name" />
+    </label>
+    Plugin: {{ cmp.device.plugin }}
+    Class: {{ cmp.device.deviceClass }}
+    <div ng-repeat="config in cmp.config">
+        {{ config }}: <config config="cmp.device.config[config]" device="device"></config>
+    </div>
+
+    <input type="submit" value="Save" ng-click="cmp.save()"/>
+</div>

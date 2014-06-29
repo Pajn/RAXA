@@ -14,9 +14,9 @@ class PluginManagerApi {
      */
     initialize() {
         restServer
-            ..route(new Route('/plugins')
+            ..route(new Route('/rest/plugins')
                 ..get = getAllPlugins)
-            ..route(new Route('/plugins/{plugin}')
+            ..route(new Route('/rest/plugins/{plugin}')
                 ..get = getPlugin
                 ..put = putPlugin);
     }

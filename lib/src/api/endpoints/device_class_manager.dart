@@ -14,11 +14,11 @@ class DeviceClassManagerApi {
      */
     initialize() {
         restServer
-            ..route(new Route('/deviceclasses')
+            ..route(new Route('/rest/deviceclasses')
                 ..get = getAllDeviceClasses)
-            ..route(new Route('/deviceclasses/{deviceClass}')
+            ..route(new Route('/rest/deviceclasses/{deviceClass}')
                 ..get = getAllDeviceClasses)
-            ..route(new Route('/deviceclasses/{deviceClass}/{name}')
+            ..route(new Route('/rest/deviceclasses/{deviceClass}/{name}')
                 ..get = getDeviceClass);
     }
 

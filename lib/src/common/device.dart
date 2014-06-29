@@ -32,7 +32,7 @@ class Device extends ModelBase {
     set variables(Map<String, dynamic> value) => this['variables'] = value;
 
     Device();
-    Device.from(Map<String, dynamic> other) : super.from(other, removeId: false) {
+    Device.from(Map<String, dynamic> other, {removeId: false}) : super.from(other, removeId: removeId) {
         if (this['_id'].runtimeType.toString() == 'ObjectId') {
             this['_id'] = this['_id'].toHexString();
         }

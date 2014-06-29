@@ -1,0 +1,10 @@
+<select ng-if="cmp.useSelect" ng-model="cmp.config['value']">
+    <option ng-repeat="option in cmp.options" ng-value="option['value']">
+        {{ option['label'] }}
+    </option>
+</select>
+<span ng-if="cmp.readOnly">{{ cmp.config['value'] }}</span>
+<input ng-if="cmp.useInput && cmp.inputType == 'number'" ng-model="cmp.config['value']"
+       type="number" />
+<input ng-if="cmp.useInput && cmp.inputType == 'text'" ng-model="cmp.config['value']"
+       type="text" />

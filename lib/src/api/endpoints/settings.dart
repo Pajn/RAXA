@@ -14,9 +14,9 @@ class SettingsApi {
      */
     initialize() {
         restServer
-            ..route(new Route('/settings')
+            ..route(new Route('/rest/settings')
                 ..get = getAllSettings)
-            ..route(new Route('/settings/{group}')
+            ..route(new Route('/rest/settings/{group}')
                 ..get = getSettings
                 ..put = putSettings);
     }

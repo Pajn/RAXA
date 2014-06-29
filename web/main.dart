@@ -8,15 +8,26 @@ void routeInitializer(Router router, RouteViewFactory views) {
     views.configure({
         'main': ngRoute(
             path: '/',
-            view: 'views/main.html')
+            view: 'views/main.html'),
+        'settings': ngRoute(
+            path: '/settings',
+            view: 'views/settings.html',
+            mount: {
+                'devices': ngRoute(
+                    path: '/devices',
+                    viewHtml: '<devices-settings></devices-settings>')
+            })
     });
 }
 
 class WebModule extends Module {
     WebModule() {
+        bind(ConfigComponent);
         bind(DevicesWidget);
         bind(InterfaceDimLevelComponent);
         bind(InterfaceLampComponent);
+        bind(DeviceSettingsComponent);
+        bind(DevicesSettingsComponent);
         bind(RestService);
         bind(RouteInitializerFn, toValue: routeInitializer);
     }
