@@ -1,0 +1,20 @@
+<h3>New Device</h3>
+<label>Device class:
+    <select ng-model="cmp.deviceClass">
+        <option ng-repeat="deviceClass in cmp.deviceClasses" ng-value="deviceClass">
+            {{ deviceClass.name }}
+        </option>
+    </select>
+</label>
+<div>
+    <label>Name
+        <input ng-model="cmp.device.name" />
+    </label>
+    Plugin: {{ cmp.device.plugin }}
+    Class: {{ cmp.device.deviceClass }}
+    <div ng-repeat="config in cmp.config">
+        {{ config }}: <config config="cmp.device.config[config]" device="device"></config>
+    </div>
+
+    <input type="submit" value="Save" ng-click="cmp.save()"/>
+</div>

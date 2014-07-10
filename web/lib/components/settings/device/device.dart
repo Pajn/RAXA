@@ -13,9 +13,7 @@ class DeviceSettingsComponent {
     Device device;
     bool show = false;
 
-    List get config {
-        return device.config.keys;
-    }
+    Iterable get config => device.config.keys;
 
     DeviceSettingsComponent(this.restService);
 

@@ -8,7 +8,6 @@ import 'package:raxa/configuration.dart';
 
 export 'package:raxa/common.dart' show Device;
 
-part 'src/device/class.dart';
 part 'src/device/class_manager.dart';
 part 'src/device/manager.dart';
 

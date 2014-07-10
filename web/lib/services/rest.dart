@@ -7,22 +7,30 @@ class RestService {
     RestService(this.http);
 
     Future call(Call call) {
-        return http.post('http://127.0.0.1:8080/rest/call', call);
+        return http.post('http://127.0.0.1:8080/rest/call', JSON.encode(call));
     }
 
     Future<List<Device>> getDevices([Map query]) {
         var queryParam = '';
 
         if (query != null) {
-            queryParam = 'query=${JSON.encode(query)}';
+            queryParam = '?query=${JSON.encode(query)}';
         }
 
-        return http.get('http://127.0.0.1:8080/rest/devices?$queryParam').then((response) {
-            print(response.data);
+        return http.get('http://127.0.0.1:8080/rest/devices$queryParam').then((response) {
             return response.data['data'].map((json) => new Device.from(json)).toList();
         });
     }
 
+    Future<List<DeviceClass>> getDeviceClasses() {
+        return http.get('http://127.0.0.1:8080/rest/deviceclasses').then((response) {
+            return response.data['data'].map((json) => new DeviceClass.from(json)).toList();
+        });
+    }
+
+    Future createDevice(Device device) =>
+        http.post('http://127.0.0.1:8080/rest/devices', JSON.encode(device));
+
     Future saveDevice(Device device) =>
-        http.put('http://127.0.0.1:8080/rest/devices/${device.id}', device);
+        http.put('http://127.0.0.1:8080/rest/devices/${device.id}', JSON.encode(device));
 }

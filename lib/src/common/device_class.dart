@@ -1,4 +1,4 @@
-part of raxa.device;
+part of raxa.common;
 
 /**
  * Every [Device] is created from a [DeviceClass] that describes
