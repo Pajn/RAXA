@@ -5,6 +5,7 @@ import 'dart:collection';
 part 'src/common/call.dart';
 part 'src/common/device.dart';
 part 'src/common/device_class.dart';
+part 'src/common/messages.dart';
 
 /**
  * A base class for models that extends [MapBase] as all models is JSON based.

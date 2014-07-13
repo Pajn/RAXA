@@ -35,25 +35,17 @@ class DeviceManagerApi {
     postDevice(Request request) {
         var device = new Device.from(request.json);
 
-        return deviceManager.create(device).then((data) {
-            if (data['err'] != null) {
-                return new RestResponse('Creation of device failed', status: Status.FAIL);
-            }
-
-            return new RestResponse('Creation of device succeeded');
-        });
+        return deviceManager.create(device).then((data) =>
+            new RestResponse('Creation of device succeeded')
+        ).catchError((_) => new RestResponse('Creation of device failed', status: Status.FAIL));
     }
 
     deleteDevice(Request request) {
         var device = request.urlParameters['id'];
 
-        return deviceManager.delete(device).then((data) {
-            if (data['err'] != null) {
-                return new RestResponse('Deletion of device failed', status: Status.FAIL);
-            }
-
-            return new RestResponse('Deletion of device succeeded');
-        });
+        return deviceManager.delete(device).then((data) =>
+            new RestResponse('Deletion of device succeeded')
+        ).catchError((_) => new RestResponse('Deletion of device failed', status: Status.FAIL));
     }
 
     getDevice(Request request) {
@@ -72,12 +64,8 @@ class DeviceManagerApi {
     putDevice(Request request) {
         var device = request.urlParameters['id'];
 
-        return deviceManager.update(new Device.from(request.json, removeId: true), device).then((data) {
-            if (data['err'] != null) {
-                return new RestResponse('Update of device failed', status: Status.FAIL);
-            }
-
-            return new RestResponse('Update of device succeeded');
-        });
+        return deviceManager.update(new Device.from(request.json, removeId: true), device)
+        .then((data) => new RestResponse('Update of device succeeded'))
+        .catchError((_) => new RestResponse('Update of device failed', status: Status.FAIL));
     }
 }

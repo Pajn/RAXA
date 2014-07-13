@@ -1,4 +1,4 @@
-part of raxa.plugin_helper;
+part of raxa.common;
 
 class Message extends ModelBase {
     String get command => this['command'];
@@ -55,4 +55,23 @@ class RestMessage extends Message {
         super.command = 'Rest';
     }
     RestMessage.from(Map<String, dynamic> other) : super.from(other);
+}
+
+class EventMessage extends Message {
+    String get type => this['type'];
+    set type(String value) => this['type'] = value;
+
+    String get event => this['event'];
+    set event(String value) => this['event'] = value;
+
+    get data => this['data'];
+    set data(value) => this['data'] = value;
+
+    EventMessage(String type, String event, data) {
+        this.type = type;
+        this.event = event;
+        this.data = data;
+        super.command = 'Status';
+    }
+    EventMessage.from(Map<String, dynamic> other) : super.from(other);
 }

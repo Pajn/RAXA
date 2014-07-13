@@ -6,10 +6,11 @@ class PluginManager {
     Database db;
     DeviceClassManager deviceClassManager;
     InterfaceManager interfaceManager;
+    EventApi eventApi;
 
     Map<String, PluginInstance> enabledPlugins = {};
 
-    PluginManager(this.db, this.deviceClassManager, this.interfaceManager) {
+    PluginManager(this.db, this.deviceClassManager, this.interfaceManager, this.eventApi) {
         new Directory.fromUri(new Uri.file('plugins')).list().listen((file) {
             if (file is Directory) {
                 var pluginName = new Uri.file(file.path).pathSegments.last;
@@ -44,7 +45,9 @@ class PluginManager {
             db.connect((db) {
                 var collection = db.collection(COLLECTION);
 
-                return collection.insert(plugin);
+                collection.insert(plugin);
+
+                eventApi.broadcast(new EventMessage('Plugin', 'installed', plugin));
             })
         );
 
@@ -77,7 +80,8 @@ class PluginManager {
                             .catchError((_) {}, test: (e) => e == 'DeviceClass already installed')
                      )))
                 .then((_) => update({'enabled': true}, plugin.name))
-                .then((_) => enabledPlugins[plugin.name] = new PluginInstance(plugin.name));
+                .then((_) => enabledPlugins[plugin.name] = new PluginInstance(plugin.name))
+                .then((_) => eventApi.broadcast(new EventMessage('Plugin', 'enabled', plugin)));
         });
     }
 
@@ -123,6 +127,11 @@ class PluginManager {
         db.connect((db) {
             var collection = db.collection(COLLECTION);
 
-            return collection.update({'name': pluginName}, {r'$set': settings});
+            collection.update({'name': pluginName}, {r'$set': settings});
+
+            eventApi.broadcast(new EventMessage('Plugin', 'updated', {
+                'name': pluginName,
+                'changed': settings,
+            }));
         });
 }

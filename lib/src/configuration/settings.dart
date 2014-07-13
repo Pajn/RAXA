@@ -7,8 +7,9 @@ class Settings {
     static const COLLECTION = 'Settings';
 
     Database db;
+    EventApi eventApi;
 
-    Settings(this.db);
+    Settings(this.db, this.eventApi);
 
     /**
      * Loads settings from the database, saves and returns [defaultSettings]
@@ -83,6 +84,10 @@ class Settings {
         db.connect((db) {
             var collection = db.collection(COLLECTION);
 
-            return collection.update({'group': group}, {r'$set': settings});
+            collection.update({'group': group}, {r'$set': settings});
+
+            eventApi.broadcast(new EventMessage('Settings', 'updated', {
+                'group': group,
+            }));
         });
 }

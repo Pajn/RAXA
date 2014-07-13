@@ -17,7 +17,7 @@ class InterfaceManager {
                     throw 'Interface already installed';
                 }
 
-                return collection.insert(interface);
+                collection.insert(interface);
             });
         });
 

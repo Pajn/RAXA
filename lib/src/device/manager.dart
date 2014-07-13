@@ -5,8 +5,9 @@ class DeviceManager {
 
     Database db;
     DeviceClassManager classManager;
+    EventApi eventApi;
 
-    DeviceManager(this.db, this.classManager);
+    DeviceManager(this.db, this.classManager, this.eventApi);
 
     Future create(Device device) =>
         db.connect((db) {
@@ -24,7 +25,9 @@ class DeviceManager {
                 }
                 deviceClass.validate(device);
 
-                return collection.insert(device);
+                collection.insert(device);
+
+                eventApi.broadcast(new EventMessage('Device', 'created', device));
             });
         });
 
@@ -35,7 +38,9 @@ class DeviceManager {
         db.connect((db) {
             var collection = db.collection(COLLECTION);
 
-            return collection.remove({'_id': new ObjectId.fromHexString(id)});
+            collection.remove({'_id': new ObjectId.fromHexString(id)});
+
+            eventApi.broadcast(new EventMessage('Device', 'deleted', id));
         });
 
     /**
@@ -77,6 +82,11 @@ class DeviceManager {
         db.connect((db) {
             var collection = db.collection(COLLECTION);
 
-            return collection.update({'_id': new ObjectId.fromHexString(id)}, {r'$set': device});
+            collection.update({'_id': new ObjectId.fromHexString(id)}, {r'$set': device});
+
+            eventApi.broadcast(new EventMessage('Device', 'updated', {
+                'id': id,
+                'changed': device,
+            }));
         });
 }
