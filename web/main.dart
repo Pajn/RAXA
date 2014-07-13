@@ -26,6 +26,7 @@ class WebModule extends Module {
         bind(DevicesWidget);
         bind(InterfaceDimLevelComponent);
         bind(InterfaceLampComponent);
+        bind(InterfaceSyncComponent);
         bind(DeviceCreateComponent);
         bind(DeviceSettingsComponent);
         bind(DevicesSettingsComponent);

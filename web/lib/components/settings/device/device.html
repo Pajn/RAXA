@@ -11,4 +11,6 @@
 
     <input type="submit" value="Save" ng-click="cmp.save()"/>
     <button ng-click="cmp.delete()">Delete</button>
+    <interface name="sync" ng-if="cmp.device.implementedInterfaces.contains('Sync')"
+               device="cmp.device"></interface>
 </div>
