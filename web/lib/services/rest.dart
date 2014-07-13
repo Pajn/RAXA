@@ -37,6 +37,9 @@ class RestService {
     Future createDevice(Device device) =>
         http.post('http://127.0.0.1:8080/rest/devices', JSON.encode(device));
 
+    Future deleteDevice(Device device) =>
+        http.delete('http://127.0.0.1:8080/rest/devices/${device.id}');
+
     Future saveDevice(Device device) =>
         http.put('http://127.0.0.1:8080/rest/devices/${device.id}', JSON.encode(device));
 }

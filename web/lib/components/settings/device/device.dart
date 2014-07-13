@@ -17,5 +17,6 @@ class DeviceSettingsComponent {
 
     DeviceSettingsComponent(this.restService);
 
+    delete() => restService.deleteDevice(device);
     save() => restService.saveDevice(device);
 }
