@@ -14,7 +14,7 @@ class RestService {
         var queryParam = '';
 
         if (query != null) {
-            queryParam = '?query=${JSON.encode(query)}';
+            queryParam = '?query=${Uri.encodeQueryComponent(JSON.encode(query))}';
         }
 
         return http.get('http://127.0.0.1:8080/rest/devices$queryParam').then((response) {
@@ -22,8 +22,14 @@ class RestService {
         });
     }
 
-    Future<List<DeviceClass>> getDeviceClasses() {
-        return http.get('http://127.0.0.1:8080/rest/deviceclasses').then((response) {
+    Future<List<DeviceClass>> getDeviceClasses([Map query]) {
+        var queryParam = '';
+
+        if (query != null) {
+            queryParam = '?query=${Uri.encodeQueryComponent(JSON.encode(query))}';
+        }
+
+        return http.get('http://127.0.0.1:8080/rest/deviceclasses$queryParam').then((response) {
             return response.data['data'].map((json) => new DeviceClass.from(json)).toList();
         });
     }

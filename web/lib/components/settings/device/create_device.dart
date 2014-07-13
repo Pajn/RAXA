@@ -26,7 +26,8 @@ class DeviceCreateComponent {
     Iterable get config => device.config.keys;
 
     DeviceCreateComponent(this.restService, Scope scope) {
-        restService.getDeviceClasses().then((deviceClasses) => this.deviceClasses = deviceClasses);
+        restService.getDeviceClasses({'visibility': {r'$nin': ['read', 'hidden']}})
+            .then((deviceClasses) => this.deviceClasses = deviceClasses);
     }
 
     save() => restService.createDevice(device);

@@ -16,17 +16,19 @@ class DeviceClassManagerApi {
         restServer
             ..route(new Route('/rest/deviceclasses')
                 ..get = getAllDeviceClasses)
-            ..route(new Route('/rest/deviceclasses/{deviceClass}')
+            ..route(new Route('/rest/deviceclasses/{plugin}')
                 ..get = getAllDeviceClasses)
-            ..route(new Route('/rest/deviceclasses/{deviceClass}/{name}')
+            ..route(new Route('/rest/deviceclasses/{plugin}/{name}')
                 ..get = getDeviceClass);
     }
 
     getAllDeviceClasses(Request request) {
-        var deviceClass = request.urlParameters['deviceClass'];
-        var query = {};
-        if (deviceClass != null) {
-            query['deviceClass'] = deviceClass;
+        var query = request.httpRequest.uri.queryParameters['query'];
+        query = query != null ? JSON.decode(query) : {};
+
+        var plugin = request.urlParameters['plugin'];
+        if (plugin != null) {
+            query['plugin'] = plugin;
         }
 
         return deviceClassManager.readAll(query).then((data) {
@@ -35,10 +37,10 @@ class DeviceClassManagerApi {
     }
 
     getDeviceClass(Request request) {
-        var deviceClass = request.urlParameters['deviceClass'];
+        var plugin = request.urlParameters['plugin'];
         var name = request.urlParameters['name'];
 
-        return deviceClassManager.read(deviceClass, name).then((data) {
+        return deviceClassManager.read(plugin, name).then((data) {
             if (data == null) {
                 request.httpRequest.response.statusCode = HttpStatus.NOT_FOUND;
                 return new RestResponse('DeviceClass not found', status: Status.FAIL);
