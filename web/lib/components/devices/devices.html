@@ -1,5 +1,5 @@
 <ul>
-    <li ng-repeat="device in cmp.devices | filter:cmp.supported">
+    <li ng-repeat="device in cmp.modelService.devices | filter:cmp.supported">
         <span>{{ device.name }}</span>
         <interface name="lamp" ng-if="device.implementedInterfaces.contains('Lamp')"
                    device="device"></interface>

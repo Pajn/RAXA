@@ -8,13 +8,10 @@ part of raxa_web;
 )
 class DevicesWidget {
     static const SUPPORTED = const ['Lamp', 'DimLevel'];
+    final ModelService modelService;
     final RestService restService;
 
-    List<Device> devices = [];
-
-    DevicesWidget(this.restService) {
-        restService.getDevices().then((devices) => this.devices = devices);
-    }
+    DevicesWidget(this.modelService, this.restService);
 
     bool supported(Device device) =>
         device.implementedInterfaces.any((interface) => SUPPORTED.contains(interface));

@@ -3,6 +3,7 @@ part of raxa.api;
 class RestApi {
     Config config;
     RestServer restServer;
+    WebSocketApi webSocketApi;
 
     CallApi callApi;
     DeviceClassManagerApi deviceClassManagerApi;
@@ -10,7 +11,7 @@ class RestApi {
     PluginManagerApi pluginManagerApi;
     SettingsApi settingsApi;
 
-    RestApi(this.config, this.restServer, this.callApi, this.deviceClassManagerApi,
+    RestApi(this.config, this.restServer, this.webSocketApi, this.callApi, this.deviceClassManagerApi,
             this.deviceManagerApi, this.pluginManagerApi, this.settingsApi);
 
     initialize() {
@@ -24,7 +25,16 @@ class RestApi {
         restServer.clientRoutes = [
             '/settings/devices', '/settings'
         ];
-        restServer.start(address: config.restHostname, port: config.restPort);
+
+        HttpServer.bind(config.restHostname, config.restPort).then((server) {
+            server.listen((HttpRequest request) {
+                if (request.uri.path == '/ws' && WebSocketTransformer.isUpgradeRequest(request)) {
+                    WebSocketTransformer.upgrade(request).then(webSocketApi.upgrade);
+                } else {
+                    restServer.handle(request);
+                }
+            });
+        });
     }
 }
 
@@ -39,6 +49,7 @@ class RestModule extends Module {
         bind(DeviceManagerApi);
         bind(PluginManagerApi);
         bind(SettingsApi);
+        bind(WebSocketApi);
         bind(RestApi);
     }
 }

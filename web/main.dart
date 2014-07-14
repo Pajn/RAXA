@@ -30,7 +30,9 @@ class WebModule extends Module {
         bind(DeviceCreateComponent);
         bind(DeviceSettingsComponent);
         bind(DevicesSettingsComponent);
+        bind(ModelService);
         bind(RestService);
+        bind(WebSocketService);
         bind(RouteInitializerFn, toValue: routeInitializer);
     }
 }
@@ -42,5 +44,6 @@ main() {
     });
     applicationFactory()
           .addModule(new WebModule())
-          .run();
+          .run()
+          .get(WebSocketService);
 }

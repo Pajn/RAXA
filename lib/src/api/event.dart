@@ -1,16 +1,15 @@
 part of raxa.api;
 
-class EventApi {
-    StreamController _local = new StreamController.broadcast();
-    Stream get local => _local.stream;
+/**
+ * A simple EventBus that broadcasts all events to it's listeners.
+ */
+class EventBus extends StreamView<EventMessage> {
+    static final _streamController = new StreamController<EventMessage>.broadcast();
 
-    EventApi();
+    EventBus() : super(_streamController.stream);
 
-    initialize() {
-    }
-
-    broadcast(EventMessage event) {
-        _local.add(event);
+    add(EventMessage event) {
+        _streamController.add(event);
         print(event);
     }
 }

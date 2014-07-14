@@ -2,6 +2,7 @@ library raxa_web;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 import 'package:angular/angular.dart';
 import 'package:raxa/common.dart';
 
@@ -13,4 +14,6 @@ part 'components/interfaces/sync/sync.dart';
 part 'components/settings/device/create_device.dart';
 part 'components/settings/device/device.dart';
 part 'components/settings/devices/devices.dart';
+part 'services/model.dart';
 part 'services/rest.dart';
+part 'services/websocket.dart';

@@ -7,11 +7,8 @@ part of raxa_web;
     useShadowDom: false
 )
 class DevicesSettingsComponent {
+    final ModelService modelService;
     final RestService restService;
 
-    List<Device> devices = [];
-
-    DevicesSettingsComponent(this.restService) {
-        restService.getDevices().then((devices) => this.devices = devices);
-    }
+    DevicesSettingsComponent(this.modelService, this.restService);
 }

@@ -4,9 +4,9 @@ class DeviceClassManager {
     static const COLLECTION = 'DeviceClasses';
 
     Database db;
-    EventApi eventApi;
+    EventBus eventBus;
 
-    DeviceClassManager(this.db, this.eventApi);
+    DeviceClassManager(this.db, this.eventBus);
 
     /**
      * Installs a new [DeviceClass].
@@ -26,7 +26,7 @@ class DeviceClassManager {
 
                 collection.insert(deviceClass);
 
-                eventApi.broadcast(new EventMessage('DeviceClass', 'installed', deviceClass));
+                eventBus.add(new EventMessage('DeviceClass', 'installed', deviceClass));
             });
         });
 
