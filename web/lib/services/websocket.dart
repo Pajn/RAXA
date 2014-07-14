@@ -11,9 +11,15 @@ class WebSocketService {
             print('Connected to server');
         });
 
-        ws.onMessage.listen((MessageEvent e){
+        ws.onMessage.listen((MessageEvent e) {
             print(e.data);
-            var message = new EventMessage.from(JSON.decode(e.data));
+            var message;
+            try {
+                message = new EventMessage.from(JSON.decode(e.data));
+            } catch (e) {
+                // Bad message, just let it drop.
+                return;
+            }
 
             switch (message.type) {
                 case 'Device':
