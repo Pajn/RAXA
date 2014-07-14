@@ -23,6 +23,11 @@ class WebSocketService {
                             break;
                         case 'deleted':
                             modelService.devices.removeWhere((device) => device.id == message.data);
+                            break;
+                        case 'updated':
+                            modelService.devices.firstWhere((device) => device.id == message.data['id'])
+                                .addAll(message.data['changed']);
+                            break;
                     }
                     break;
             }
