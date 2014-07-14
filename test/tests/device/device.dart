@@ -1,7 +1,7 @@
 library device_test;
 
 import 'package:guinness/guinness.dart';
-import 'package:raxa/device.dart';
+import 'package:raxa/common.dart';
 import 'package:unittest/unittest.dart' hide expect;
 
 main() {
@@ -17,7 +17,6 @@ main() {
                 'config': {
                     'someParameter': 'someValue'
                 },
-                'types': ['SomeType'],
                 'implementedInterfaces': ['SomeInterface'],
                 'status': {
                     'someStatus': 'someValue'
@@ -33,7 +32,6 @@ main() {
             expect(device.deviceClass).toEqual('SomeClass');
 
             expect(device.config).toEqual({'someParameter': 'someValue'});
-            expect(device.types).toEqual(['SomeType']);
             expect(device.implementedInterfaces).toEqual(['SomeInterface']);
             expect(device.status).toEqual({'someStatus': 'someValue'});
             expect(device.variables).toEqual({'someVariable': 'someValue'});
@@ -56,7 +54,6 @@ main() {
                 'config': {
                     'someParameter': 'someValue'
                 },
-                'types': ['SomeType'],
                 'implementedInterfaces': ['SomeInterface'],
                 'status': {
                     'someStatus': 'someValue'
@@ -75,7 +72,6 @@ main() {
                 'config': {
                     'someParameter': 'someValue'
                 },
-                'types': ['SomeType'],
                 'implementedInterfaces': ['SomeInterface'],
                 'status': {
                     'someStatus': 'someValue'

@@ -1,6 +1,8 @@
 library configuration_settings_test;
 
+import 'dart:async';
 import 'package:guinness/guinness.dart';
+import 'package:raxa/api.dart';
 import 'package:raxa/configuration.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
@@ -14,17 +16,17 @@ main() {
 
         beforeEach(() {
             db = new MockDb();
-            settings = new Settings(db);
+            settings = new Settings(db, new EventBus());
         });
 
         describe('load', () {
             it('should use the Settings collection', () {
+                db.mockCollection.fakedFind = new Future.value(null);
+
                 var future = settings.load({});
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Settings');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -34,8 +36,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'group': 'core'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -45,8 +45,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'group': 'Plugin'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -63,8 +61,6 @@ main() {
 
                 return future.then(expectAsync((group) {
                     expect(group).toEqual(db.mockCollection.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -83,8 +79,6 @@ main() {
                     var arguments = db.mockCollection.insertSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([defaultSettings]);
                     expect(group).toEqual(defaultSettings);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -95,8 +89,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Settings');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -106,8 +98,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'group': 'core'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -117,8 +107,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'group': 'Plugin'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -135,8 +123,6 @@ main() {
 
                 return future.then(expectAsync((group) {
                     expect(group).toEqual(db.mockCollection.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -145,8 +131,6 @@ main() {
 
                 return future.then(expectAsync((group) {
                     expect(group).toBeNull();
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -157,8 +141,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Settings');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -168,8 +150,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([null]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -210,8 +190,6 @@ main() {
 
                 return future.then(expectAsync((groups) {
                     expect(groups).toEqual(expected);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -222,8 +200,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Settings');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -233,8 +209,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
                     expect(arguments.first).toEqual({'group': 'core'});
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -244,8 +218,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
                     expect(arguments.first).toEqual({'group': 'Plugin'});
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -263,8 +235,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
                     expect(arguments[1]).toEqual({r'$set': updatedSettings});
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });

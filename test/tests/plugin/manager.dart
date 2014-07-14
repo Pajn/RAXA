@@ -1,6 +1,7 @@
 library plugin_manager_test;
 
 import 'package:guinness/guinness.dart';
+import 'package:raxa/api.dart';
 import 'package:raxa/device.dart';
 import 'package:raxa/interface.dart';
 import 'package:raxa/plugin.dart';
@@ -16,8 +17,8 @@ main() {
 
         beforeEach(() {
             db = new MockDb();
-            pluginManager = new PluginManager(db, new DeviceClassManager(db),
-                            new InterfaceManager(db));
+            pluginManager = new PluginManager(db, new DeviceClassManager(db, new EventBus()),
+                            new InterfaceManager(db), new EventBus());
         });
 
         describe('read', () {
@@ -26,8 +27,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Plugins');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -37,8 +36,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'name': 'PluginName'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -56,8 +53,6 @@ main() {
 
                 return future.then(expectAsync((plugin) {
                     expect(plugin).toEqual(db.mockCollection.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -66,8 +61,6 @@ main() {
 
                 return future.then(expectAsync((plugin) {
                     expect(plugin).toBeNull();
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -78,8 +71,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Plugins');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -89,8 +80,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([null]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -118,8 +107,6 @@ main() {
 
                 return future.then(expectAsync((plugins) {
                     expect(plugins).toEqual(db.mockCollection.mockCursor.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -130,8 +117,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Plugins');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -141,8 +126,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
                     expect(arguments.first).toEqual({'name': 'PluginName'});
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -154,8 +137,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
                     expect(arguments[1]).toEqual({r'$set': updatedInfo});
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });

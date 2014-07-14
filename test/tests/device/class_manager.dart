@@ -1,6 +1,8 @@
 library class_manager_test;
 
 import 'package:guinness/guinness.dart';
+import 'package:raxa/api.dart';
+import 'package:raxa/common.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
@@ -14,7 +16,7 @@ main() {
 
         beforeEach(() {
             db = new MockDb();
-            deviceClassManager = new DeviceClassManager(db);
+            deviceClassManager = new DeviceClassManager(db, new EventBus());
         });
 
         describe('install', () {
@@ -33,8 +35,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('DeviceClasses');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -44,8 +44,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'name': 'SomeName', 'plugin': 'SomePlugin'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -56,8 +54,6 @@ main() {
 
                 return future.catchError(expectAsync((error) {
                     expect(error).toEqual('DeviceClass already installed');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -67,8 +63,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.insertSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([testDeviceClass]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -79,8 +73,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('DeviceClasses');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -90,8 +82,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'name': 'DeviceClassName', 'plugin': 'PluginName'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -111,8 +101,6 @@ main() {
                 return future.then(expectAsync((deviceClass) {
                     expect(deviceClass).toBeA(DeviceClass);
                     expect(deviceClass).toEqual(db.mockCollection.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -121,8 +109,6 @@ main() {
 
                 return future.then(expectAsync((deviceClass) {
                     expect(deviceClass).toBeNull();
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -133,8 +119,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('DeviceClasses');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -144,8 +128,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -178,8 +160,6 @@ main() {
                         expect(deviceClass).toBeA(DeviceClass);
                     }, count: deviceClasses.length));
                     expect(deviceClasses).toEqual(db.mockCollection.mockCursor.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });

@@ -53,8 +53,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Interfaces');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -64,8 +62,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'name': 'DimLevel'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -76,8 +72,6 @@ main() {
 
                 return future.catchError(expectAsync((error) {
                     expect(error).toEqual('Interface already installed');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -87,8 +81,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.insertSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([testInterface]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -99,8 +91,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Interfaces');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -110,8 +100,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'name': 'InterfaceName'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -151,8 +139,6 @@ main() {
                 return future.then(expectAsync((interface) {
                     expect(interface).toBeA(Interface);
                     expect(interface).toEqual(db.mockCollection.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -161,8 +147,6 @@ main() {
 
                 return future.then(expectAsync((interface) {
                     expect(interface).toBeNull();
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -173,8 +157,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Interfaces');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -184,8 +166,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([null]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -258,8 +238,6 @@ main() {
                         expect(interface).toBeA(Interface);
                     }, count: interfaces.length));
                     expect(interfaces).toEqual(db.mockCollection.mockCursor.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });

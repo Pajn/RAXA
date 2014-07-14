@@ -1,7 +1,7 @@
 library class_test;
 
 import 'package:guinness/guinness.dart';
-import 'package:raxa/device.dart';
+import 'package:raxa/common.dart';
 import 'package:unittest/unittest.dart' hide expect;
 
 main() {

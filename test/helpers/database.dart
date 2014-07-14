@@ -18,6 +18,12 @@ class MockDb extends Mock implements Database {
         collectionSpy = guinness.createSpy('collectionSpy').andCallFake((_) => mockCollection);
     }
 
+    Future connect(Function fn) {
+        fn(this);
+
+        return new Future.value(null);
+    }
+
     open({writeConcern: null}) => openSpy(writeConcern);
     close() => closeSpy();
     collection(name) => collectionSpy(name);

@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:guinness/guinness.dart';
 import 'package:mock/mock.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:raxa/api.dart';
+import 'package:raxa/common.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
@@ -11,7 +13,7 @@ import '../../helpers/database.dart';
 class MockDeviceClassManager extends Mock implements DeviceClassManager {
     DeviceClass fakedRead;
 
-    Future<DeviceClass> read(String plugin, String name, {bool closeDb: true}) =>
+    Future<DeviceClass> read(String plugin, String name) =>
         new Future.value(fakedRead);
 
     noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -29,7 +31,7 @@ main() {
         beforeEach(() {
             db = new MockDb();
             deviceClassManager = new MockDeviceClassManager();
-            deviceManager = new DeviceManager(db, deviceClassManager);
+            deviceManager = new DeviceManager(db, deviceClassManager, new EventBus());
             id = new ObjectId();
 
             deviceClassManager.fakedRead = new DeviceClass.from({
@@ -67,8 +69,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Devices');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -78,8 +78,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'name': 'SomeName'}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -90,8 +88,6 @@ main() {
 
                 return future.catchError(expectAsync((error) {
                     expect(error).toEqual('Name already exist');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -102,8 +98,6 @@ main() {
 
                 return future.catchError(expectAsync((error) {
                     expect(error).toEqual('Specified DeviceClass does not exist');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -113,8 +107,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.insertSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([testDevice]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -126,8 +118,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Devices');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -137,8 +127,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.removeSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'_id': id}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -149,8 +137,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Devices');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -160,8 +146,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findOneSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'_id': id}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -189,8 +173,6 @@ main() {
                 return future.then(expectAsync((device) {
                     expect(device).toBeA(Device);
                     expect(device).toEqual(db.mockCollection.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -199,8 +181,6 @@ main() {
 
                 return future.then(expectAsync((device) {
                     expect(device).toBeNull();
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
@@ -211,8 +191,6 @@ main() {
 
                 return future.then(expectAsync((_) {
                     expect(db.collectionSpy).toHaveBeenCalledOnceWith('Devices');
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -222,8 +200,6 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.findSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{}]);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
 
@@ -281,8 +257,6 @@ main() {
                         expect(device).toBeA(Device);
                     }, count: devices.length));
                     expect(devices).toEqual(db.mockCollection.mockCursor.fakedFind);
-
-                    expect(db.closeSpy).toHaveBeenCalledOnce();
                 }));
             });
         });
