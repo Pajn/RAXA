@@ -7,10 +7,10 @@ part of raxa_web;
     useShadowDom: false
 )
 class DeviceCreateComponent {
+    final ModelService modelService;
     final RestService restService;
 
     Device device = new Device();
-    List<DeviceClass> deviceClasses = [];
 
     DeviceClass _deviceClass;
 
@@ -25,10 +25,10 @@ class DeviceCreateComponent {
 
     Iterable get config => device.config.keys;
 
-    DeviceCreateComponent(this.restService, Scope scope) {
-        restService.getDeviceClasses({'visibility': {r'$nin': ['read', 'hidden']}})
-            .then((deviceClasses) => this.deviceClasses = deviceClasses);
-    }
+    DeviceCreateComponent(this.modelService, this.restService);
 
     save() => restService.createDevice(device);
+
+    bool visible(DeviceClass deviceClass) =>
+        !deviceClass.getValue('visibility', []).any((rule) => ['read', 'hidden'].contains(rule));
 }

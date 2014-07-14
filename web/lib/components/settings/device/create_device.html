@@ -1,7 +1,8 @@
 <h3>New Device</h3>
 <label>Device class:
     <select ng-model="cmp.deviceClass">
-        <option ng-repeat="deviceClass in cmp.deviceClasses" ng-value="deviceClass">
+        <option ng-repeat="deviceClass in cmp.modelService.deviceClasses | filter:cmp.visible"
+                ng-value="deviceClass">
             {{ deviceClass.name }}
         </option>
     </select>

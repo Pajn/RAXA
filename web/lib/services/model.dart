@@ -5,6 +5,7 @@ class ModelService {
     final RestService restService;
 
     List<Device> _devices;
+    List<DeviceClass> _deviceClasses;
 
     List<Device> get devices {
         if (_devices == null) {
@@ -14,6 +15,16 @@ class ModelService {
         }
 
         return _devices;
+    }
+
+    List<DeviceClass> get deviceClasses {
+        if (_deviceClasses == null) {
+            _deviceClasses = new List<DeviceClass>();
+
+            restService.getDeviceClasses().then((classes) => _deviceClasses.addAll(classes));
+        }
+
+        return _deviceClasses;
     }
 
     ModelService(this.restService);

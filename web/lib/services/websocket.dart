@@ -30,6 +30,13 @@ class WebSocketService {
                             break;
                     }
                     break;
+                case 'DeviceClass':
+                    switch (message.event) {
+                        case 'installed':
+                            modelService.deviceClasses.add(new DeviceClass.from(message.data));
+                            break;
+                    }
+                    break;
             }
         });
 
