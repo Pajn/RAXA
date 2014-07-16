@@ -305,5 +305,54 @@ main() {
                 }));
             });
         });
+
+        describe('update', () {
+            var changed = {
+                'name': 'SomeOtherName'
+            };
+
+            it('should use the Devices collection', () {
+                var future = deviceManager.update(changed, id.toHexString());
+
+                return future.then(expectAsync((_) {
+                    expect(db.collectionSpy).toHaveBeenCalledOnceWith('Devices');
+                }));
+            });
+
+            it('should query for the device id', () {
+                var future = deviceManager.update(changed, id.toHexString());
+
+                return future.then(expectAsync((_) {
+                    var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
+                    expect(arguments.first).toEqual({'_id': id});
+                }));
+            });
+
+            it('should update with provided values', () {
+                var future = deviceManager.update(changed, id.toHexString());
+
+                return future.then(expectAsync((_) {
+                    var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
+                    expect(arguments.last).toEqual({r'$set': changed});
+                }));
+            });
+
+            it('should emit an event when updated', () {
+                var future = deviceManager.update(changed, id.toHexString());
+
+                return future.then(expectAsync((_) {
+                    var arguments = bus.addSpy.mostRecentCall.positionalArguments;
+                    expect(arguments).toEqual([{
+                        'type': 'Device',
+                        'event': 'updated',
+                        'data': {
+                            'id': id.toHexString(),
+                            'changed': changed
+                        },
+                        'command': 'Event'
+                    }]);
+                }));
+            });
+        });
     });
 }
