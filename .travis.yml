@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+- "0.11"
+env:
+  matrix:
+  - JOB=unit-stable
+    CHANNEL=stable
+  - JOB=unit-dev
+    CHANNEL=dev
+
+before_install:
+- export DISPLAY=:99.0
+- ./travis/install.sh
+before_script:
+- ./travis/setup.sh
+script:
+- ./travis/build.sh
