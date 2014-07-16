@@ -71,7 +71,7 @@ class EventMessage extends Message {
         this.type = type;
         this.event = event;
         this.data = data;
-        super.command = 'Status';
+        super.command = 'Event';
     }
     EventMessage.from(Map<String, dynamic> other) : super.from(other);
 }

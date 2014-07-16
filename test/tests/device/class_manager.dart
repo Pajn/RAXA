@@ -6,17 +6,20 @@ import 'package:raxa/common.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
+import '../../helpers/event.dart';
 
 main() {
     unittestConfiguration.timeout = new Duration(seconds: 3);
 
     describe('ClassManager', () {
         MockDb db;
+        MockEventBus bus;
         DeviceClassManager deviceClassManager;
 
         beforeEach(() {
             db = new MockDb();
-            deviceClassManager = new DeviceClassManager(db, new EventBus());
+            bus = new MockEventBus();
+            deviceClassManager = new DeviceClassManager(db, bus);
         });
 
         describe('install', () {
@@ -63,6 +66,28 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.insertSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([testDeviceClass]);
+                }));
+            });
+
+            it('should emit an event when installed', () {
+                var future = deviceClassManager.install(new DeviceClass.from(testDeviceClass));
+
+                return future.then(expectAsync((_) {
+                    var arguments = bus.addSpy.mostRecentCall.positionalArguments;
+                    expect(arguments).toEqual([{
+                        'type': 'DeviceClass',
+                        'event': 'installed',
+                        'data': {
+                            'name': 'SomeName',
+                            'plugin': 'SomePlugin',
+                            'config': {
+                                'someParameter': 'someValue'
+                            },
+                            'implementedInterfaces': ['SomeInterface'],
+                            'requiredInterfaces': ['SomeOtherInterface'],
+                        },
+                        'command': 'Event'
+                    }]);
                 }));
             });
         });

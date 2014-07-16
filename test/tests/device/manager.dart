@@ -9,6 +9,7 @@ import 'package:raxa/common.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
+import '../../helpers/event.dart';
 
 class MockDeviceClassManager extends Mock implements DeviceClassManager {
     DeviceClass fakedRead;
@@ -25,13 +26,15 @@ main() {
     describe('Manager', () {
         MockDb db;
         MockDeviceClassManager deviceClassManager;
+        MockEventBus bus;
         DeviceManager deviceManager;
         ObjectId id;
 
         beforeEach(() {
             db = new MockDb();
             deviceClassManager = new MockDeviceClassManager();
-            deviceManager = new DeviceManager(db, deviceClassManager, new EventBus());
+            bus = new MockEventBus();
+            deviceManager = new DeviceManager(db, deviceClassManager, bus);
             id = new ObjectId();
 
             deviceClassManager.fakedRead = new DeviceClass.from({
@@ -54,7 +57,6 @@ main() {
                 'config': {
                     'someParameter': 'someValue'
                 },
-                'types': ['SomeType'],
                 'implementedInterfaces': ['SomeInterface'],
                 'status': {
                     'someStatus': 'someValue'
@@ -109,6 +111,35 @@ main() {
                     expect(arguments).toEqual([testDevice]);
                 }));
             });
+
+            it('should emit an event when created', () {
+                var future = deviceManager.create(new Device.from(testDevice));
+
+                return future.then(expectAsync((_) {
+                    var arguments = bus.addSpy.mostRecentCall.positionalArguments;
+                    // Clear id to be testable
+                    arguments.first['data']['_id'] = '';
+                    expect(arguments).toEqual([{
+                        'type': 'Device',
+                        'event': 'created',
+                        'data': {
+                            '_id': '',
+                            'name': 'SomeName',
+                            'plugin': 'SomePlugin',
+                            'deviceClass': 'SomeClass',
+                            'config': {
+                                'someParameter': 'someValue'
+                            },
+                            'implementedInterfaces': ['SomeInterface'],
+                            'status': {
+                                'someStatus': 'someValue'
+                            },
+                            'variables': {}
+                        },
+                        'command': 'Event'
+                    }]);
+                }));
+            });
         });
 
         describe('delete', () {
@@ -127,6 +158,20 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.removeSpy.mostRecentCall.positionalArguments;
                     expect(arguments).toEqual([{'_id': id}]);
+                }));
+            });
+
+            it('should emit an event when deleted', () {
+                var future = deviceManager.delete(id.toHexString());
+
+                return future.then(expectAsync((_) {
+                    var arguments = bus.addSpy.mostRecentCall.positionalArguments;
+                    expect(arguments).toEqual([{
+                        'type': 'Device',
+                        'event': 'deleted',
+                        'data': id.toHexString(),
+                        'command': 'Event'
+                    }]);
                 }));
             });
         });

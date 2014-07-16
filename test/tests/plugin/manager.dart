@@ -7,18 +7,21 @@ import 'package:raxa/interface.dart';
 import 'package:raxa/plugin.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
+import '../../helpers/event.dart';
 
 main() {
     unittestConfiguration.timeout = new Duration(seconds: 3);
 
     describe('Plugin/Manager', () {
         MockDb db;
+        MockEventBus bus;
         PluginManager pluginManager;
 
         beforeEach(() {
             db = new MockDb();
+            bus = new MockEventBus();
             pluginManager = new PluginManager(db, new DeviceClassManager(db, new EventBus()),
-                            new InterfaceManager(db), new EventBus());
+                            new InterfaceManager(db), bus);
         });
 
         describe('read', () {
@@ -140,6 +143,25 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
                     expect(arguments[1]).toEqual({r'$set': updatedInfo});
+                }));
+            });
+
+            it('should emit an event when updated', () {
+                var updatedInfo = {'enabled': true};
+
+                var future = pluginManager.update(updatedInfo, 'PluginName');
+
+                return future.then(expectAsync((_) {
+                    var arguments = bus.addSpy.mostRecentCall.positionalArguments;
+                    expect(arguments).toEqual([{
+                        'type': 'Plugin',
+                        'event': 'updated',
+                        'data': {
+                            'name': 'PluginName',
+                            'changed': { 'enabled': true }
+                        },
+                        'command': 'Event'
+                    }]);
                 }));
             });
         });
