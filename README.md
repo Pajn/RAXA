@@ -1,4 +1,4 @@
-RAXA
+RAXA [![Build Status](https://travis-ci.org/Pajn/RAXA.svg?branch=master)](https://travis-ci.org/Pajn/RAXA)
 ====
 
 RAXA is a server and client for home steering and automation.
