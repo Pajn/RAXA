@@ -6,17 +6,20 @@ import 'package:raxa/api.dart';
 import 'package:raxa/configuration.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
+import '../../helpers/event.dart';
 
 main() {
     unittestConfiguration.timeout = new Duration(seconds: 3);
 
     describe('Configuration/Settings', () {
         MockDb db;
+        MockEventBus bus;
         Settings settings;
 
         beforeEach(() {
             db = new MockDb();
-            settings = new Settings(db, new EventBus());
+            bus = new MockEventBus();
+            settings = new Settings(db, bus);
         });
 
         describe('load', () {
@@ -235,6 +238,31 @@ main() {
                 return future.then(expectAsync((_) {
                     var arguments = db.mockCollection.updateSpy.mostRecentCall.positionalArguments;
                     expect(arguments[1]).toEqual({r'$set': updatedSettings});
+                }));
+            });
+
+            it('should emit an event when saved', () {
+                var updatedSettings = {
+                    'group': 'core',
+                    'version': '0.1.2',
+                    'settings': {
+                        'key': 'value'
+                    }
+                };
+
+                var future = settings.save(updatedSettings);
+
+                return future.then(expectAsync((_) {
+                    var arguments = bus.addSpy.mostRecentCall.positionalArguments;
+                    expect(arguments).toEqual([{
+                        'type': 'Settings',
+                        'event': 'updated',
+                        'data': {
+                            'group': 'core',
+                            'settings': updatedSettings,
+                        },
+                        'command': 'Event'
+                    }]);
                 }));
             });
         });

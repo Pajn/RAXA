@@ -88,6 +88,7 @@ class Settings {
 
             eventBus.add(new EventMessage('Settings', 'updated', {
                 'group': group,
+                'settings': settings,
             }));
         });
 }
