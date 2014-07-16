@@ -5,7 +5,9 @@ class Plugin {
     SendPort sendPort;
 
     var _onCalled = new StreamController();
+    var _onEvent = new StreamController();
     Stream<CallMessage> get onCalled => _onCalled.stream;
+    Stream<EventMessage> get onEvent => _onEvent.stream;
 
     Plugin(List<String> args, this.sendPort) {
         receivePort.listen((message) {
@@ -14,6 +16,9 @@ class Plugin {
             switch (message.command) {
                 case 'Call':
                     _onCalled.add(new CallMessage.from(message));
+                    break;
+                case 'Event':
+                    _onEvent.add(new EventMessage.from(message));
                     break;
             }
         });

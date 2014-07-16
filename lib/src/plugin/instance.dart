@@ -28,9 +28,16 @@ class PluginInstance {
             }
         });
 
-        started = Isolate.spawnUri('plugins/$pluginName/main.dart',
+        started = Isolate.spawnUri(new Uri.file('plugins/$pluginName/main.dart'),
                                    [PLUGIN_API_VERSION],
                                    receivePort.sendPort)
             .then((isolate) => this.isolate = isolate);
+    }
+
+    send(Message message) {
+        if (sendPort is SendPort) {
+            // Go through JSON to make sure we only have supported object types
+            sendPort.send(JSON.decode(JSON.encode(message)));
+        }
     }
 }

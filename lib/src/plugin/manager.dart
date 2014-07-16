@@ -28,6 +28,11 @@ class PluginManager {
                 enable(plugin.name);
             });
         });
+
+        // Forward events to plugins
+        eventBus.listen((message) =>
+            enabledPlugins.values.forEach((plugin) =>
+                plugin.send(message)));
     }
 
     call(Call call, Device device) {
