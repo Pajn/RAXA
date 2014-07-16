@@ -1,13 +1,24 @@
 library plugin_manager_test;
 
 import 'package:guinness/guinness.dart';
+import 'package:mock/mock.dart';
 import 'package:raxa/api.dart';
+import 'package:raxa/common.dart';
 import 'package:raxa/device.dart';
 import 'package:raxa/interface.dart';
 import 'package:raxa/plugin.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../helpers/database.dart';
 import '../../helpers/event.dart';
+
+class MockPluginInstance extends Mock implements PluginInstance {
+    var sendSpy = guinness.createSpy('sendSpy');
+
+    send(message) => sendSpy(message);
+
+    // Ignore warnings about unimplemented methods
+    noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 main() {
     unittestConfiguration.timeout = new Duration(seconds: 3);
@@ -22,6 +33,35 @@ main() {
             bus = new MockEventBus();
             pluginManager = new PluginManager(db, new DeviceClassManager(db, new EventBus()),
                             new InterfaceManager(db), bus);
+        });
+
+        describe('call', () {
+            MockPluginInstance pluginOne;
+            MockPluginInstance pluginTwo;
+            Call call;
+            Device device;
+
+            beforeEach(() {
+                pluginOne = new MockPluginInstance();
+                pluginTwo = new MockPluginInstance();
+                call = new Call();
+                device = new Device()..plugin='PluginOne';
+
+                pluginManager.enabledPlugins = {
+                    'PluginOne': pluginOne,
+                    'PluginTwo': pluginTwo
+                };
+            });
+
+            it('should send a CallMessage to the correct plugin instance', () {
+                pluginManager.call(call, device);
+
+                expect(pluginOne.sendSpy).toHaveBeenCalledOnce();
+                var arguments = pluginOne.sendSpy.calls.last.positionalArguments;
+                expect(arguments).toEqual([new CallMessage(call, device)]);
+
+                expect(pluginTwo.sendSpy).not.toHaveBeenCalled();
+            });
         });
 
         describe('read', () {

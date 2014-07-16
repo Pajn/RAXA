@@ -41,7 +41,7 @@ class PluginManager {
         print(device);
 
         if (plugin is PluginInstance) {
-            plugin.sendPort.send(new CallMessage(call, device));
+            plugin.send(new CallMessage(call, device));
         }
     }
 
