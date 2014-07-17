@@ -3,6 +3,7 @@ part of raxa_web;
 @Injectable()
 class ModelService {
     final RestService restService;
+    final WebSocketService webSocketService;
 
     List<Device> _devices;
     List<DeviceClass> _deviceClasses;
@@ -27,5 +28,31 @@ class ModelService {
         return _deviceClasses;
     }
 
-    ModelService(this.restService);
+    ModelService(this.restService, this.webSocketService) {
+        webSocketService.onEvent.listen((message) {
+            switch (message.type) {
+                case 'Device':
+                    switch (message.event) {
+                        case 'created':
+                            devices.add(new Device.from(message.data));
+                            break;
+                        case 'deleted':
+                            devices.removeWhere((device) => device.id == message.data);
+                            break;
+                        case 'updated':
+                            devices.firstWhere((device) => device.id == message.data['id'])
+                                .addAll(message.data['changed']);
+                            break;
+                    }
+                    break;
+                case 'DeviceClass':
+                    switch (message.event) {
+                        case 'installed':
+                            deviceClasses.add(new DeviceClass.from(message.data));
+                            break;
+                    }
+                    break;
+            }
+        });
+    }
 }

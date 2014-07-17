@@ -44,6 +44,5 @@ main() {
     });
     applicationFactory()
           .addModule(new WebModule())
-          .run()
-          .get(WebSocketService);
+          .run();
 }
