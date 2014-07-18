@@ -5,6 +5,15 @@
     </label>
     Plugin: {{ cmp.device.plugin }}
     Class: {{ cmp.device.deviceClass }}
+    <label>Position:
+        <select ng-model="cmp.device.position">
+            <option></option>
+            <option ng-repeat="position in cmp.modelService.positions" ng-value="position['_id']">
+                {{ position.name }}
+            </option>
+        </select>
+    </label>
+
     <div ng-repeat="config in cmp.config">
         {{ config }}: <config config="cmp.device.config[config]" device="device"></config>
     </div>

@@ -15,7 +15,10 @@ void routeInitializer(Router router, RouteViewFactory views) {
             mount: {
                 'devices': ngRoute(
                     path: '/devices',
-                    viewHtml: '<devices-settings></devices-settings>')
+                    viewHtml: '<devices-settings></devices-settings>'),
+                'positions': ngRoute(
+                    path: '/positions',
+                    viewHtml: '<positions-settings></positions-settings>')
             })
     });
 }
@@ -30,6 +33,9 @@ class WebModule extends Module {
         bind(DeviceCreateComponent);
         bind(DeviceSettingsComponent);
         bind(DevicesSettingsComponent);
+        bind(PositionSettingsComponent);
+        bind(PositionCreateComponent);
+        bind(PositionsSettingsComponent);
         bind(ModelService);
         bind(RestService);
         bind(WebSocketService);

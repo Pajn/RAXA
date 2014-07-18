@@ -13,6 +13,10 @@ class Device extends ModelBase {
     String get deviceClass => this['deviceClass'];
     set deviceClass(String value) => this['deviceClass'] = value;
 
+    /// Id of the position where the device is located, may be null
+    String get position => this['position'];
+    set position(String value) => this['position'] = value;
+
     /// Configuration values for the plugin. May be a network id or similar.
     Map<String, dynamic> get config => getValue('config', {});
     set config(Map<String, dynamic> value) => this['config'] = value;

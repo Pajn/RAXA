@@ -1,5 +1,10 @@
+<button ng-if="cmp.position != null" ng-click="cmp.back()">Back</button>
+{{ cmp.position.name }}
 <ul>
-    <li ng-repeat="device in cmp.modelService.devices | filter:cmp.supported">
+    <li ng-repeat="position in cmp.positions">
+        <span ng-click="cmp.position = position">{{ position.name }}</span>
+    </li>
+    <li ng-repeat="device in cmp.devices">
         <span>{{ device.name }}</span>
         <interface name="lamp" ng-if="device.implementedInterfaces.contains('Lamp')"
                    device="device"></interface>

@@ -117,6 +117,7 @@ main() {
 
                 return future.then(expectAsync((_) {
                     var arguments = bus.addSpy.mostRecentCall.positionalArguments;
+                    expect(arguments.first['data']['_id']).not.toEqual('SomeId');
                     // Clear id to be testable
                     arguments.first['data']['_id'] = '';
                     expect(arguments).toEqual([{

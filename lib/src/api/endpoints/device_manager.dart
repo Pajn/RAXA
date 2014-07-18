@@ -64,7 +64,7 @@ class DeviceManagerApi {
     putDevice(Request request) {
         var device = request.urlParameters['id'];
 
-        return deviceManager.update(new Device.from(request.json, removeId: true), device)
+        return deviceManager.update(request.json, device)
         .then((data) => new RestResponse('Update of device succeeded'))
         .catchError((_) => new RestResponse('Update of device failed', status: Status.FAIL));
     }

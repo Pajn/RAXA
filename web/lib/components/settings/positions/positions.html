@@ -1,0 +1,8 @@
+<ul>
+    <li ng-repeat="position in cmp.positions | filter:cmp.isChild">
+        <position-settings position="position"></position-settings>
+    </li>
+    <li>
+        <position-create position="cmp.newPosition"></position-create>
+    </li>
+</ul>
