@@ -9,10 +9,11 @@ class Message extends ModelBase {
 }
 
 class CallMessage extends Message {
-    Call get call => this['call'];
+    Call get call => (this['call'] is Call) ? this['call'] : new Call.from(this['call']);
     set call(Call value) => this['call'] = value;
 
-    Device get device => this['device'];
+    Device get device =>
+        (this['device'] is Device) ? this['device'] : new Device.from(this['device']);
     set device(Device value) => this['device'] = value;
 
     CallMessage(Call call, Device device) {
