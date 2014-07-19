@@ -6,19 +6,16 @@ import 'package:raxa/configuration.dart';
 import 'package:raxa/device.dart';
 import 'package:raxa/interface.dart';
 
-var parser;
-
-help(_) {
-    print(parser.getUsage());
-    exit(0);
-}
-
 main(arguments) {
-    parser = new ArgParser()
+    var parser = new ArgParser()
         ..addOption('config-file', abbr: 'c', help: 'Path to the configuration file')
-        ..addFlag('help', abbr: 'h', callback: help, negatable: false,
-                  help: 'Display this help text and exit');
+        ..addFlag('help', abbr: 'h', negatable: false, help: 'Display this help text and exit');
     var results = parser.parse(arguments);
+
+    if (results['help']) {
+        print(parser.getUsage());
+        exit(0);
+    }
 
     var injector = defaultInjector(modules: [
         new ConfigurationModule()..bind(ArgResults, toValue: results),
