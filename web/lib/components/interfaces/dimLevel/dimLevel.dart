@@ -11,10 +11,13 @@ class InterfaceDimLevelComponent {
     final RestService restService;
 
     Device device;
+    int _value;
 
     bool show = false;
-    int get value => 0;
+
+    int get value => (_value == null) ? device.status['level']['value']: _value;
     set value(int value) {
+        _value = value;
         print(value);
         restService.call(new Call()
             ..deviceId = device.id
@@ -23,7 +26,7 @@ class InterfaceDimLevelComponent {
             ..arguments = {
                 'level': value
             }
-        );
+        ).then((_) => _value = null);
     }
 
     InterfaceDimLevelComponent(this.restService);
