@@ -4,11 +4,16 @@ part of raxa.configuration;
  * Handles configuration values stored in config file.
  */
 class Config {
-    static const CONFIG_FILE = 'configuration.yaml';
+    var configPath;
 
     var _configValues = {};
 
-    Config() {
+    Config(ArgResults arguments) {
+        if (arguments['config-file'] != null) {
+            configPath = arguments['config-file'];
+        } else {
+            configPath = 'configuration.yaml';
+        }
         _load();
     }
 
@@ -65,7 +70,7 @@ class Config {
      */
     _readConfigFile() {
         try {
-            var configFile = new File(CONFIG_FILE);
+            var configFile = new File(configPath);
             return configFile.readAsStringSync();
         } catch(_) {
             return null;
