@@ -18,8 +18,8 @@ class Plugin extends ModelBase {
 
     Plugin.from(Map<String, dynamic> other) : super.from(other);
 
-    static Future<Plugin> fromManifest(String name) =>
-        new File('plugins/$name/plugin.yaml')
+    static Future<Plugin> fromManifest(String pluginFolderPath, String name) =>
+        new File('$pluginFolderPath/$name/plugin.yaml')
             .readAsString()
             .then((file) => new Plugin.from(loadYaml(file)));
 }

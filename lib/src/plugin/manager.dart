@@ -48,7 +48,7 @@ class PluginManager {
     }
 
     Future install(String pluginName) =>
-        Plugin.fromManifest(pluginName).then((plugin) =>
+        Plugin.fromManifest(config.pluginFolderPath, pluginName).then((plugin) =>
             db.connect((db) {
                 var collection = db.collection(COLLECTION);
 

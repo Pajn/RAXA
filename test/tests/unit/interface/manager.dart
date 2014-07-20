@@ -3,7 +3,7 @@ library interface_manager_test;
 import 'package:guinness/guinness.dart';
 import 'package:raxa/interface.dart';
 import 'package:unittest/unittest.dart' hide expect;
-import '../../helpers/database.dart';
+import '../../../helpers/database.dart';
 
 main() {
     unittestConfiguration.timeout = new Duration(seconds: 3);

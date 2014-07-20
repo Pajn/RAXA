@@ -5,8 +5,8 @@ import 'package:guinness/guinness.dart';
 import 'package:raxa/api.dart';
 import 'package:raxa/configuration.dart';
 import 'package:unittest/unittest.dart' hide expect;
-import '../../helpers/database.dart';
-import '../../helpers/event.dart';
+import '../../../helpers/database.dart';
+import '../../../helpers/event.dart';
 
 main() {
     unittestConfiguration.timeout = new Duration(seconds: 3);

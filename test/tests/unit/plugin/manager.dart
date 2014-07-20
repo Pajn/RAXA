@@ -8,8 +8,9 @@ import 'package:raxa/device.dart';
 import 'package:raxa/interface.dart';
 import 'package:raxa/plugin.dart';
 import 'package:unittest/unittest.dart' hide expect;
-import '../../helpers/database.dart';
-import '../../helpers/event.dart';
+import '../../../helpers/config.dart';
+import '../../../helpers/database.dart';
+import '../../../helpers/event.dart';
 
 class MockPluginInstance extends Mock implements PluginInstance {
     var sendSpy = guinness.createSpy('sendSpy');
@@ -31,7 +32,8 @@ main() {
         beforeEach(() {
             db = new MockDb();
             bus = new MockEventBus();
-            pluginManager = new PluginManager(db, new DeviceClassManager(db, new EventBus()),
+            pluginManager = new PluginManager(new MockConfig(), db,
+                            new DeviceClassManager(db,new EventBus()),
                             new InterfaceManager(db), bus);
         });
 

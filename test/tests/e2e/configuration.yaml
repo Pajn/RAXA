@@ -3,3 +3,4 @@ rest:
   port: 9090
 database:
   name: RAXA-E2E-Test
+pluginFolder: tests/e2e/plugins
