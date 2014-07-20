@@ -1,0 +1,8 @@
+name: TestPlugin
+version: 0.0.0
+api: 0.0.0
+descriptionSummary: A Plugin used for testing different parts of RAXA
+providedInterfaces:
+  - TestInterface
+deviceClasses:
+  - TestClass
