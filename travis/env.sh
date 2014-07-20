@@ -71,8 +71,4 @@ export BASE_DIR=$(dirname $SCRIPT_DIR)
   echo NGDART_SCRIPT_DIR=$SCRIPT_DIR
   $DART --version 2>&1
 
-  echo "Staring mongo"
-  sudo start mongodb
-  sleep 10
-
 fi
