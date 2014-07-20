@@ -3,6 +3,8 @@
 set -e
 . "$(dirname $0)/env.sh"
 
+cd test
+
 echo '-----------------------------'
 echo '-- TEST: Server Unit Tests --'
 echo '-----------------------------'
