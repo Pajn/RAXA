@@ -7,7 +7,7 @@ class PluginInstance {
     Isolate isolate;
     SendPort sendPort;
 
-    PluginInstance(String pluginName) {
+    PluginInstance(String pluginFolderPath, String pluginName) {
         var receivePort = new ReceivePort();
 
         receivePort.listen((message) {
@@ -28,7 +28,7 @@ class PluginInstance {
             }
         });
 
-        started = Isolate.spawnUri(new Uri.file('plugins/$pluginName/main.dart'),
+        started = Isolate.spawnUri(new Uri.file('$pluginFolderPath/$pluginName/main.dart'),
                                    [PLUGIN_API_VERSION],
                                    receivePort.sendPort)
             .then((isolate) => this.isolate = isolate);

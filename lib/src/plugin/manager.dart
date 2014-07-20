@@ -3,6 +3,7 @@ part of raxa.plugin;
 class PluginManager {
     static const COLLECTION = 'Plugins';
 
+    Config config;
     Database db;
     DeviceClassManager deviceClassManager;
     InterfaceManager interfaceManager;
@@ -10,8 +11,9 @@ class PluginManager {
 
     Map<String, PluginInstance> enabledPlugins = {};
 
-    PluginManager(this.db, this.deviceClassManager, this.interfaceManager, this.eventBus) {
-        new Directory.fromUri(new Uri.file('plugins')).list().listen((file) {
+    PluginManager(this.config, this.db, this.deviceClassManager, this.interfaceManager,
+                  this.eventBus) {
+        new Directory(config.pluginFolderPath).list().listen((file) {
             if (file is Directory) {
                 var pluginName = new Uri.file(file.path).pathSegments.last;
 
@@ -69,7 +71,7 @@ class PluginManager {
                 throw 'Plugin is not installed';
             }
 
-            var pluginDirectory = new PluginDirectory(plugin);
+            var pluginDirectory = new PluginDirectory(config.pluginFolderPath, plugin);
 
             pluginDirectory.isValid()
                 .then((_) => pluginDirectory.getProvidedInterfaces())
@@ -85,7 +87,8 @@ class PluginManager {
                             .catchError((_) {}, test: (e) => e == 'DeviceClass already installed')
                      )))
                 .then((_) => update({'enabled': true}, plugin.name))
-                .then((_) => enabledPlugins[plugin.name] = new PluginInstance(plugin.name))
+                .then((_) => enabledPlugins[plugin.name] = new PluginInstance(config.pluginFolderPath,
+                                                                              plugin.name))
                 .then((_) => eventBus.add(new EventMessage('Plugin', 'enabled', plugin)));
         });
     }

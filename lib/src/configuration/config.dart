@@ -46,6 +46,12 @@ class Config {
             _createDbString();
         }
 
+        if (configuration.containsKey('pluginFolder')) {
+            _configValues['pluginFolder'] = new File(configuration['pluginFolder']).absolute.path;
+        } else {
+            _configValues['pluginFolder'] = new File('plugins').absolute.path;
+        }
+
         _configValues['rest'] = {};
         _configValues['rest']['hostname'] = '127.0.0.1';
         _configValues['rest']['port'] = 80;
@@ -109,6 +115,8 @@ class Config {
     }
 
     String get dbString => _configValues['database'];
+
+    String get pluginFolderPath => _configValues['pluginFolder'];
 
     String get restHostname => _configValues['rest']['hostname'];
     int get restPort => _configValues['rest']['port'];

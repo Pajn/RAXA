@@ -4,9 +4,10 @@ class PluginDirectory {
     static const REQUIRED_FILES = const ['main.dart', 'plugin.yaml'];
     Directory directory;
     Plugin plugin;
+    String pluginFolderPath;
 
-    PluginDirectory(this.plugin) {
-        directory = new Directory.fromUri(new Uri.file('plugins/${plugin.name}'));
+    PluginDirectory(this.pluginFolderPath, this.plugin) {
+        directory = new Directory('$pluginFolderPath/${plugin.name}');
     }
 
     Future isValid() =>
@@ -16,7 +17,8 @@ class PluginDirectory {
             }
 
             return Future.wait(
-                REQUIRED_FILES.map((file) => FileSystemEntity.isFile('plugins/${plugin.name}/$file')),
+                REQUIRED_FILES.map((file) =>
+                    FileSystemEntity.isFile('$pluginFolderPath/${plugin.name}/$file')),
                 eagerError: true
             );
         }).then((filesExist) {
@@ -28,7 +30,7 @@ class PluginDirectory {
     Future<List<DeviceClass>> getDeviceClasses() =>
         Future.wait(
             plugin.deviceClasses.map((deviceClass) =>
-                new File('plugins/${plugin.name}/deviceClasses/$deviceClass.yaml')
+                new File('$pluginFolderPath/${plugin.name}/deviceClasses/$deviceClass.yaml')
                     .readAsString()
                     .then((file) => new DeviceClass.from(loadYaml(file)))),
             eagerError: true
@@ -37,7 +39,7 @@ class PluginDirectory {
     Future<List<Interface>> getProvidedInterfaces() =>
         Future.wait(
             plugin.providedInterfaces.map((interface) =>
-                new File('plugins/${plugin.name}/interfaces/$interface.yaml')
+                new File('$pluginFolderPath/${plugin.name}/interfaces/$interface.yaml')
                     .readAsString()
                     .then((file) => new Interface.from(loadYaml(file)))),
             eagerError: true
