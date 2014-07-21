@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:isolate';
 import 'package:http/http.dart' as http;
 import 'package:mongo_dart/mongo_dart.dart';
@@ -38,7 +39,7 @@ main() {
     .then((_) {
         // Now the tests can be run
         rest_devices_test.main();
-    });
+    }).catchError((_) => exit(1));
 }
 
 class TestConfiguration extends SimpleConfiguration {

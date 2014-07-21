@@ -16,6 +16,8 @@ class PluginDirectory {
                 throw 'Plugin directory does not exist';
             }
 
+            print('Directory.isValid, $pluginFolderPath, ${plugin.name}');
+
             return Future.wait(
                 REQUIRED_FILES.map((file) =>
                     FileSystemEntity.isFile('$pluginFolderPath/${plugin.name}/$file')),
