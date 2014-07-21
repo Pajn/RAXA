@@ -8,6 +8,7 @@ import 'package:unittest/unittest.dart' hide expect;
 import 'tests/e2e/configuration.dart';
 
 import 'tests/e2e/rest/devices.dart' as rest_devices_test;
+import 'tests/e2e/rest/positions.dart' as rest_positions_test;
 
 /**
  * Make sure that the database is empty so that tests aren't accidentally
@@ -39,13 +40,13 @@ main() {
     .then((_) {
         // Now the tests can be run
         rest_devices_test.main();
-    }).catchError((_) => exit(1));
+        rest_positions_test.main();
+    });
 }
 
 class TestConfiguration extends SimpleConfiguration {
     void onDone(bool success) {
-        exit(success ? 0 : 1);
         var db = new Db('mongodb://127.0.0.1/RAXA-E2E-Test');
-        db.open().then((_) => db.drop());
+        db.open().then((_) => db.drop().then((_) => exit(success ? 0 : 1)));
     }
 }
