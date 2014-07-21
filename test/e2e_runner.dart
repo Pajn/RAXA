@@ -44,6 +44,7 @@ main() {
 
 class TestConfiguration extends SimpleConfiguration {
     void onDone(bool success) {
+        exit(success ? 0 : 1);
         var db = new Db('mongodb://127.0.0.1/RAXA-E2E-Test');
         db.open().then((_) => db.drop());
     }
