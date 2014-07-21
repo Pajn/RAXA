@@ -7,6 +7,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import 'tests/e2e/configuration.dart';
 
+import 'tests/e2e/rest/deviceClasses.dart' as rest_deviceClasses_test;
 import 'tests/e2e/rest/devices.dart' as rest_devices_test;
 import 'tests/e2e/rest/positions.dart' as rest_positions_test;
 
@@ -39,6 +40,7 @@ main() {
     ).then(checkEmpty)
     .then((_) {
         // Now the tests can be run
+        rest_deviceClasses_test.main();
         rest_devices_test.main();
         rest_positions_test.main();
     });

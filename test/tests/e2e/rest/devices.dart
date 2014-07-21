@@ -20,24 +20,23 @@ main() {
             };
 
             it('should be able to create devices', () =>
-                Future.wait([
-                    http.post('$HOST/rest/devices', body: JSON.encode(testDevice)).then((response) {
+                http.post('$HOST/rest/devices', body: JSON.encode(testDevice)).then((response) {
+                    expect(JSON.decode(response.body)).toEqual({
+                        'data': 'Creation of device succeeded',
+                        'status': 'success',
+                        'version': '0.0.0',
+                    });
+                })
+                .then((_) =>http.post('$HOST/rest/devices', body: JSON.encode(
+                        testDevice..['name'] = 'TestDevice2')
+                    ).then((response) {
                         expect(JSON.decode(response.body)).toEqual({
                             'data': 'Creation of device succeeded',
                             'status': 'success',
                             'version': '0.0.0',
                         });
-                    }),
-                    http.post('$HOST/rest/devices', body: JSON.encode(
-                            testDevice..['name'] = 'TestDevice2')
-                        ).then((response) {
-                            expect(JSON.decode(response.body)).toEqual({
-                                'data': 'Creation of device succeeded',
-                                'status': 'success',
-                                'version': '0.0.0',
-                            });
-                        })
-                ])
+                    })
+                )
             );
 
             it('should not be able to create a device with the same name', () =>
@@ -51,7 +50,7 @@ main() {
             );
 
             it('should not be able to create a device with a non existing plugin', () {
-                testDevice['plugin'] = 'NonExistingPlugin';
+                testDevice['plugin'] = 'NonExistentPlugin';
 
                 return http.post('$HOST/rest/devices', body: JSON.encode(testDevice)).then((response) {
                     expect(JSON.decode(response.body)).toEqual({
@@ -63,7 +62,7 @@ main() {
             });
 
             it('should not be able to create a device with a non existing deviceClass', () {
-                testDevice['deviceClass'] = 'NonExistingClass';
+                testDevice['deviceClass'] = 'NonExistentClass';
 
                 return http.post('$HOST/rest/devices', body: JSON.encode(testDevice)).then((response) {
                     expect(JSON.decode(response.body)).toEqual({
@@ -131,7 +130,7 @@ main() {
             });
 
             it('should be return an empty response when to hard filter is used', () {
-                var query = Uri.encodeQueryComponent(JSON.encode({'name':'NonExistantName'}));
+                var query = Uri.encodeQueryComponent(JSON.encode({'name':'NonExistentName'}));
 
                 return http.get('$HOST/rest/devices?query=$query')
                 .then((response) => JSON.decode(response.body))

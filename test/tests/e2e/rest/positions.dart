@@ -18,24 +18,24 @@ main() {
             };
 
             it('should be able to create positions', () =>
-                Future.wait([
-                    http.post('$HOST/rest/positions', body: JSON.encode(testPosition)).then((response) {
+                http.post('$HOST/rest/positions', body: JSON.encode(testPosition)).then((response) {
+                    expect(JSON.decode(response.body)).toEqual({
+                        'data': 'Creation of position succeeded',
+                        'status': 'success',
+                        'version': '0.0.0',
+                    });
+                })
+                .then((_) =>
+                    http.post('$HOST/rest/positions', body: JSON.encode(
+                        testPosition..['name'] = 'TestPosition2')
+                    ).then((response) {
                         expect(JSON.decode(response.body)).toEqual({
                             'data': 'Creation of position succeeded',
                             'status': 'success',
                             'version': '0.0.0',
                         });
-                    }),
-                    http.post('$HOST/rest/positions', body: JSON.encode(
-                            testPosition..['name'] = 'TestPosition2')
-                        ).then((response) {
-                            expect(JSON.decode(response.body)).toEqual({
-                                'data': 'Creation of position succeeded',
-                                'status': 'success',
-                                'version': '0.0.0',
-                            });
-                        })
-                ])
+                    })
+                )
             );
 
             it('should not be able to create a position with the same name', () =>
@@ -49,7 +49,7 @@ main() {
             );
 
             it('should not be able to create a position with a non existing plugin', () {
-                testPosition['plugin'] = 'NonExistingPlugin';
+                testPosition['plugin'] = 'NonExistentPlugin';
 
                 return http.post('$HOST/rest/positions', body: JSON.encode(testPosition)).then((response) {
                     expect(JSON.decode(response.body)).toEqual({
@@ -61,7 +61,7 @@ main() {
             });
 
             it('should not be able to create a position with a non existing positionClass', () {
-                testPosition['positionClass'] = 'NonExistingClass';
+                testPosition['positionClass'] = 'NonExistentClass';
 
                 return http.post('$HOST/rest/positions', body: JSON.encode(testPosition)).then((response) {
                     expect(JSON.decode(response.body)).toEqual({
@@ -117,7 +117,7 @@ main() {
             });
 
             it('should be return an empty response when to hard filter is used', () {
-                var query = Uri.encodeQueryComponent(JSON.encode({'name':'NonExistantName'}));
+                var query = Uri.encodeQueryComponent(JSON.encode({'name':'NonExistentName'}));
 
                 return http.get('$HOST/rest/positions?query=$query')
                 .then((response) => JSON.decode(response.body))
