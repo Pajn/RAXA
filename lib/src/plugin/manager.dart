@@ -17,6 +17,11 @@ class PluginManager {
             if (file is Directory) {
                 var pluginName = new Uri.file(file.path).pathSegments.last;
 
+                // Pub may add a packages dir
+                if (pluginName == 'packages') {
+                    return;
+                }
+
                 read(pluginName).then((plugin) {
                     if (plugin == null) {
                         install(pluginName).then((_) => enable(pluginName));
