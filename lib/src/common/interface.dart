@@ -1,4 +1,4 @@
-part of raxa.interface;
+part of raxa.common;
 
 /**
  * [Interface]s describe how to communicate with [Device]s

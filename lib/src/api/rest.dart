@@ -8,25 +8,27 @@ class RestApi {
     CallApi callApi;
     DeviceClassManagerApi deviceClassManagerApi;
     DeviceManagerApi deviceManagerApi;
+    InterfaceManagerApi interfaceManagerApi;
     PluginManagerApi pluginManagerApi;
     PositionManagerApi positionManagerApi;
     SettingsApi settingsApi;
 
     RestApi(this.config, this.restServer, this.webSocketApi, this.callApi,
-            this.deviceClassManagerApi, this.deviceManagerApi, this.pluginManagerApi,
-            this.positionManagerApi, this.settingsApi);
+            this.deviceClassManagerApi, this.deviceManagerApi, this.interfaceManagerApi,
+            this.pluginManagerApi, this.positionManagerApi, this.settingsApi);
 
     initialize() {
         callApi.initialize();
         deviceClassManagerApi.initialize();
         deviceManagerApi.initialize();
+        interfaceManagerApi.initialize();
         pluginManagerApi.initialize();
         positionManagerApi.initialize();
         settingsApi.initialize();
 
         restServer.static('../web', jailRoot: false);
         restServer.clientRoutes = [
-            '/settings/devices', '/settings/positions', '/settings'
+            '/settings/devices', '/settings/positions', '/settings/scenarios', '/settings'
         ];
 
         HttpServer.bind(config.restHostname, config.restPort).then((server) {
@@ -51,6 +53,7 @@ class RestModule extends Module {
         bind(CallApi);
         bind(DeviceClassManagerApi);
         bind(DeviceManagerApi);
+        bind(InterfaceManagerApi);
         bind(PluginManagerApi);
         bind(PositionManagerApi);
         bind(SettingsApi);

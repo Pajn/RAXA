@@ -5,6 +5,7 @@ import 'dart:collection';
 part 'src/common/call.dart';
 part 'src/common/device.dart';
 part 'src/common/device_class.dart';
+part 'src/common/interface.dart';
 part 'src/common/messages.dart';
 part 'src/common/position.dart';
 
