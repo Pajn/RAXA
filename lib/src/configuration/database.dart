@@ -5,7 +5,7 @@ class Database {
 
     Database(this.config);
 
-    Future connect(Function fn) {
+    Future<Db> connect(Function fn) {
         var db = new Db(config.dbString);
 
         return db.open().then((_) => fn(db)).whenComplete(db.close);

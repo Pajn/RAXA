@@ -65,7 +65,7 @@ class DeviceManagerApi {
         var device = request.urlParameters['id'];
 
         return deviceManager.update(request.json, device)
-        .then((data) => new RestResponse('Update of device succeeded'))
-        .catchError((_) => new RestResponse('Update of device failed', status: Status.FAIL));
+            .then((data) => new RestResponse('Update of device succeeded'))
+            .catchError((_) => new RestResponse('Update of device failed', status: Status.FAIL));
     }
 }
