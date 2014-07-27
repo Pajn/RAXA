@@ -6,6 +6,9 @@ class RestService {
 
     RestService(this.http);
 
+    _default(value, defaultValue) =>
+        (value != null) ? value : defaultValue;
+
     _query(Map query) =>
         (query != null) ? '?query=${Uri.encodeQueryComponent(JSON.encode(query))}' : '';
 
@@ -21,9 +24,14 @@ class RestService {
      */
 
     Future<List<DeviceClass>> getDeviceClasses([Map query]) =>
-        http.get('http://127.0.0.1:8080/rest/deviceclasses${_query(query)}').then((response) {
+        http.get('http://127.0.0.1:8080/rest/deviceclasses${
+            _query(_default(query, {})..putIfAbsent('name', () => {r'$ne': 'Scenario'}))
+        }').then((response) {
             return response.data['data'].map((json) => new DeviceClass.from(json)).toList();
         });
+
+    Future<List<DeviceClass>> getScenarioClasses([Map query]) =>
+        getDeviceClasses(_default(query, {})..putIfAbsent('name', () => 'Scenario'));
 
     /*
      Device
@@ -36,12 +44,27 @@ class RestService {
         http.delete('http://127.0.0.1:8080/rest/devices/${device.id}');
 
     Future<List<Device>> getDevices([Map query]) =>
-        http.get('http://127.0.0.1:8080/rest/devices${_query(query)}').then((response) {
-            return response.data['data'].map((json) => new Device.from(json)).toList();
-        });
+        http.get('http://127.0.0.1:8080/rest/devices${
+            _query(_default(query, {})..putIfAbsent('deviceClass', () => {r'$ne': 'Scenario'}))
+        }')
+        .then((response) =>
+            response.data['data'].map((json) => new Device.from(json)).toList()
+        );
 
     Future saveDevice(Device device) =>
         http.put('http://127.0.0.1:8080/rest/devices/${device.id}', JSON.encode(device));
+
+    Future<List<Device>> getScenarios([Map query]) =>
+        getDevices(_default(query, {})..putIfAbsent('deviceClass', () => 'Scenario'));
+
+    /*
+     Interface
+     */
+
+    Future<List<Interface>> getInterfaces([Map query]) =>
+        http.get('http://127.0.0.1:8080/rest/interfaces').then((response) =>
+            response.data['data'].map((json) => new Interface.from(json)).toList()
+        );
 
     /*
      Position

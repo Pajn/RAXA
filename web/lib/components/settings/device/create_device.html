@@ -1,7 +1,7 @@
 <h3>New Device</h3>
 <label>Device class:
     <select ng-model="cmp.deviceClass">
-        <option ng-repeat="deviceClass in cmp.modelService.deviceClasses | filter:cmp.visible"
+        <option ng-repeat="deviceClass in cmp.classes | filter:cmp.visible"
                 ng-value="deviceClass">
             {{ deviceClass.name }}
         </option>
@@ -14,7 +14,7 @@
     Plugin: {{ cmp.device.plugin }}
     Class: {{ cmp.device.deviceClass }}
     <div ng-repeat="config in cmp.config">
-        {{ config }}: <config config="cmp.device.config[config]" device="device"></config>
+        {{ config }}: <config config="cmp.device.config[config]"></config>
     </div>
 
     <input type="submit" value="Save" ng-click="cmp.save()"/>

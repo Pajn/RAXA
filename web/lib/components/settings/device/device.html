@@ -15,7 +15,7 @@
     </label>
 
     <div ng-repeat="config in cmp.config">
-        {{ config }}: <config config="cmp.device.config[config]" device="device"></config>
+        {{ config }}: <config config="cmp.device.config[config]"></config>
     </div>
 
     <input type="submit" value="Save" ng-click="cmp.save()"/>

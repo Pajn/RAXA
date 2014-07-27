@@ -4,13 +4,14 @@ part of raxa_web;
     selector: 'device-create',
     templateUrl: 'lib/components/settings/device/create_device.html',
     publishAs: 'cmp',
-    useShadowDom: false
+    useShadowDom: false,
+    map: const {'classes': '=>classes'}
 )
 class DeviceCreateComponent {
-    final ModelService modelService;
     final RestService restService;
 
     Device device = new Device();
+    List<DeviceClass> classes;
 
     DeviceClass _deviceClass;
 
@@ -25,7 +26,7 @@ class DeviceCreateComponent {
 
     Iterable get config => device.config.keys;
 
-    DeviceCreateComponent(this.modelService, this.restService);
+    DeviceCreateComponent(this.restService);
 
     save() => restService.createDevice(device);
 

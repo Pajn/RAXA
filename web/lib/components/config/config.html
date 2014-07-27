@@ -1,3 +1,5 @@
+<config-array ng-if="cmp.useArray" config="cmp.config"></config-array>
+<config-call ng-if="cmp.useCall" config="cmp.config"></config-call>
 <select ng-if="cmp.useSelect" ng-model="cmp.config['value']">
     <option ng-repeat="option in cmp.options" ng-value="option['value']">
         {{ option['label'] }}

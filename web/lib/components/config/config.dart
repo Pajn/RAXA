@@ -6,21 +6,21 @@ part of raxa_web;
     publishAs: 'cmp',
     useShadowDom: false,
     map: const {
-        'config': '=>config',
-        'device': '=>device'
+        'config': '=>config'
     }
 )
 class ConfigComponent {
     RestService restService;
 
-    Map config;
-    Device device;
+    Map config = {};
 
     var _options;
 
     bool get readOnly => config['visibility'] == 'read';
 
-    bool get useInput => !useSelect && !readOnly;
+    bool get useArray => config['type'] == 'array';
+    bool get useCall => config['type'] == 'call';
+    bool get useInput => !useSelect && !readOnly && !useArray && !useCall;
     bool get useSelect => config.containsKey('enum') || config['type'] == 'deviceId';
 
     String get inputType =>
@@ -51,7 +51,5 @@ class ConfigComponent {
         return _options;
     }
 
-    ConfigComponent(this.restService, Scope scope) {
-        scope.watch("cmp.config['value']", (value, _) => print(value));
-    }
+    ConfigComponent(this.restService);
 }

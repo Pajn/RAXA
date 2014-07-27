@@ -15,12 +15,14 @@ class DevicesWidget {
     Position _position;
     List<Device> devices = [];
     List<Position> positions = [];
+    List<Device> scenarios = [];
 
     Position get position => _position;
     set position(Position value) {
         _position = value;
         setDevices();
         setPositions();
+        setScenarios();
     }
 
     String get positionId => (position == null) ? null : position.id;
@@ -28,6 +30,7 @@ class DevicesWidget {
     DevicesWidget(this.modelService, this.restService, this.scope) {
         scope.watch('cmp.modelService.devices', (_, __) => setDevices(), collection: true);
         scope.watch('cmp.modelService.positions', (_, __) => setPositions(), collection: true);
+        scope.watch('cmp.modelService.scenarios', (_, __) => setScenarios(), collection: true);
     }
 
     back() {
@@ -39,6 +42,13 @@ class DevicesWidget {
         }
     }
 
+    scenario(Device scenario) =>
+        restService.call(new Call()
+            ..deviceId = scenario.id
+            ..interface = 'Scenario'
+            ..method = 'set'
+        );
+
     setDevices() =>
         devices = modelService.devices.where((device) => device.position == positionId &&
             device.implementedInterfaces.any((interface) => SUPPORTED.contains(interface)))
@@ -46,5 +56,9 @@ class DevicesWidget {
 
     setPositions() =>
         positions = modelService.positions.where((position) => position.parent == positionId)
+            .toList();
+
+    setScenarios() =>
+        scenarios = modelService.scenarios.where((scenario) => scenario.position == positionId)
             .toList();
 }

@@ -18,7 +18,10 @@ void routeInitializer(Router router, RouteViewFactory views) {
                     viewHtml: '<devices-settings></devices-settings>'),
                 'positions': ngRoute(
                     path: '/positions',
-                    viewHtml: '<positions-settings></positions-settings>')
+                    viewHtml: '<positions-settings></positions-settings>'),
+                'scenarios': ngRoute(
+                    path: '/scenarios',
+                    viewHtml: '<scenarios-settings></scenarios-settings>')
             })
     });
 }
@@ -26,6 +29,8 @@ void routeInitializer(Router router, RouteViewFactory views) {
 class WebModule extends Module {
     WebModule() {
         bind(ConfigComponent);
+        bind(ConfigArrayComponent);
+        bind(ConfigCallComponent);
         bind(DevicesWidget);
         bind(InterfaceDimLevelComponent);
         bind(InterfaceLampComponent);
@@ -36,6 +41,7 @@ class WebModule extends Module {
         bind(PositionSettingsComponent);
         bind(PositionCreateComponent);
         bind(PositionsSettingsComponent);
+        bind(ScenariosSettingsComponent);
         bind(ModelService);
         bind(RestService);
         bind(WebSocketService);

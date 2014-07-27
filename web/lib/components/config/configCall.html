@@ -1,0 +1,11 @@
+<select ng-model="cmp.device">
+    <option ng-repeat="device in cmp.devices" ng-value="device">
+        {{ device.name }}
+    </option>
+</select>
+<select ng-model="cmp.method">
+    <option ng-repeat="method in cmp.methods" ng-value="method">
+        {{ method['label'] }}
+    </option>
+</select>
+<config ng-repeat="config in cmp.arguments" config="config"></config>

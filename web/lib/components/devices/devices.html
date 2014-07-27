@@ -4,6 +4,9 @@
     <li ng-repeat="position in cmp.positions">
         <span ng-click="cmp.position = position">{{ position.name }}</span>
     </li>
+    <li ng-repeat="scenario in cmp.scenarios">
+        <span ng-click="cmp.scenario(scenario)">{{ scenario.name }}</span>
+    </li>
     <li ng-repeat="device in cmp.devices">
         <span>{{ device.name }}</span>
         <interface name="lamp" ng-if="device.implementedInterfaces.contains('Lamp')"
