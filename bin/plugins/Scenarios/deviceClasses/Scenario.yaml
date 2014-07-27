@@ -1,0 +1,9 @@
+name: Scenario
+plugin: Scenarios
+config:
+  scenario:
+    type: array
+    items:
+      type: call
+implementedInterfaces:
+  - Scenario

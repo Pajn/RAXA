@@ -1,0 +1,8 @@
+name: Scenarios
+version: 0.0.0
+api: 0.0.0
+descriptionSummary: Provides support for setting scenarios that sets multiple devices to preset actions.
+providedInterfaces:
+  - Scenario
+deviceClasses:
+  - Scenario
