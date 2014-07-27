@@ -86,11 +86,13 @@ class DeviceManager {
         db.connect((db) {
             var collection = db.collection(COLLECTION);
 
-            collection.update({'_id': new ObjectId.fromHexString(id)}, {r'$set': device});
+            // Change of id is not allowed
+            device.remove('_id');
 
-            eventBus.add(new EventMessage('Device', 'updated', {
-                'id': id,
-                'changed': device,
-            }));
+            return collection.update({'_id': new ObjectId.fromHexString(id)}, {r'$set': device})
+                .then((_) => eventBus.add(new EventMessage('Device', 'updated', {
+                    'id': id,
+                    'changed': device,
+                })));
         });
 }
