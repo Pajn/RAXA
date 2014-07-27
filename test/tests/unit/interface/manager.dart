@@ -1,6 +1,7 @@
 library interface_manager_test;
 
 import 'package:guinness/guinness.dart';
+import 'package:raxa/common.dart';
 import 'package:raxa/interface.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../../helpers/database.dart';

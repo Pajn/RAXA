@@ -35,27 +35,51 @@ class ErrorMessage extends Message {
     ErrorMessage.from(Map<String, dynamic> other) : super.from(other);
 }
 
-class RestMessage extends Message {
+class RestRequest extends Message {
+    /// An optional id that can be used to link the request with the [RestResponse] when sent over
+    /// a transport that doesn't support responding to specific messages.
+    String get id => this['id'];
+    set id(String value) => this['id'] = value;
+
     String get endpoint => this['endpoint'];
     set endpoint(String value) => this['endpoint'] = value;
 
     String get method => this['method'];
     set method(String value) => this['method'] = value;
 
-    Map get parameters => this['parameters'];
-    set parameters(Map value) => this['parameters'] = value;
+    Map<String, String> get parameters => this['parameters'];
+    set parameters(Map<String, String> value) => this['parameters'] = value;
 
     Map get data => this['data'];
     set data(Map value) => this['data'] = value;
 
-    RestMessage(String endpoint, String method, Map parameters, Map data) {
+    RestRequest(String endpoint, String method, {String id,
+                                                 Map<String, String> parameters,
+                                                 Map data}) {
         this.endpoint = endpoint;
         this.method = method;
+        this.id = id;
         this.parameters = parameters;
         this.data = data;
-        super.command = 'Rest';
+        super.command = 'RestRequest';
     }
-    RestMessage.from(Map<String, dynamic> other) : super.from(other);
+    RestRequest.from(Map<String, dynamic> other) : super.from(other);
+}
+
+class RestResponse extends Message {
+    /// Set to the same value as provided in the corresponding [RestRequest].
+    String get id => this['id'];
+    set id(String value) => this['id'] = value;
+
+    Map get data => this['data'];
+    set data(Map value) => this['data'] = value;
+
+    RestResponse(Map data, {String id}) {
+        this.data = data;
+        this.id = id;
+        super.command = 'RestResponse';
+    }
+    RestResponse.from(Map<String, dynamic> other) : super.from(other);
 }
 
 class EventMessage extends Message {
