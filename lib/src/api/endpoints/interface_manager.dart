@@ -31,7 +31,7 @@ class InterfaceManagerApi {
         return interfaceManager.read(interface).then((data) {
             if (data == null) {
                 request.httpRequest.response.statusCode = HttpStatus.NOT_FOUND;
-                return new RestResponse('Interface "$interface" not found', status: Status.FAIL);
+                return new RestResponse('Interface not found', status: Status.FAIL);
             }
 
             return new RestResponse(data);

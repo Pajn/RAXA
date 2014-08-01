@@ -31,7 +31,7 @@ class SettingsApi {
         return settings.read(group).then((data) {
             if (data == null) {
                 request.httpRequest.response.statusCode = HttpStatus.NOT_FOUND;
-                return new RestResponse('Group "$group" not found', status: Status.FAIL);
+                return new RestResponse('Group not found', status: Status.FAIL);
             }
 
             return new RestResponse(data);
@@ -42,10 +42,10 @@ class SettingsApi {
         var group = request.urlParameters['group'];
         return settings.save(request.json, group).then((data) {
             if (data['err'] != null) {
-                return new RestResponse('Update of group "$group" failed', status: Status.FAIL);
+                return new RestResponse('Update of group failed', status: Status.FAIL);
             }
 
-            return new RestResponse('Update of group "$group" succeeded');
+            return new RestResponse('Update of group succeeded');
         });
     }
 }

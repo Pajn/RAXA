@@ -32,7 +32,7 @@ class PluginManagerApi {
         return pluginManager.read(plugin).then((data) {
             if (data == null) {
                 request.httpRequest.response.statusCode = HttpStatus.NOT_FOUND;
-                return new RestResponse('Plugin "$plugin" not found', status: Status.FAIL);
+                return new RestResponse('Plugin not found', status: Status.FAIL);
             }
 
             return new RestResponse(data);

@@ -9,6 +9,7 @@ import 'tests/e2e/configuration.dart';
 
 import 'tests/e2e/rest/deviceClasses.dart' as rest_deviceClasses_test;
 import 'tests/e2e/rest/devices.dart' as rest_devices_test;
+import 'tests/e2e/rest/interfaces.dart' as rest_interfaces_test;
 import 'tests/e2e/rest/positions.dart' as rest_positions_test;
 
 /**
@@ -42,6 +43,7 @@ main() {
         // Now the tests can be run
         rest_deviceClasses_test.main();
         rest_devices_test.main();
+        rest_interfaces_test.main();
         rest_positions_test.main();
     });
 }
