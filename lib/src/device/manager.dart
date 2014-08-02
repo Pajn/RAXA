@@ -9,8 +9,13 @@ class DeviceManager {
 
     DeviceManager(this.db, this.classManager, this.eventBus);
 
-    Future create(Device device) =>
-        db.connect((db) {
+    Future create(Device device) => device.validate()
+        .then((valid) {
+            if (!valid) {
+                throw 'Device is not valid';
+            }
+        })
+        .then((_) => db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': device.name}).then((dbObject) {
@@ -23,7 +28,7 @@ class DeviceManager {
                 if (deviceClass == null) {
                     throw 'Specified DeviceClass does not exist';
                 }
-                deviceClass.validate(device);
+                deviceClass.validateDevice(device);
 
                 device['_id'] = new ObjectId();
 
@@ -33,7 +38,7 @@ class DeviceManager {
 
                 eventBus.add(new EventMessage('Device', 'created', device));
             });
-        });
+        }));
 
     /**
      * Deletes a [Device] from the database.

@@ -42,25 +42,42 @@ class PluginManager {
                 plugin.send(message)));
     }
 
-    call(Call call, Device device) {
-        var plugin = enabledPlugins[device.plugin];
-        print(call);
-        print(device);
+    Future call(Call call, Device device) =>
+        call.validate().then((valid) {
+            if (!valid) {
+                throw 'Call is not valid';
+            }
+        })
+        .then((_) => device.validate())
+        .then((valid) {
+            if (!valid) {
+                throw 'Device is not valid';
+            }
+        })
+        .then((_) {
+            var plugin = enabledPlugins[device.plugin];
+            print(call);
+            print(device);
 
-        if (plugin is PluginInstance) {
-            plugin.send(new CallMessage(call, device));
-        }
-    }
+            if (plugin is PluginInstance) {
+                plugin.send(new CallMessage(call, device));
+            }
+        });
 
     Future install(String pluginName) =>
         Plugin.fromManifest(config.pluginFolderPath, pluginName).then((plugin) =>
-            db.connect((db) {
+            plugin.validate().then((valid) {
+                if (!valid) {
+                    throw 'Plugin is not valid';
+                }
+            })
+            .then((_) => db.connect((db) {
                 var collection = db.collection(COLLECTION);
 
                 collection.insert(plugin);
 
                 eventBus.add(new EventMessage('Plugin', 'installed', plugin));
-            })
+            }))
         );
 
     Future enable(String pluginName) {
@@ -72,7 +89,6 @@ class PluginManager {
 
         return read(pluginName).then((plugin) {
             if (plugin == null) {
-
                 throw 'Plugin is not installed';
             }
 

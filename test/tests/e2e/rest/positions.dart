@@ -13,9 +13,26 @@ main() {
         var positionIds = [];
 
         describe('post', () {
-            var testPosition = {
-                'name': 'TestPosition',
-            };
+            var testPosition;
+
+            beforeEach(() {
+                testPosition = {
+                    'name': 'TestPosition',
+                };
+            });
+
+            it('should validate positions', () {
+                testPosition['name'] = '';
+
+                return http.post('$HOST/rest/positions', body: JSON.encode(testPosition))
+                    .then((response) {
+                        expect(JSON.decode(response.body)).toEqual({
+                            'data': 'Creation of position failed',
+                            'status': 'fail',
+                            'version': '0.0.0',
+                        });
+                    });
+            });
 
             it('should be able to create positions', () =>
                 http.post('$HOST/rest/positions', body: JSON.encode(testPosition)).then((response) {

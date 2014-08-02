@@ -11,8 +11,13 @@ class DeviceClassManager {
     /**
      * Installs a new [DeviceClass].
      */
-    Future install(DeviceClass deviceClass) =>
-        db.connect((db) {
+    Future install(DeviceClass deviceClass) => deviceClass.validate()
+        .then((valid) {
+            if (!valid) {
+                throw 'DeviceClass is not valid';
+            }
+        })
+        .then((_) => db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({
@@ -28,7 +33,7 @@ class DeviceClassManager {
 
                 eventBus.add(new EventMessage('DeviceClass', 'installed', deviceClass));
             });
-        });
+        }));
 
     /**
      * Reads a [DeviceClass] from the database.

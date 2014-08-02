@@ -72,6 +72,10 @@ packages:
     description: intl
     source: hosted
     version: "0.9.10"
+  json_schema:
+    description: json_schema
+    source: hosted
+    version: "0.0.2"
   logging:
     description: logging
     source: hosted

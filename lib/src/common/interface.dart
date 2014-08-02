@@ -4,6 +4,24 @@ part of raxa.common;
  * [Interface]s describe how to communicate with [Device]s
  */
 class Interface extends ModelBase {
+    /// The schema to validate against as specified in v4 draft at <http://json-schema.org/>
+    final Map jsonSchema = const {
+        r'$schema': 'http://json-schema.org/draft-04/schema#',
+        'type': 'object',
+        'properties': const {
+            'name': const {
+                'type': 'string',
+                'pattern': r'^[A-Z]+([a-zA-Z0-9])*$', // Must start with uppercase English letter
+                                                      // and must only contain English letters or
+                                                      // numbers.
+            },
+            'methods': const {'type': 'object'},
+            'status': const {'type': 'object'},
+            'variables': const {'type': 'object'},
+        },
+        'required': const ['name'],
+    };
+
     String get name => this['name'];
     Map<String, dynamic> get methods => getValue('methods', {});
     Map<String, dynamic> get status => getValue('status', {});
@@ -28,7 +46,7 @@ class Interface extends ModelBase {
      *
      * Throws on error.
      */
-    validate(Call call) {
+    validateCall(Call call) {
         if (!methods.containsKey(call.method)) {
             throw 'Unsupported method "${call.method}"';
         }

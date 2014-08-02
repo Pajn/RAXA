@@ -49,22 +49,36 @@ main() {
         });
 
         describe('create', () {
-            var testDevice = {
-                '_id': 'SomeId',
-                'name': 'SomeName',
-                'plugin': 'SomePlugin',
-                'deviceClass': 'SomeClass',
-                'config': {
-                    'someParameter': 'someValue'
-                },
-                'implementedInterfaces': ['SomeInterface'],
-                'status': {
-                    'someStatus': 'someValue'
-                },
-                'variables': {
-                    'someVariable': 'someValue'
-                },
-            };
+            var testDevice;
+
+            beforeEach(() {
+                testDevice = {
+                    '_id': 'SomeId',
+                    'name': 'SomeName',
+                    'plugin': 'SomePlugin',
+                    'deviceClass': 'SomeClass',
+                    'config': {
+                        'someParameter': 'someValue'
+                    },
+                    'implementedInterfaces': ['SomeInterface'],
+                    'status': {
+                        'someStatus': 'someValue'
+                    },
+                    'variables': {
+                        'someVariable': 'someValue'
+                    },
+                };
+            });
+
+            it('should validate the device', () {
+                testDevice['name'] = '';
+
+                var future = deviceManager.create(new Device.from(testDevice));
+
+                return future.catchError(expectAsync((error) {
+                    expect(error).toEqual('Device is not valid');
+                }));
+            });
 
             it('should use the Devices collection', () {
                 var future = deviceManager.create(new Device.from(testDevice));

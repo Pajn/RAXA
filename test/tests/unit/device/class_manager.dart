@@ -23,15 +23,29 @@ main() {
         });
 
         describe('install', () {
-            var testDeviceClass = {
-                'name': 'SomeName',
-                'plugin': 'SomePlugin',
-                'config': {
-                    'someParameter': 'someValue'
-                },
-                'implementedInterfaces': ['SomeInterface'],
-                'requiredInterfaces': ['SomeOtherInterface'],
-            };
+            var testDeviceClass;
+
+            beforeEach(() {
+                testDeviceClass = {
+                    'name': 'SomeName',
+                    'plugin': 'SomePlugin',
+                    'config': {
+                        'someParameter': 'someValue'
+                    },
+                    'implementedInterfaces': ['SomeInterface'],
+                    'requiredInterfaces': ['SomeOtherInterface'],
+                };
+            });
+
+            it('should validate the deviceClass', () {
+                testDeviceClass['name'] = '';
+
+                var future = deviceClassManager.install(new DeviceClass.from(testDeviceClass));
+
+                return future.catchError(expectAsync((error) {
+                    expect(error).toEqual('DeviceClass is not valid');
+                }));
+            });
 
             it('should use the DeviceClasses collection', () {
                 var future = deviceClassManager.install(new DeviceClass.from(testDeviceClass));

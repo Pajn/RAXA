@@ -19,35 +19,49 @@ main() {
         });
 
         describe('install', () {
-            var testInterface = {
-                'name': 'DimLevel',
-                'methods': {
-                    'level': {
-                        'arguments': {
-                            'level': {
-                                'type': 'integer',
-                                'max': 'max',
-                                'min': 'min',
+            var testInterface;
+
+            beforeEach(() {
+                testInterface = {
+                    'name': 'DimLevel',
+                    'methods': {
+                        'level': {
+                            'arguments': {
+                                'level': {
+                                    'type': 'integer',
+                                    'max': 'max',
+                                    'min': 'min',
+                                }
                             }
+                        },
+                    },
+                    'status': {
+                        'level': {
+                            'type': 'integer',
+                            'max': 'max',
+                            'min': 'min',
                         }
                     },
-                },
-                'status': {
-                    'level': {
-                        'type': 'integer',
-                        'max': 'max',
-                        'min': 'min',
+                    'variables': {
+                        'max': {
+                            'type': 'integer',
+                        },
+                        'min': {
+                            'type': 'integer',
+                        }
                     }
-                },
-                'variables': {
-                    'max': {
-                        'type': 'integer',
-                    },
-                    'min': {
-                        'type': 'integer',
-                    }
-                }
-            };
+                };
+            });
+
+            it('should validate the interface', () {
+                testInterface['name'] = '';
+
+                var future = interfaceManager.install(new Interface.from(testInterface));
+
+                return future.catchError(expectAsync((error) {
+                    expect(error).toEqual('Interface is not valid');
+                }));
+            });
 
             it('should use the Interfaces collection', () {
                 var future = interfaceManager.install(new Interface.from(testInterface));

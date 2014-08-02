@@ -8,8 +8,13 @@ class PositionManager {
 
     PositionManager(this.db, this.eventBus);
 
-    Future create(Position position) =>
-        db.connect((db) {
+    Future create(Position position) => position.validate()
+        .then((valid) {
+            if (!valid) {
+                throw 'Position is not valid';
+            }
+        })
+        .then((_) => db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': position.name}).then((dbObject) {
@@ -26,7 +31,7 @@ class PositionManager {
 
                 eventBus.add(new EventMessage('Position', 'created', position));
             });
-        });
+        }));
 
     /**
      * Deletes a [Position] from the database.

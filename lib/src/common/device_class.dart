@@ -8,6 +8,29 @@ part of raxa.common;
  * created primarily by the user.
  */
 class DeviceClass extends ModelBase {
+    /// The schema to validate against as specified in v4 draft at <http://json-schema.org/>
+    final Map jsonSchema = const {
+        r'$schema': 'http://json-schema.org/draft-04/schema#',
+        'type': 'object',
+        'properties': const {
+            'name': const {
+                'type': 'string',
+                'pattern': r'^[A-Z]+([a-zA-Z0-9])*$', // Must start with uppercase English letter
+                                                      // and must only contain English letters or
+                                                      // numbers.
+            },
+            'plugin': const {'type': 'string'},
+            'config': const {'type': 'object'},
+            'implementedInterfaces': const {
+                'type': 'array',
+                'items': const {'type': 'string'},
+                'uniqueItems': true,
+            },
+            'variables': const {'type': 'object'},
+        },
+        'required': const ['name'],
+    };
+
     /// The name of this [DeviceClass], it must be unique inside the plugin.
     String get name => this['name'];
     /// The name of the plugin that specifies this [DeviceClass].
@@ -31,7 +54,7 @@ class DeviceClass extends ModelBase {
      * Will overwrite fields that should be copied and throws if the [device]
      * have any errors.
      */
-    validate(Device device) {
+    validateDevice(Device device) {
         device.implementedInterfaces = implementedInterfaces;
         device.variables = variables;
 

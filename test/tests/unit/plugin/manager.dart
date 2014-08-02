@@ -46,8 +46,14 @@ main() {
             beforeEach(() {
                 pluginOne = new MockPluginInstance();
                 pluginTwo = new MockPluginInstance();
-                call = new Call();
-                device = new Device()..plugin='PluginOne';
+                call = new Call()
+                    ..deviceId = 'PluginOne'
+                    ..interface = 'Test'
+                    ..method = 'test';
+                device = new Device()
+                    ..name = 'Test'
+                    ..plugin='PluginOne'
+                    ..deviceClass = 'Test';
 
                 pluginManager.enabledPlugins = {
                     'PluginOne': pluginOne,
@@ -55,15 +61,36 @@ main() {
                 };
             });
 
-            it('should send a CallMessage to the correct plugin instance', () {
-                pluginManager.call(call, device);
+            it('should validate the call', () {
+                call.deviceId = null;
 
-                expect(pluginOne.sendSpy).toHaveBeenCalledOnce();
-                var arguments = pluginOne.sendSpy.calls.last.positionalArguments;
-                expect(arguments).toEqual([new CallMessage(call, device)]);
+                var future = pluginManager.call(call, device);
 
-                expect(pluginTwo.sendSpy).not.toHaveBeenCalled();
+                return future.catchError(expectAsync((error) {
+                    expect(error).toEqual('Call is not valid');
+                }));
             });
+
+            it('should validate the device', () {
+                device.name = '';
+
+                var future = pluginManager.call(call, device);
+
+                return future.catchError(expectAsync((error) {
+                    expect(error).toEqual('Device is not valid');
+                }));
+            });
+
+            it('should send a CallMessage to the correct plugin instance', () =>
+                pluginManager.call(call, device)
+                    .then((_) {
+                        expect(pluginOne.sendSpy).toHaveBeenCalledOnce();
+                        var arguments = pluginOne.sendSpy.calls.last.positionalArguments;
+                        expect(arguments).toEqual([new CallMessage(call, device)]);
+
+                        expect(pluginTwo.sendSpy).not.toHaveBeenCalled();
+                    })
+            );
         });
 
         describe('read', () {

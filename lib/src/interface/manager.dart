@@ -7,8 +7,13 @@ class InterfaceManager {
 
     InterfaceManager(this.db);
 
-    Future install(Interface interface) =>
-        db.connect((db) {
+    Future install(Interface interface) => interface.validate()
+        .then((valid) {
+            if (!valid) {
+                throw 'Interface is not valid';
+            }
+        })
+        .then((_) => db.connect((db) {
             var collection = db.collection(COLLECTION);
 
             return collection.findOne({'name': interface.name}).then((dbObject) {
@@ -19,7 +24,7 @@ class InterfaceManager {
 
                 collection.insert(interface);
             });
-        });
+        }));
 
     /**
      * Reads an [Interface] from the database.
@@ -67,7 +72,7 @@ class InterfaceManager {
                     throw 'Unsupported interface "${call.interface}"';
                 }
 
-                new Interface.from(dbObject, device).validate(call);
+                new Interface.from(dbObject, device).validateCall(call);
             });
         });
 }

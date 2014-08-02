@@ -13,11 +13,28 @@ main() {
         var deviceIds = [];
 
         describe('post', () {
-            var testDevice = {
-                'name': 'TestDevice',
-                'plugin': 'TestPlugin',
-                'deviceClass': 'TestClass',
-            };
+            var testDevice;
+
+            beforeEach(() {
+                testDevice = {
+                    'name': 'TestDevice',
+                    'plugin': 'TestPlugin',
+                    'deviceClass': 'TestClass',
+                };
+            });
+
+            it('should validate devices', () {
+                testDevice['name'] = '';
+
+                return http.post('$HOST/rest/devices', body: JSON.encode(testDevice))
+                    .then((response) {
+                        expect(JSON.decode(response.body)).toEqual({
+                            'data': 'Creation of device failed',
+                            'status': 'fail',
+                            'version': '0.0.0',
+                        });
+                });
+            });
 
             it('should be able to create devices', () =>
                 http.post('$HOST/rest/devices', body: JSON.encode(testDevice)).then((response) {

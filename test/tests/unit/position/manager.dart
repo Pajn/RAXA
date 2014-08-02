@@ -28,11 +28,25 @@ main() {
         });
 
         describe('create', () {
-            var testPosition = {
-                '_id': 'SomeId',
-                'name': 'SomeName',
-                'parent': 'SomeParent',
-            };
+            var testPosition;
+
+            beforeEach(() {
+                testPosition = {
+                    '_id': 'SomeId',
+                    'name': 'SomeName',
+                    'parent': 'SomeParent',
+                };
+            });
+
+            it('should validate the position', () {
+                testPosition['name'] = '';
+
+                var future = positionManager.create(new Position.from(testPosition));
+
+                return future.catchError(expectAsync((error) {
+                    expect(error).toEqual('Position is not valid');
+                }));
+            });
 
             it('should use the Positions collection', () {
                 var future = positionManager.create(new Position.from(testPosition));
