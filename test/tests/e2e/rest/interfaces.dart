@@ -14,28 +14,11 @@ main() {
                 http.get('$HOST/rest/interfaces')
                     .then((response) => JSON.decode(response.body))
                     .then((response) {
+                        // Sort the list so that we can compare
+                        response['data'].sort((a, b) => a['name'].compareTo(b['name']));
 
                         expect(response).toEqual({
                             'data': [
-                                {
-                                    'name': 'Lamp',
-                                    'methods': {
-                                        'on': {
-                                            'status': 'on'
-                                        },
-                                        'off': {
-                                            'status': 'off'
-                                        }
-                                    },
-                                    'status': {
-                                        'on': {
-                                            'type': 'boolean'
-                                        },
-                                        'off': {
-                                            'type': 'boolean'
-                                        }
-                                    }
-                                },
                                 {
                                     'name': 'DimLevel',
                                     'methods': {
@@ -67,6 +50,28 @@ main() {
                                     }
                                 },
                                 {
+                                    'name': 'Lamp',
+                                    'methods': {
+                                        'on': {
+                                            'status': 'on'
+                                        },
+                                        'off': {
+                                            'status': 'off'
+                                        }
+                                    },
+                                    'status': {
+                                        'on': {
+                                            'type': 'boolean'
+                                        },
+                                        'off': {
+                                            'type': 'boolean'
+                                        }
+                                    }
+                                },
+                                {
+                                    'name': 'TestInterface',
+                                },
+                                {
                                     'name': 'Trigger',
                                     'events': {
                                         'triggered': {
@@ -77,9 +82,6 @@ main() {
                                             }
                                         }
                                     }
-                                },
-                                {
-                                    'name': 'TestInterface',
                                 }
                             ],
                             'status': 'success',
