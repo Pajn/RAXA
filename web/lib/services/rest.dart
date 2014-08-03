@@ -2,7 +2,7 @@ part of raxa_web;
 
 @Injectable()
 class RestService {
-    static const SPECIAL_TYPES = const ['Scenario'];
+    static const SPECIAL_TYPES = const ['Action', 'Scenario'];
 
     final Http http;
 
@@ -33,6 +33,9 @@ class RestService {
             response.data['data'].map((json) => new DeviceClass.from(json)).toList()
         );
 
+    Future<List<DeviceClass>> getActionClasses([Map query]) =>
+        getDeviceClasses(_default(query, {})..putIfAbsent('type', () => 'Action'));
+
     Future<List<DeviceClass>> getScenarioClasses([Map query]) =>
         getDeviceClasses(_default(query, {})..putIfAbsent('type', () => 'Scenario'));
 
@@ -56,6 +59,9 @@ class RestService {
 
     Future saveDevice(Device device) =>
         http.put('http://127.0.0.1:8080/rest/devices/${device.id}', JSON.encode(device));
+
+    Future<List<Device>> getActions([Map query]) =>
+        getDevices(_default(query, {})..putIfAbsent('type', () => 'Action'));
 
     Future<List<Device>> getScenarios([Map query]) =>
         getDevices(_default(query, {})..putIfAbsent('type', () => 'Scenario'));

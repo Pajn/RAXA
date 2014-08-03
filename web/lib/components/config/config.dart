@@ -20,7 +20,8 @@ class ConfigComponent {
 
     bool get useArray => config['type'] == 'array';
     bool get useCall => config['type'] == 'call';
-    bool get useInput => !useSelect && !readOnly && !useArray && !useCall;
+    bool get useEvent => config['type'] == 'event';
+    bool get useInput => !useSelect && !readOnly && !useArray && !useCall && !useEvent;
     bool get useSelect => config.containsKey('enum') || config['type'] == 'deviceId';
 
     String get inputType =>

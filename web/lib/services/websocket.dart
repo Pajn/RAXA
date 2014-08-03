@@ -7,7 +7,7 @@ class WebSocketService {
     var _onEvent = new StreamController.broadcast();
     var _onPluginEvent = new StreamController.broadcast();
     Stream<EventMessage> get onEvent => _onEvent.stream;
-    Stream<EventMessage> get onPluginEvent => _onPluginEvent.stream;
+    Stream<PluginEventMessage> get onPluginEvent => _onPluginEvent.stream;
 
     WebSocketService(this.http) {
         WebSocket ws = new WebSocket('ws://127.0.0.1:8080/ws');
@@ -19,7 +19,7 @@ class WebSocketService {
             print(e.data);
             try {
                 var message = new Message.from(JSON.decode(e.data));
-                
+
                 switch (message.command) {
                     case 'Event':
                         _onEvent.add(new EventMessage.from(message));

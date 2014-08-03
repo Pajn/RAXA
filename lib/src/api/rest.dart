@@ -28,7 +28,7 @@ class RestApi {
 
         restServer.static('../web', jailRoot: false);
         restServer.clientRoutes = [
-            '/settings/devices', '/settings/positions', '/settings/scenarios', '/settings'
+            '/settings/actions', '/settings/devices', '/settings/positions', '/settings/scenarios', '/settings'
         ];
 
         HttpServer.bind(config.restHostname, config.restPort).then((server) {

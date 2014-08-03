@@ -5,12 +5,37 @@ class ModelService {
     final RestService restService;
     final WebSocketService webSocketService;
 
+    List<DeviceClass> _actionClasses;
+    List<Device> _actions;
     List<DeviceClass> _deviceClasses;
     List<Device> _devices;
     List<Position> _positions;
     List<Interface> _interfaces;
     List<DeviceClass> _scenarioClasses;
     List<Device> _scenarios;
+
+    List<DeviceClass> get actionClasses {
+        if (_actionClasses == null) {
+            _actionClasses = new List<DeviceClass>();
+
+            restService.getActionClasses().then((classes) =>
+                _actionClasses.addAll(classes.map((deviceClass) =>
+                    new DeviceClass.from(deviceClass))));
+        }
+
+        return _actionClasses;
+    }
+
+    List<Device> get actions {
+        if (_actions == null) {
+            _actions = new List<Device>();
+
+            restService.getActions().then((devices) =>
+                _actions.addAll(devices.map((device) => new Device.from(device))));
+        }
+
+        return _actions;
+    }
 
     List<DeviceClass> get deviceClasses {
         if (_deviceClasses == null) {

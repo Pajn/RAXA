@@ -60,7 +60,11 @@ class ConfigCallComponent {
         _method = method;
         call.interface = method['interface'];
         call.method = method['method'];
-        arguments = method['arguments']['arguments'].values.toList();
+        if (method['arguments']['arguments'] == null) {
+            arguments = [];
+        } else {
+            arguments = method['arguments']['arguments'].values.toList();
+        }
     }
 
     List<Device> get devices => modelService.devices;

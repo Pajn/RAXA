@@ -1,5 +1,5 @@
 <select ng-model="cmp.device">
-    <option ng-repeat="device in cmp.devices" ng-value="device">
+    <option ng-repeat="device in cmp.modelService.devices" ng-value="device">
         {{ device.name }}
     </option>
 </select>

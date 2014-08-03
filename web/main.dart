@@ -13,6 +13,9 @@ void routeInitializer(Router router, RouteViewFactory views) {
             path: '/settings',
             view: 'views/settings.html',
             mount: {
+                'actions': ngRoute(
+                    path: '/actions',
+                    viewHtml: '<actions-settings></actions-settings>'),
                 'devices': ngRoute(
                     path: '/devices',
                     viewHtml: '<devices-settings></devices-settings>'),
@@ -21,7 +24,7 @@ void routeInitializer(Router router, RouteViewFactory views) {
                     viewHtml: '<positions-settings></positions-settings>'),
                 'scenarios': ngRoute(
                     path: '/scenarios',
-                    viewHtml: '<scenarios-settings></scenarios-settings>')
+                    viewHtml: '<scenarios-settings></scenarios-settings>'),
             })
     });
 }
@@ -31,10 +34,12 @@ class WebModule extends Module {
         bind(ConfigComponent);
         bind(ConfigArrayComponent);
         bind(ConfigCallComponent);
+        bind(ConfigEventComponent);
         bind(DevicesWidget);
         bind(InterfaceDimLevelComponent);
         bind(InterfaceLampComponent);
         bind(InterfaceSyncComponent);
+        bind(ActionsSettingsComponent);
         bind(DeviceCreateComponent);
         bind(DeviceSettingsComponent);
         bind(DevicesSettingsComponent);
