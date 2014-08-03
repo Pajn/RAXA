@@ -5,9 +5,14 @@ class InterfaceManager {
 
     Database db;
 
-    InterfaceManager(this.db);
+    InterfaceManager(this.db) {
+        defaultInterfaces.map((interface) => new Interface.from(interface)).forEach((interface) =>
+            install(interface)
+                .catchError((_) {}, test: (e) => e == 'Interface already installed')
+        );
+    }
 
-    Future install(Interface interface) => interface.validate()
+    Future install(Interface interface) => validateModel(interface)
         .then((valid) {
             if (!valid) {
                 throw 'Interface is not valid';
