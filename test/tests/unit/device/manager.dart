@@ -148,7 +148,8 @@ main() {
                             'status': {
                                 'someStatus': 'someValue'
                             },
-                            'variables': {}
+                            'variables': {},
+                            'type': null,
                         },
                         'command': 'Event'
                     }]);

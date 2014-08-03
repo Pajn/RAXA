@@ -28,6 +28,5 @@ class ConfigurationModule extends Module {
  * Validate the model according to its specified [jsonSchema]
  */
 Future<bool> validateModel(ModelBase model) =>
-    //Schema.createSchema(model.jsonSchema)
-    //    .then((schema) => schema.validate(model));
-    new Future.value(true);
+    Schema.createSchema(model.jsonSchema)
+        .then((schema) => schema.validate(model));

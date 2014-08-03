@@ -67,7 +67,9 @@ main() {
                 var future = interfaceManager.install(new Interface.from(testInterface));
 
                 return future.then(expectAsync((_) {
-                    expect(db.collectionSpy).toHaveBeenCalledOnceWith('Interfaces');
+                    expect(db.collectionSpy.calls.last.positionalArguments).toEqual(['Interfaces']);
+                    // install is called in the constructor to install default interfaces so
+                    // just checking the last call
                 }));
             });
 
@@ -105,7 +107,9 @@ main() {
                 var future = interfaceManager.read('InterfaceName');
 
                 return future.then(expectAsync((_) {
-                    expect(db.collectionSpy).toHaveBeenCalledOnceWith('Interfaces');
+                    expect(db.collectionSpy.calls.last.positionalArguments).toEqual(['Interfaces']);
+                    // install is called in the constructor to install default interfaces so
+                    // just checking the last call
                 }));
             });
 
@@ -171,7 +175,9 @@ main() {
                 var future = interfaceManager.readAll();
 
                 return future.then(expectAsync((_) {
-                    expect(db.collectionSpy).toHaveBeenCalledOnceWith('Interfaces');
+                    expect(db.collectionSpy.calls.last.positionalArguments).toEqual(['Interfaces']);
+                    // install is called in the constructor to install default interfaces so
+                    // just checking the last call
                 }));
             });
 
