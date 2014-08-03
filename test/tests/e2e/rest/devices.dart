@@ -106,7 +106,8 @@ main() {
                                     'deviceClass': 'TestClass',
                                     'implementedInterfaces': ['TestInterface'],
                                     'variables': {},
-                                    '_id': ''
+                                    'type': null,
+                                    '_id': '',
                                 },
                                 {
                                     'name': 'TestDevice2',
@@ -114,7 +115,8 @@ main() {
                                     'deviceClass': 'TestClass',
                                     'implementedInterfaces': ['TestInterface'],
                                     'variables': {},
-                                    '_id': ''
+                                    'type': null,
+                                    '_id': '',
                                 }
                             ],
                             'status': 'success',
@@ -136,6 +138,7 @@ main() {
                                 'deviceClass': 'TestClass',
                                 'implementedInterfaces': ['TestInterface'],
                                 'variables': {},
+                                'type': null,
                                 '_id': deviceIds.first
                             }],
                             'status': 'success',
@@ -169,6 +172,7 @@ main() {
                                 'deviceClass': 'TestClass',
                                 'implementedInterfaces': ['TestInterface'],
                                 'variables': {},
+                                'type': null,
                                 '_id': deviceIds.first
                             },
                             'status': 'success',
@@ -217,6 +221,7 @@ main() {
                                         'deviceClass': 'TestClass',
                                         'implementedInterfaces': ['TestInterface'],
                                         'variables': {},
+                                        'type': null,
                                         '_id': deviceIds.last
                                     },
                                     'status': 'success',
@@ -250,6 +255,7 @@ main() {
                                 'deviceClass': 'TestClass',
                                 'implementedInterfaces': ['TestInterface'],
                                 'variables': {},
+                                'type': null,
                                 '_id': deviceIds.last
                             }],
                             'status': 'success',
