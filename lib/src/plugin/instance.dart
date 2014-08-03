@@ -3,9 +3,13 @@ part of raxa.plugin;
 const PLUGIN_API_VERSION = '0.0.0';
 
 class PluginInstance {
+    var _onPluginEvent = new StreamController();
+
     Future started;
     Isolate isolate;
     SendPort sendPort;
+
+    Stream<PluginEventMessage> get onPluginEvent => _onPluginEvent.stream;
 
     PluginInstance(String pluginFolderPath, String pluginName) {
         var receivePort = new ReceivePort();
@@ -19,6 +23,9 @@ class PluginInstance {
             } else if (message is Map && message.containsKey('command')) {
                 message = new Message.from(message);
                 switch (message.command) {
+                    case 'PluginEvent':
+                        _onPluginEvent.add(new PluginEventMessage.from(message));
+                        break;
                     default:
                         sendPort.send(new ErrorMessage(
                             'Command "${message.command}" is not supported'));

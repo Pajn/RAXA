@@ -109,7 +109,9 @@ class PluginManager {
                      )))
                 .then((_) => update({'enabled': true}, plugin.name))
                 .then((_) => enabledPlugins[plugin.name] = new PluginInstance(config.pluginFolderPath,
-                                                                              plugin.name))
+                                                                              plugin.name)
+                                                           ..onPluginEvent.listen((event) =>
+                                                               eventBus.add(event)))
                 .then((_) => eventBus.add(new EventMessage('Plugin', 'enabled', plugin)));
         });
     }

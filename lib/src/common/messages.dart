@@ -100,3 +100,26 @@ class EventMessage extends Message {
     }
     EventMessage.from(Map<String, dynamic> other) : super.from(other);
 }
+
+class PluginEventMessage extends Message {
+    String get plugin => this['plugin'];
+    set plugin(String value) => this['plugin'] = value;
+
+    String get interface => this['interface'];
+    set interface(String value) => this['interface'] = value;
+
+    String get event => this['event'];
+    set event(String value) => this['event'] = value;
+
+    get data => this['data'];
+    set data(value) => this['data'] = value;
+
+    PluginEventMessage(String plugin, String interface, String event, data) {
+        this.plugin = plugin;
+        this.interface = interface;
+        this.event = event;
+        this.data = data;
+        super.command = 'PluginEvent';
+    }
+    PluginEventMessage.from(Map<String, dynamic> other) : super.from(other);
+}
