@@ -20,6 +20,7 @@ class DeviceClass extends ModelBase {
                                                       // numbers.
             },
             'plugin': const {'type': 'string'},
+            'type': const {'type': 'string'},
             'config': const {'type': 'object'},
             'implementedInterfaces': const {
                 'type': 'array',
@@ -35,6 +36,8 @@ class DeviceClass extends ModelBase {
     String get name => this['name'];
     /// The name of the plugin that specifies this [DeviceClass].
     String get plugin => this['plugin'];
+
+    String get type => this['type'];
 
     /// Configuration values for the plugin that is set by the user while creating the [Device].
     /// May be a network id or similar.
@@ -57,6 +60,7 @@ class DeviceClass extends ModelBase {
     validateDevice(Device device) {
         device.implementedInterfaces = implementedInterfaces;
         device.variables = variables;
+        device.type = type;
 
         // TODO Validate config
     }

@@ -43,12 +43,12 @@ class PluginManager {
     }
 
     Future call(Call call, Device device) =>
-        call.validate().then((valid) {
+        validateModel(call).then((valid) {
             if (!valid) {
                 throw 'Call is not valid';
             }
         })
-        .then((_) => device.validate())
+        .then((_) => validateModel(device))
         .then((valid) {
             if (!valid) {
                 throw 'Device is not valid';
@@ -66,7 +66,7 @@ class PluginManager {
 
     Future install(String pluginName) =>
         Plugin.fromManifest(config.pluginFolderPath, pluginName).then((plugin) =>
-            plugin.validate().then((valid) {
+            validateModel(plugin).then((valid) {
                 if (!valid) {
                     throw 'Plugin is not valid';
                 }
@@ -74,9 +74,9 @@ class PluginManager {
             .then((_) => db.connect((db) {
                 var collection = db.collection(COLLECTION);
 
-                collection.insert(plugin);
-
-                eventBus.add(new EventMessage('Plugin', 'installed', plugin));
+                return collection.insert(plugin).then((_) =>
+                    eventBus.add(new EventMessage('Plugin', 'installed', plugin))
+                );
             }))
         );
 

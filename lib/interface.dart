@@ -2,13 +2,13 @@ library raxa.interface;
 
 import 'dart:async';
 import 'package:di/di.dart';
-import 'package:raxa/api.dart';
 import 'package:raxa/common.dart';
 import 'package:raxa/configuration.dart';
 import 'package:raxa/device.dart';
 
 export 'package:raxa/common.dart' show Call;
 
+part 'src/interface/default_interfaces.dart';
 part 'src/interface/manager.dart';
 
 

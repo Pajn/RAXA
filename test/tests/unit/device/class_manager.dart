@@ -1,7 +1,6 @@
 library class_manager_test;
 
 import 'package:guinness/guinness.dart';
-import 'package:raxa/api.dart';
 import 'package:raxa/common.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;

@@ -44,9 +44,9 @@ class PluginManagerApi {
 
         if (request.json.keys.length == 1 && request.json.keys.first == 'enabled') {
             if (request.json.keys['enabled']) {
-                pluginManager.read(plugin).then((plugin) => pluginManager.enable(plugin));
+                pluginManager.read(plugin).then((plugin) => pluginManager.enable(plugin.name));
             } else {
-                pluginManager.read(plugin).then((plugin) => pluginManager.disable(plugin));
+                pluginManager.read(plugin).then((plugin) => pluginManager.disable(plugin.name));
             }
         }
 

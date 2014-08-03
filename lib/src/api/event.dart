@@ -8,7 +8,7 @@ class EventBus extends StreamView<Message> {
 
     EventBus() : super(_streamController.stream);
 
-    add(EventMessage event) {
+    add(Message event) {
         _streamController.add(event);
         print(event);
     }

@@ -13,6 +13,7 @@ class Device extends ModelBase {
             },
             'plugin': const {'type': 'string'},
             'deviceClass': const {'type': 'string'},
+            'type': const {'type': 'string'},
             'position': const {'type': 'string'},
             'config': const {'type': 'object'},
             'implementedInterfaces': const {
@@ -37,6 +38,9 @@ class Device extends ModelBase {
 
     String get deviceClass => this['deviceClass'];
     set deviceClass(String value) => this['deviceClass'] = value;
+
+    String get type => this['type'];
+    set type(String value) => this['type'] = value;
 
     /// Id of the position where the device is located, may be null
     String get position => this['position'];

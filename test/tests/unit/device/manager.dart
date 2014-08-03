@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:guinness/guinness.dart';
 import 'package:mock/mock.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:raxa/api.dart';
 import 'package:raxa/common.dart';
 import 'package:raxa/device.dart';
 import 'package:unittest/unittest.dart' hide expect;

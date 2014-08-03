@@ -8,7 +8,7 @@ class PositionManager {
 
     PositionManager(this.db, this.eventBus);
 
-    Future create(Position position) => position.validate()
+    Future create(Position position) => validateModel(position)
         .then((valid) {
             if (!valid) {
                 throw 'Position is not valid';

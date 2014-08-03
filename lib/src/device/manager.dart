@@ -9,7 +9,7 @@ class DeviceManager {
 
     DeviceManager(this.db, this.classManager, this.eventBus);
 
-    Future create(Device device) => device.validate()
+    Future create(Device device) => validateModel(device)
         .then((valid) {
             if (!valid) {
                 throw 'Device is not valid';

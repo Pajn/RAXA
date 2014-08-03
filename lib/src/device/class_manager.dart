@@ -11,7 +11,7 @@ class DeviceClassManager {
     /**
      * Installs a new [DeviceClass].
      */
-    Future install(DeviceClass deviceClass) => deviceClass.validate()
+    Future install(DeviceClass deviceClass) => validateModel(deviceClass)
         .then((valid) {
             if (!valid) {
                 throw 'DeviceClass is not valid';

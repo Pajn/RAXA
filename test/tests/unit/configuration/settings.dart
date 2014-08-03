@@ -2,7 +2,6 @@ library configuration_settings_test;
 
 import 'dart:async';
 import 'package:guinness/guinness.dart';
-import 'package:raxa/api.dart';
 import 'package:raxa/configuration.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import '../../../helpers/database.dart';

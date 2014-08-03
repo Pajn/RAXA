@@ -3,7 +3,6 @@ import 'package:args/args.dart';
 import 'package:di/auto_injector.dart';
 import 'package:raxa/api.dart';
 import 'package:raxa/configuration.dart';
-import 'package:raxa/device.dart';
 import 'package:raxa/interface.dart';
 
 main(arguments) {

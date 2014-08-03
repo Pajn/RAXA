@@ -18,7 +18,7 @@ class DeviceCreateComponent {
     get deviceClass => _deviceClass;
     set deviceClass(value) {
         _deviceClass = value;
-        _deviceClass.validate(device);
+        _deviceClass.validateDevice(device);
         device.deviceClass = deviceClass.name;
         device.plugin = deviceClass.plugin;
         device.config = _deviceClass.config;

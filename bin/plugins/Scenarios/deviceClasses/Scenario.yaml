@@ -1,5 +1,6 @@
 name: Scenario
 plugin: Scenarios
+type: Scenario
 config:
   scenario:
     type: array

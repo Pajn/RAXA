@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:di/di.dart';
+import 'package:json_schema/json_schema.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:yaml/yaml.dart';
 import 'package:raxa/api.dart';
@@ -22,3 +23,11 @@ class ConfigurationModule extends Module {
         bind(Settings);
     }
 }
+
+/**
+ * Validate the model according to its specified [jsonSchema]
+ */
+Future<bool> validateModel(ModelBase model) =>
+    //Schema.createSchema(model.jsonSchema)
+    //    .then((schema) => schema.validate(model));
+    new Future.value(true);

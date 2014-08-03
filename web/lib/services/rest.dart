@@ -2,6 +2,8 @@ part of raxa_web;
 
 @Injectable()
 class RestService {
+    static const SPECIAL_TYPES = const ['Scenario'];
+
     final Http http;
 
     RestService(this.http);
@@ -25,13 +27,14 @@ class RestService {
 
     Future<List<DeviceClass>> getDeviceClasses([Map query]) =>
         http.get('http://127.0.0.1:8080/rest/deviceclasses${
-            _query(_default(query, {})..putIfAbsent('name', () => {r'$ne': 'Scenario'}))
-        }').then((response) {
-            return response.data['data'].map((json) => new DeviceClass.from(json)).toList();
-        });
+            _query(_default(query, {})..putIfAbsent('type', () => {r'$nin': SPECIAL_TYPES}))
+        }')
+        .then((response) =>
+            response.data['data'].map((json) => new DeviceClass.from(json)).toList()
+        );
 
     Future<List<DeviceClass>> getScenarioClasses([Map query]) =>
-        getDeviceClasses(_default(query, {})..putIfAbsent('name', () => 'Scenario'));
+        getDeviceClasses(_default(query, {})..putIfAbsent('type', () => 'Scenario'));
 
     /*
      Device
@@ -45,7 +48,7 @@ class RestService {
 
     Future<List<Device>> getDevices([Map query]) =>
         http.get('http://127.0.0.1:8080/rest/devices${
-            _query(_default(query, {})..putIfAbsent('deviceClass', () => {r'$ne': 'Scenario'}))
+            _query(_default(query, {})..putIfAbsent('type', () => {r'$nin': SPECIAL_TYPES}))
         }')
         .then((response) =>
             response.data['data'].map((json) => new Device.from(json)).toList()
@@ -55,7 +58,7 @@ class RestService {
         http.put('http://127.0.0.1:8080/rest/devices/${device.id}', JSON.encode(device));
 
     Future<List<Device>> getScenarios([Map query]) =>
-        getDevices(_default(query, {})..putIfAbsent('deviceClass', () => 'Scenario'));
+        getDevices(_default(query, {})..putIfAbsent('type', () => 'Scenario'));
 
     /*
      Interface

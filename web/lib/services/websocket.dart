@@ -17,13 +17,16 @@ class WebSocketService {
 
         ws.onMessage.listen((MessageEvent e) {
             print(e.data);
-            var message = new Message.from(JSON.decode(e.data));
             try {
+                var message = new Message.from(JSON.decode(e.data));
+                
                 switch (message.command) {
                     case 'Event':
                         _onEvent.add(new EventMessage.from(message));
+                        break;
                     case 'PluginEvent':
                         _onPluginEvent.add(new PluginEventMessage.from(message));
+                        break;
                 }
             } catch (e) {
                 // Bad message, just let it drop.

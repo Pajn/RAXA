@@ -1,11 +1,8 @@
 library rest_deviceClasses_test;
 
-import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:guinness/guinness.dart';
-import 'package:mongo_dart/mongo_dart.dart';
-import 'package:unittest/unittest.dart' hide expect;
 import '../configuration.dart';
 
 main() {
