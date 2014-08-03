@@ -1,0 +1,7 @@
+name: Triggers
+version: 0.0.0
+api: 0.0.0
+descriptionSummary: Gives the possibility to set Scenarios or Devices when an event triggers,
+  for example on button press or on a motion sensor event.
+deviceClasses:
+  - Trigger

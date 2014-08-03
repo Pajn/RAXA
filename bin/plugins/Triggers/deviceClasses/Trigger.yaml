@@ -1,0 +1,12 @@
+name: Trigger
+plugin: Triggers
+type: Action
+config:
+  trigger:
+    type: event
+    interface: Trigger
+    event: triggered
+  action:
+    type: call
+implementedInterfaces:
+  - Trigger
