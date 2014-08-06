@@ -21,6 +21,8 @@ class ConfigCallComponent {
     Call get call {
         if (config['value'] == null) {
             config['value'] = new Call();
+        } else if (config['value'] is! Call) {
+            config['value'] = new Call.from(config['value']);
         }
 
         return config['value'];
@@ -28,8 +30,12 @@ class ConfigCallComponent {
 
     Device get device {
         if (_device == null && call.deviceId != null) {
-            _device = modelService.devices.singleWhere((device) =>
-                device.id == call.deviceId);
+            try {
+                _device = modelService.devices.singleWhere((device) =>
+                    device.id == call.deviceId);
+            } on StateError catch (e) {
+                _device = null;
+            }
         }
 
         return _device;
@@ -48,9 +54,13 @@ class ConfigCallComponent {
         }
 
         if (_method == null && call.interface != null && call.method != null) {
-            _method = methods.singleWhere((method) =>
-                method['interface'] == call.interface &&
-                method['method'] == call.method);
+            try {
+                _method = methods.singleWhere((method) =>
+                    method['interface'] == call.interface &&
+                    method['method'] == call.method);
+            } on StateError catch (e) {
+                _method = null;
+            }
         }
 
         return _method;

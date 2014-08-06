@@ -11,7 +11,7 @@ class DeviceCreateComponent {
     final RestService restService;
 
     Device device = new Device();
-    List<DeviceClass> classes;
+    List<DeviceClass> classes = [];
 
     DeviceClass _deviceClass;
 
