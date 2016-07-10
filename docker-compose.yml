@@ -1,0 +1,25 @@
+version: '2'
+services:
+  server:
+    build: ./server
+    ports:
+      - "7001:7001"
+    volumes:
+      - ./server:/code
+    links:
+      - postgres
+    restart: on-failure
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=socialview
+      - POSTGRES_PASSWORD=password
+    restart: on-failure
+  ui:
+   build: ./ui
+   ports:
+     - "80:80"
+   depends_on:
+     - server
