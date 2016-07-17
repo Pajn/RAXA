@@ -1,25 +1,27 @@
 version: '2'
 services:
   server:
-    build: ./server
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     ports:
-      - "7001:7001"
-    volumes:
-      - ./server:/code
+      - '9000'
     links:
       - postgres
     restart: on-failure
   postgres:
     image: postgres
     ports:
-      - "5432:5432"
+      - '5432'
     environment:
       - POSTGRES_DB=socialview
       - POSTGRES_PASSWORD=password
     restart: on-failure
   ui:
-   build: ./ui
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
    ports:
-     - "80:80"
+     - '80'
    depends_on:
      - server

@@ -5,10 +5,6 @@ const webpack = require('webpack')
 
 const production = process.env.NODE_ENV === 'production'
 
-// Workaround for bug in sass
-// https://github.com/sass/node-sass/issues/857
-process.env.UV_THREADPOOL_SIZE = 100
-
 const babelPlugins = ['jsx-tagclass']
 const babelDevPlugins = babelPlugins
   .map(plugin => require.resolve(`babel-plugin-${plugin}`))
@@ -24,12 +20,12 @@ const browserConfig = {
   entry: {
     javascript: [
       'babel-polyfill',
-      './ui/index',
+      './src/web/index',
     ],
-    html: './ui/index.html'
+    html: './src/web/index.html'
   },
   output: {
-    path: './ui/dist',
+    path: './dist.ui',
     filename: 'app.js',
     devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
   },
@@ -41,7 +37,7 @@ const browserConfig = {
         test: /\.[jt]s(x?)$/,
         exclude: /node_modules/,
         loaders: [
-          'babel?' + JSON.stringify({
+          `babel?${JSON.stringify({
             presets: [
               require.resolve('babel-preset-react'),
               require.resolve('babel-preset-es2015'),
@@ -50,7 +46,7 @@ const browserConfig = {
             plugins: production
               ? babelProdPlugins
               : babelDevPlugins,
-          }),
+          })}`,
         ],
       },
       {
@@ -63,18 +59,9 @@ const browserConfig = {
       },
       {
         test: /\.scss$/,
-        exclude: /\.global\.scss$/,
         loaders: [
           'style',
           'css?modules&importLoaders=1&localIdentName=[path][name]---[local]---[hash:base64:5]',
-          'postcss',
-        ],
-      },
-      {
-        test: /\.global\.scss$/,
-        loaders: [
-          'style',
-          'css',
           'postcss',
         ],
       },

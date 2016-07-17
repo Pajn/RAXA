@@ -5,7 +5,7 @@ const sourcemaps = require('gulp-sourcemaps')
 const ts = require('gulp-typescript')
 const merge = require('merge2')
 
-const outDir = 'dist'
+const outDir = 'dist.server'
 const paths = ['src/**/*.ts', 'typings/**/*.d.ts']
 
 gulp.task('ts', () => {
