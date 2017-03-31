@@ -1,21 +1,21 @@
 #!/bin/sh
 
-npm install
+yarn
 
 cd common
-npm install
-npm link
+yarn
+yarn link
 cd ..
 
-npm link raxa-common
+yarn link raxa-common
 
 cd plugins
 for PLUGIN in *; do
   if [ -d "${PLUGIN}" ]; then
     cd "${PLUGIN}"
-    npm link
+    yarn link
     cd ../..
-    npm link "raxa-plugin-${PLUGIN}"
+    yarn link "raxa-plugin-${PLUGIN}"
     cd plugins
   fi
 done

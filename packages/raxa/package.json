@@ -1,0 +1,46 @@
+{
+  "name": "raxa",
+  "version": "0.1.0",
+  "description": "",
+  "main": "-",
+  "author": "Rasmus Eneman <rasmus@eneman.eu>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@types/hapi": "^16.0.0",
+    "@types/jest": "19.2.2",
+    "@types/joi": "^10.0.1",
+    "@types/node": "7.0.12",
+    "@types/q-io": "0.0.29",
+    "babel-polyfill": "^6.9.1",
+    "graphql": "^0.9.1",
+    "graphql-server-hapi": "^0.6.0",
+    "graphql-type-json": "^0.1.4",
+    "graphql-verified": "^0.8.4",
+    "hapi": "^13.5.0",
+    "joi": "^10.3.1",
+    "nedb-persist": "^0.1.2",
+    "nes": "^6.2.1",
+    "post-material": "^0.1.0",
+    "react": "^15.2.1",
+    "react-dom": "^15.2.1",
+    "react-mdl": "^1.6.1",
+    "react-redux": "^4.4.5",
+    "redux": "^3.6.0",
+    "redux-decorated": "^0.2.0",
+    "redux-persist": "^4.6.0",
+    "source-map-support": "^0.4.1"
+  },
+  "devDependencies": {
+    "tscomp": "dev"
+  },
+  "tscomp": {
+    "mode": "server"
+  },
+  "scripts": {
+    "build": "tscomp build",
+    "test": "tscomp test",
+    "eject": "tscomp eject",
+    "start": "tscomp start",
+    "watch": "tscomp watch"
+  }
+}

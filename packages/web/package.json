@@ -1,0 +1,25 @@
+{
+  "name": "raxa-web",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/jest": "19.2.2",
+    "@types/react": "15.0.20",
+    "@types/react-dom": "0.14.23",
+    "@types/webpack": "2.2.13",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {
+    "tscomp": "dev"
+  },
+  "tscomp": {
+    "mode": "browser"
+  },
+  "scripts": {
+    "build": "tscomp build",
+    "test": "tscomp test --env=jsdom",
+    "eject": "tscomp eject",
+    "start": "tscomp start"
+  }
+}

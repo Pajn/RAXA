@@ -1,0 +1,27 @@
+{
+  "name": "raxa-common",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Rasmus Eneman <rasmus@eneman.eu>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@types/jest": "19.2.2",
+    "@types/webpack": "2.2.13",
+    "eventemitter2": "^2.0.0",
+    "redux-decorated": "^0.2.0-dev.3"
+  },
+  "devDependencies": {
+    "tscomp": "dev"
+  },
+  "tscomp": {
+    "mode": "lib"
+  },
+  "scripts": {
+    "build": "tscomp build",
+    "test": "tscomp test",
+    "eject": "tscomp eject",
+    "watch": "tscomp watch"
+  },
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts"
+}
