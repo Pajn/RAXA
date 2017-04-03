@@ -2,9 +2,12 @@ import {GraphQlDevice} from 'raxa-common/lib/entities'
 import * as React from 'react'
 import {InjectedGraphQLProps, compose, gql, graphql} from 'react-apollo/lib'
 import {FormHelper} from 'react-form-helper'
+import {List, ListSubHeader} from 'react-toolbox/lib/list'
 import {StatusView} from '../properties/status'
 import {PropertyView} from '../properties/property'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
+import {SettingInput} from '../ui/setting-input'
+import {ListItem} from '../ui/list'
 
 export type DeviceSettingsProps = {}
 export type GraphqlData = {
@@ -41,20 +44,19 @@ export const DeviceSettingsView = ({data}: PrivateDeviceSettingsProps) =>
   <DeviceList
     data={data}
     getItems={data => data.devices as any}
-    renderItem={(device, activate) =>
-      <li onClick={activate}>
-        {device.name}
-      </li>
-    }
+    renderItem={device => <ListItem caption={device.name} />}
     renderActiveItem={device =>
-      <div>
-        {device.name}
+      <List>
+        <div>
+          {device.name}
+        </div>
         <div>
           type: {device.deviceClass.name}
         </div>
-        <h5>Properties</h5>
+        <ListSubHeader caption='Properties' />
         <FormHelper
           value={device}
+          inputComponent={SettingInput}
           fields={[
             {
               path: ['name'],
@@ -70,21 +72,19 @@ export const DeviceSettingsView = ({data}: PrivateDeviceSettingsProps) =>
           onSave={() => {}}
           saveButton='Save'
         />
-        Status
-        <ul>
-          {device.status && device.status.map(status =>
-            <li>
-              <StatusView
-                label={status.statusId}
-                deviceId={device.id}
-                interfaceId={status.interfaceId}
-                statusId={status.statusId}
-                value={status.value}
-              />
-            </li>
-          )}
-        </ul>
-      </div>
+        <ListSubHeader caption='Status' />
+        {device.status && device.status.map(status =>
+          <li>
+            <StatusView
+              label={status.statusId}
+              deviceId={device.id}
+              interfaceId={status.interfaceId}
+              statusId={status.statusId}
+              value={status.value}
+            />
+          </li>
+        )}
+      </List>
     }
   />
 

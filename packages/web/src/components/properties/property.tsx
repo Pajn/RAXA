@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {Property} from 'raxa-common'
+import {SettingInput, SettingValue, SettingCheckbox} from '../ui/setting-input'
 
 export type PropertyProps = ModifyablePropertyProps
 export type ReadonlyPropertyProps = {
@@ -13,9 +14,11 @@ export type ModifyablePropertyProps = ReadonlyPropertyProps & {
 }
 
 const GenericDisplay = ({property, value}: ReadonlyPropertyProps) =>
-  <span>
-    {value}{property.unit && ` ${property.unit}`}
-  </span>
+  <SettingValue
+    label={property.name || property.id}
+    value={value}
+    unit={property.unit}
+  />
 
 const NumberInput = ({property, value, onChange}: PropertyProps) =>
   (property.min! + property.max!)
@@ -31,19 +34,23 @@ const NumberInput = ({property, value, onChange}: PropertyProps) =>
           {value}{property.unit && ` ${property.unit}`}
         </span>
       </div>
-    : <input
+    : <SettingInput
+        label={property.name || property.id}
         type='number'
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={onChange}
         min={property.min}
         max={property.max}
       />
 
 const types = {
   boolean(props: PropertyProps) {
-    return props.property.modifiable
-      ? <input type='checkbox' value={props.value} onChange={e => props.onChange(e.target.value)} />
-      : <input type='checkbox' value={props.value} disabled />
+    return <SettingCheckbox
+      label={props.property.name || props.property.id}
+      value={props.value}
+      onChange={props.onChange}
+      disabled={!props.property.modifiable}
+    />
   },
   integer(props: PropertyProps) {
     return props.property.modifiable
@@ -57,23 +64,17 @@ const types = {
   },
   string(props: PropertyProps) {
     return props.property.modifiable
-      ? <input value={props.value} onChange={e => props.onChange(e.target.value)} />
+      ? <SettingInput
+          label={props.property.name || props.property.id}
+          value={props.value}
+          onChange={props.onChange}
+        />
       : <GenericDisplay {...props} />
   },
 }
 
-export const PropertyView = ({label, ...props}: PropertyProps) => {
+export const PropertyView = (props: PropertyProps) => {
   const Component = types[props.property.type]
 
-  if (label) {
-    return (
-      <div>
-        <label>
-          <span style={{fontWeight: 500}}>{label} </span>
-          <Component {...props} />
-        </label>
-      </div>
-    )
-  }
-  else return <Component {...props} />
+  return <Component {...props} />
 }

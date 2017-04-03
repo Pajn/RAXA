@@ -20,7 +20,6 @@ export const withPushState = ({onBack}: {onBack: (ownProps: any) => void}) => Wr
       isActiveState = false
 
       pushState = (state: State<any>) => {
-        console.log('pushState', state)
         this.isActiveState = true
         this.state.state.unshift(state)
         history.pushState(state.data, state.title, state.url)

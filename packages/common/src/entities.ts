@@ -117,6 +117,7 @@ export interface Modification {
 }
 
 export interface Property {
+  id: string
   type: ValueType
   name?: string
   shortDescription?: string

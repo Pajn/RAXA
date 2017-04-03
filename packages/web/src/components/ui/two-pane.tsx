@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {withMedia} from 'react-with-media'
 import {compose} from 'recompose'
+import {Row} from 'styled-material/dist/src/layout'
 
 export type TwoPaneProps = {
   open: boolean
@@ -15,8 +16,8 @@ export const enhance = compose(
 )
 
 export const TwoPaneView = ({open, isMobile, children}: PrivateTwoPaneProps) =>
-  <div>
+  <Row>
     {isMobile ? children[open ? 1 : 0] : children}
-  </div>
+  </Row>
 
 export const TwoPane = enhance(TwoPaneView) as React.ComponentClass<TwoPaneProps>

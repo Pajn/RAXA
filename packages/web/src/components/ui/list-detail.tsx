@@ -11,7 +11,7 @@ import {withPushState, WithPushStateProps} from './with-push-state'
 export type ListDetailProps<E, T> = {
   data?: T & GraphQLDataProps
   getItems: (data: T & GraphQLDataProps) => Array<E>
-  renderItem: (item: E, activate: () => void) => JSX.Element
+  renderItem: (item: E, props: {isActive: boolean, activate: () => void}) => JSX.Element
   renderActiveItem: (item: E) => JSX.Element
 }
 
@@ -27,17 +27,31 @@ const enhance = compose(
 
 export const ListDetailView = ({data, getItems, renderItem, renderActiveItem, activeItem, setActive, pushState}: PrivateListDetailProps) =>
   <TwoPane open={!!activeItem}>
-    <List>
+    <List selectable>
       {!data || data.loading
         ? <span>loading</span>
-        : getItems(data).map(item =>
-            <ListItem>
-              {renderItem(item, () => {
-                pushState({data: item, title: ''})
-                setActive(item)
-              })}
-            </ListItem>
-          )
+        : getItems(data).map(item => {
+            const activate = () => {
+              pushState({data: item, title: ''})
+              setActive(item)
+            }
+            const child = renderItem(item, {
+              activate,
+              isActive: item === activeItem,
+            })
+
+            if (!child) return child
+            const c = child as React.ReactElement<any>
+            if (c.type === ListItem) {
+              return React.cloneElement(c, {
+                selected: c.props.selected === undefined
+                  ? item === activeItem
+                  : c.props.selected,
+                onClick: c.props.onClick || activate,
+              })
+            }
+            return child
+          })
       }
     </List>
     <Column style={{flex: 1}}>

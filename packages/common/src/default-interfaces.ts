@@ -1,11 +1,12 @@
-export const defaultInterfaces = {
+import {Interface} from '../lib/entities'
+
+export const defaultInterfaces: {[id: string]: Interface} = {
   Light: {
     id: 'Light',
     status: {
       on: {
         id: 'on',
-        interfaceId: 'Light',
-        type: 'boolean' as 'boolean',
+        type: 'boolean',
         modifiable: true,
         defaultValue: false,
       },
@@ -16,8 +17,7 @@ export const defaultInterfaces = {
     status: {
       level: {
         id: 'level',
-        interfaceId: 'Dimmer',
-        type: 'integer' as 'integer',
+        type: 'integer',
         modifiable: true,
         max: 100,
         min: 0,
@@ -31,8 +31,7 @@ export const defaultInterfaces = {
     status: {
       color: {
         id: 'color',
-        interfaceId: 'RGB',
-        type: 'object' as 'object',
+        type: 'object',
         modifiable: true,
         defaultValue: {
           red: 0,
@@ -42,19 +41,19 @@ export const defaultInterfaces = {
         properties: {
           red: {
             id: 'red',
-            type: 'integer' as 'integer',
+            type: 'integer',
             min: 0,
             max: 255,
           },
           green: {
             id: 'green',
-            type: 'integer' as 'integer',
+            type: 'integer',
             min: 0,
             max: 255,
           },
           blue: {
             id: 'blue',
-            type: 'integer' as 'integer',
+            type: 'integer',
             min: 0,
             max: 255,
           },
@@ -67,8 +66,7 @@ export const defaultInterfaces = {
     status: {
       temp: {
         id: 'temp',
-        interfaceId: 'Temperature',
-        type: 'number' as 'number',
+        type: 'number',
         unit: '°C',
       },
     },

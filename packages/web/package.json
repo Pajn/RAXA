@@ -13,6 +13,7 @@
     "react-apollo": "^1.0.0",
     "react-dom": "^15.4.2",
     "react-form-helper": "^0.4.2",
+    "react-toolbox": "^2.0.0-beta.7",
     "react-with-media": "^0.1.2",
     "recompose": "^0.22.0",
     "styled-components": "^1.4.4",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "flow-bin": "^0.42.0",
+    "react-toolbox-themr": "^1.0.2",
     "tscomp": "dev",
     "tslint": "^5.0.0"
   },
@@ -30,6 +32,7 @@
     "build": "tscomp build",
     "test": "tscomp test --env=jsdom",
     "eject": "tscomp eject",
-    "start": "tscomp start"
+    "start": "tscomp start",
+    "toolbox": "react-toolbox-themr"
   }
 }

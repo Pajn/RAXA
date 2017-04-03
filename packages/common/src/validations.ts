@@ -4,6 +4,7 @@ import {RaxaError, raxaError} from './errors'
 import {State} from './state'
 
 export const propertiesSchema: joi.Schema = joi.object().pattern(/^/, joi.object({
+  id: joi.string().required(),
   type: joi.string().only('string', 'integer', 'number', 'boolean', 'object').required(),
 
   optional: joi.boolean(),
