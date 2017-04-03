@@ -283,7 +283,7 @@ export default class MySensorsPlugin extends Plugin {
             node: nodeId,
             sensor,
           },
-          interfaces: [interfaces[type]],
+          interfaceIds: [interfaces[type]],
         }
 
         this.upsertDevice(device)
@@ -353,7 +353,7 @@ export default class MySensorsPlugin extends Plugin {
             node: nodeId,
             sensor,
           },
-          interfaces: [interfaces[S_TEMP]],
+          interfaceIds: [interfaces[S_TEMP]],
         }
 
         this.upsertDevice(device)

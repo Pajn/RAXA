@@ -1,10 +1,10 @@
 import nedb from 'nedb-persist'
 import {Service, actions, defaultInterfaces, DeviceClass, Interface, PluginConfiguration, Device} from 'raxa-common'
 import {DeviceState, DeviceClassState, InterfaceState, PluginState, State, StatusState} from 'raxa-common/lib/state'
+import {validateDeviceClass, validateInterface, validateDevice} from 'raxa-common/lib/validations'
 import {createReducer, updateIn, Action, action} from 'redux-decorated'
 import {Store, createStore, combineReducers} from 'redux'
 import {persistStore, autoRehydrate} from 'redux-persist'
-import {validateDeviceClass, validateInterface, validateDevice} from '../validations'
 import {PluginSupervisor} from './plugin-supervisor'
 
 const deviceReducer = createReducer<DeviceState>({})

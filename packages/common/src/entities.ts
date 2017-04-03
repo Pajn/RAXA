@@ -21,9 +21,9 @@ export interface Device {
    */
   config?: {[id: string]: any}
   /**
-   * A list with names of the Interfaces that the Device implements.
+   * A list with ids of the Interfaces that the Device implements.
    */
-  interfaces?: string[]
+  interfaceIds?: string[]
   /**
    * Variables of the device as required by the implemented interfaces.
    * Every implemented interface with variables have its own object with its variables.
@@ -40,6 +40,8 @@ export interface Device {
  */
 export interface DeviceClass {
   id: string
+  name?: string
+  shortDescription?: string
   description?: string
   /**
    * Id of the plugin that owns this DeviceClass.
@@ -52,7 +54,7 @@ export interface DeviceClass {
   /**
    * A list with names of the Interfaces that the Device created from this class implements.
    */
-  interfaces: string[]
+  interfaceIds: string[]
   /**
    * Static variables of the device as required by the implemented interfaces.
    * Every implemented interface with variables have its own object with its variables.
@@ -62,6 +64,9 @@ export interface DeviceClass {
 
 export interface Interface {
   id: string
+  name?: string
+  shortDescription?: string
+  description?: string
   /**
    * Id of the plugin that specifies this Interface.
    * undefined if specified by RAXA.
@@ -113,6 +118,9 @@ export interface Modification {
 
 export interface Property {
   type: ValueType
+  name?: string
+  shortDescription?: string
+  description?: string
 
   defaultValue?: any
   optional?: boolean
@@ -137,6 +145,29 @@ export interface PluginDefinition {
 export interface PluginConfiguration {
   id: string
   enabled: boolean
+}
+
+export type DeviceStatus = {
+  id: string
+  interfaceId: string
+  statusId: string
+  value: string
+}
+
+export interface GraphQlDevice extends Device {
+  name: string
+  deviceClass: GraphQlDeviceClass
+  interfaces: Array<GraphQlInterface>
+  status: Array<DeviceStatus>
+}
+
+export interface GraphQlDeviceClass extends DeviceClass {
+  name: string
+  interfaces: Array<GraphQlInterface>
+}
+
+export interface GraphQlInterface extends Interface {
+  name: string
 }
 
 /**

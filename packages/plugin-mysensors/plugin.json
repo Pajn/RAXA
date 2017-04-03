@@ -7,17 +7,19 @@
       "name": "Serial MySensors Gateway",
       "config": {
         "serialPort": {
-          "type": "string"
+          "type": "string",
+          "modifiable": true
         }
       },
-      "interfaces": ["MySensors Gateway"]
+      "interfaceIds": ["MySensors Gateway"]
     },
     "MySensors Sensor": {
       "id": "MySensors Sensor",
       "name": "MySensors Sensor",
       "config": {
         "gateway": {
-          "type": "string"
+          "type": "string",
+          "modifiable": true
         },
         "node": {
           "type": "integer"
@@ -26,7 +28,7 @@
           "type": "integer"
         }
       },
-      "interfaces": ["MySensors Gateway"]
+      "interfaceIds": ["MySensors Gateway"]
     }
   },
   "interfaces": {

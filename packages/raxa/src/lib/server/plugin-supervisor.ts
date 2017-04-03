@@ -1,7 +1,7 @@
 import {Awaitable, ServiceManager, Plugin, Service, Device, raxaError, Call, Modification, PluginDefinition} from 'raxa-common'
 import {ServiceImplementation} from 'raxa-common/lib/service'
+import {validateAction} from 'raxa-common/lib/validations'
 import {StorageService} from './storage'
-import {validateAction} from '../validations'
 
 class PluginManager extends ServiceManager {
   supervisor: PluginSupervisor

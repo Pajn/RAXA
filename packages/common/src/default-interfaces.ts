@@ -22,6 +22,7 @@ export const defaultInterfaces = {
         max: 100,
         min: 0,
         defaultValue: 0,
+        unit: '%',
       },
     },
   },

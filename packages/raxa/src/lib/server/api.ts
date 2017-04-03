@@ -22,7 +22,7 @@ export class ApiService extends Service {
     const plugins = this.serviceManager.runningServices.PluginSupervisor as PluginSupervisor
     const context: Context = {storage, plugins}
 
-    server.connection({port: 9000})
+    server.connection({port: 9000, routes: {cors: true}})
 
     await register(server, {
       register: graphqlHapi,

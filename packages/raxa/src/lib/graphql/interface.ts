@@ -9,6 +9,12 @@ export const InterfaceType = buildType<Interface>({
   name: 'Interface',
   fields: {
     id: {type: GraphQLString},
+    name: {
+      type: GraphQLString,
+      resolve: iface => iface.name || iface.id,
+    },
+    shortDescription: {type: GraphQLString},
+    description: {type: GraphQLString},
     pluginId: {type: GraphQLString},
     methods: {type: GraphQLJSON},
     status: {type: GraphQLJSON},
@@ -19,6 +25,15 @@ export const InterfaceType = buildType<Interface>({
 })
 
 export const interfaceQueries = buildQueries({
+  interface: {
+    type: InterfaceType,
+    validate: joi.object({
+      id: joi.string().required(),
+    }),
+    resolve(_, {id}, {storage}: Context) {
+      return storage.getState().interfaces[id]
+    },
+  },
   interfaces: {
     type: [InterfaceType],
     validate: joi.object({}),

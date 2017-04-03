@@ -9,9 +9,15 @@ export const DeviceClassType = buildType<DeviceClass>({
   name: 'DeviceClass',
   fields: {
     id: {type: GraphQLString},
+    name: {
+      type: GraphQLString,
+      resolve: deviceClass => deviceClass.name || deviceClass.id,
+    },
+    shortDescription: {type: GraphQLString},
+    description: {type: GraphQLString},
     pluginId: {type: GraphQLString},
     config: {type: GraphQLJSON},
-    interfaces: {type: [GraphQLString]},
+    interfaceIds: {type: [GraphQLString]},
     // variables?: {[interfaceId: string]: {[variableName: string]: any}};
   } as any,
   readRules: false,

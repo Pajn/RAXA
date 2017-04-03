@@ -1,4 +1,5 @@
-dist/
+packages/*/lib/
+build/
 node_modules/
 old/
 src/web/

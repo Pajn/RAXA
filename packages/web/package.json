@@ -7,11 +7,21 @@
     "@types/react": "15.0.20",
     "@types/react-dom": "0.14.23",
     "@types/webpack": "2.2.13",
+    "apollo-client": "^1.0.1",
+    "graphql-tag": "^2.0.0",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-apollo": "^1.0.0",
+    "react-dom": "^15.4.2",
+    "react-form-helper": "^0.4.2",
+    "react-with-media": "^0.1.2",
+    "recompose": "^0.22.0",
+    "styled-components": "^1.4.4",
+    "styled-material": "^0.1.9"
   },
   "devDependencies": {
-    "tscomp": "dev"
+    "flow-bin": "^0.42.0",
+    "tscomp": "dev",
+    "tslint": "^5.0.0"
   },
   "tscomp": {
     "mode": "browser"
