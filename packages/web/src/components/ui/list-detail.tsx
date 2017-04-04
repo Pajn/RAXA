@@ -1,16 +1,16 @@
 import * as React from 'react'
-import {GraphQLDataProps} from 'react-apollo/lib/graphql'
 import {compose} from 'react-apollo/lib'
+import {GraphQLDataProps} from 'react-apollo/lib/graphql'
 import withState from 'recompose/withState'
 import {Column} from 'styled-material/dist/src/layout'
-import {TwoPane} from './two-pane'
 import {List, ListItem} from './list'
-import {withPushState, WithPushStateProps} from './with-push-state'
-
+import {TwoPane} from './two-pane'
+import {WithPushStateProps, withPushState} from './with-push-state'
 
 export type ListDetailProps<E, T> = {
   data?: T & GraphQLDataProps
   getItems: (data: T & GraphQLDataProps) => Array<E>
+  getTitle: (item: E) => string
   renderItem: (item: E, props: {isActive: boolean, activate: () => void}) => JSX.Element
   renderActiveItem: (item: E) => JSX.Element
 }
@@ -25,8 +25,11 @@ const enhance = compose(
   withPushState({onBack: ({setActive}) => setActive(null)})
 )
 
-export const ListDetailView = ({data, getItems, renderItem, renderActiveItem, activeItem, setActive, pushState}: PrivateListDetailProps) =>
-  <TwoPane open={!!activeItem}>
+export const ListDetailView = ({
+  data, getItems, getTitle, renderItem, renderActiveItem,
+  activeItem, setActive, pushState,
+}: PrivateListDetailProps) =>
+  <TwoPane open={activeItem && {title: getTitle(activeItem)}} onBack={() => setActive(null)}>
     <List selectable>
       {!data || data.loading
         ? <span>loading</span>

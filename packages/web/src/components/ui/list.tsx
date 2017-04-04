@@ -1,11 +1,11 @@
 import * as React from 'react'
 import {CSSProperties} from 'react'
 import {List as ToolboxList, ListItem as ToolboxListItem} from 'react-toolbox/lib/list'
-import {withMedia} from 'react-with-media'
-import {compose} from 'recompose'
+import compose from 'recompose/compose'
+import styled from 'styled-components'
 import {materialColors} from 'styled-material/dist/src/colors'
 import {Column} from 'styled-material/dist/src/layout'
-import styled from 'styled-components'
+import {IsTouchProps, withIsTouch} from './mediaQueries'
 
 const DesktopList: React.ComponentClass<any> = styled<any>(Column)`
 `
@@ -34,13 +34,13 @@ export type ListItemProps = {
   legend?: string
   onClick?: (e: React.MouseEvent<any>) => void
   style?: CSSProperties
-  isMobile?: boolean
+  isTouch?: boolean
   selected?: boolean
   selectable?: boolean
 }
 
-export const ListItem = ({caption, legend, isMobile, ...props}: ListItemProps) =>
-  isMobile
+export const ListItem = ({caption, legend, isTouch, ...props}: ListItemProps) =>
+  isTouch
     ? <ToolboxListItem
         {...props}
         caption={caption}
@@ -55,23 +55,22 @@ export type ListProps = {
   width?: number
   selectable?: boolean
 }
-export type PrivateListProps = ListProps & {
-  isMobile: true
+export type PrivateListProps = ListProps & IsTouchProps & {
   children: any
 }
 
 export const enhance = compose(
-  withMedia('(max-width: 700px)', {name: 'isMobile'})
+  withIsTouch,
 )
 
-export const ListView = ({isMobile, width = 250, selectable, children}: PrivateListProps) =>
-  <Container isMobile={isMobile} style={isMobile ? {} : {width}}>
+export const ListView = ({isTouch, width = 250, selectable, children}: PrivateListProps) =>
+  <Container isMobile={isTouch} style={isTouch ? {} : {width}}>
     {React.Children.map(children, child => {
       if (!child) return child
       const c = child as React.ReactElement<any>
       if (c.type === ListItem) {
         return React.cloneElement(c, {
-          isMobile,
+          isTouch,
           selectable: c.props.selectable === undefined
             ? selectable
             : c.props.selectable

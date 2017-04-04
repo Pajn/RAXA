@@ -1,12 +1,18 @@
 import * as React from 'react'
 import {Checkbox} from 'react-toolbox/lib/checkbox'
-import Dialog from 'react-toolbox/lib/dialog'
 import {Input} from 'react-toolbox/lib/input'
 import {ListCheckbox, ListItem} from 'react-toolbox/lib/list'
-import {withMedia} from 'react-with-media'
+import {Slider} from 'react-toolbox/lib/slider'
 import compose from 'recompose/compose'
-import withHandlers from 'recompose/withHandlers'
-import withState from 'recompose/withState'
+import {DialogInput} from './dialog-input'
+import {IsMobileProps, withIsMobile} from './mediaQueries'
+
+const asPercent = (min: number, max: number, value: number) =>
+  Math.round((100 * (+value - min)) / (max - min))
+
+export const enhance = compose(
+  withIsMobile,
+)
 
 export type SettingInputProps = SettingValueProps & {
   type?: 'number'
@@ -15,70 +21,28 @@ export type SettingInputProps = SettingValueProps & {
   max?: number
   min?: number
 }
-export type PrivateSettingInputProps = SettingInputProps & {
-  isMobile: true
+export type PrivateSettingInputProps = SettingInputProps & IsMobileProps & {
   children: any
-  dialogActive: boolean
-  showDialog: () =>  void
-  hideDialog: () =>  void
-
-  tmpValue: string
-  setTmpValue: (value: string) =>  void
 }
-
-export const enhanceInput = compose(
-  withMedia('(max-width: 700px)', {name: 'isMobile'}),
-  withState('dialogActive', 'setShowDialog', false),
-  withState('tmpValue', 'setTmpValue', null),
-  withHandlers({
-    showDialog: props => () => {
-      props.setTmpValue(props.value)
-      props.setShowDialog(true)
-    },
-    hideDialog: props => () => props.setShowDialog(false),
-  })
-)
 
 export const SettingInputView = ({
   label, type, value, onChange, unit,
-  isMobile, dialogActive, showDialog, hideDialog, tmpValue, setTmpValue
+  isMobile,
 }: PrivateSettingInputProps) =>
   isMobile
-    ? <ListItem
-        caption={label}
-        leftActions={[]}
-        legend={unit ? `${value} ${unit}`: `${value}`}
-        onClick={showDialog}
-        rightActions={[
-          <Dialog
-            active={dialogActive}
-            onEscKeyDown={hideDialog}
-            onOverlayClick={hideDialog}
-
-            type='small'
-            title={label}
-            actions={[
-              {
-                label: 'Cancel',
-                onClick: hideDialog,
-              },
-              {
-                primary: true,
-                label: 'Ok',
-                onClick: () => {
-                  onChange(tmpValue)
-                  hideDialog()
-                },
-              },
-            ]}
-          >
-            <Input
-              type={type}
-              value={tmpValue}
-              onChange={setTmpValue}
-            />
-          </Dialog>
-        ]}
+    ? <DialogInput
+        label={label}
+        value={value}
+        onChange={onChange}
+        unit={unit}
+        legend={unit ? `${value} ${unit}` : `${value}`}
+        children={(value, setValue) =>
+          <Input
+            type={type}
+            value={value}
+            onChange={setValue}
+          />
+        }
       />
     : <Input
         label={label}
@@ -87,7 +51,7 @@ export const SettingInputView = ({
         onChange={onChange}
       />
 
-export const SettingInput = enhanceInput(SettingInputView) as React.ComponentClass<SettingInputProps>
+export const SettingInput = enhance(SettingInputView) as React.ComponentClass<SettingInputProps>
 
 export type SettingCheckboxProps = {
   label: string
@@ -95,14 +59,9 @@ export type SettingCheckboxProps = {
   onChange: (newValue: boolean) => void
   disabled?: boolean
 }
-export type PrivateSettingCheckboxProps = SettingCheckboxProps & {
-  isMobile: true
+export type PrivateSettingCheckboxProps = SettingCheckboxProps & IsMobileProps & {
   children: any
 }
-
-export const enhanceCheckbox = compose(
-  withMedia('(max-width: 700px)', {name: 'isMobile'})
-)
 
 export const SettingCheckboxView = ({
   label, value, onChange, disabled,
@@ -122,40 +81,80 @@ export const SettingCheckboxView = ({
         disabled={disabled}
       />
 
-export const SettingCheckbox = enhanceCheckbox(SettingCheckboxView) as React.ComponentClass<SettingCheckboxProps>
+export const SettingCheckbox = enhance(SettingCheckboxView) as React.ComponentClass<SettingCheckboxProps>
+
+export type SettingSliderProps = SettingValueProps & {
+  onChange: (newValue: any) => void
+
+  max: number
+  min: number
+}
+export type PrivateSettingSliderProps = SettingSliderProps & IsMobileProps & {
+  children: any
+}
+
+export const SettingSliderView = ({
+  label, value, onChange, unit, max, min,
+  isMobile,
+}: PrivateSettingSliderProps) =>
+  isMobile
+    ? <DialogInput
+        label={label}
+        value={+value}
+        onChange={onChange}
+        unit={unit}
+        legend={unit
+          ? `${value} ${unit}`
+          : `${asPercent(min, max, +value)} %`
+        }
+        children={(value, setValue) =>
+          <div>
+            <Slider
+              value={value}
+              onChange={setValue}
+              max={max}
+              min={min}
+            />
+            {unit
+              ? `${value} ${unit}`
+              : `${asPercent(min, max, +value)} %`
+            }
+          </div>
+        }
+      />
+    : <div>
+        <label>
+          <span>{label}</span>
+          <span>
+            <Slider
+              value={+value}
+              onChange={onChange}
+              max={max}
+              min={min}
+            />
+          </span>
+        </label>
+      </div>
+
+export const SettingSlider = enhance(SettingSliderView) as React.ComponentClass<SettingSliderProps>
 
 export type SettingValueProps = {
   label: string
   value: any
   unit?: string
 }
-export type PrivateSettingValueProps = SettingValueProps & {
-  isMobile: true
+export type PrivateSettingValueProps = SettingValueProps & IsMobileProps & {
   children: any
 }
 
-export const enhanceValue = compose(
-  withMedia('(max-width: 700px)', {name: 'isMobile'})
-)
-
 export const SettingValueView = ({
   label, value, unit,
-  isMobile
 }: PrivateSettingValueProps) =>
-  isMobile
-    ? <ListItem
-        caption={label}
-        legend={unit ? `${value} ${unit}`: `${value}`}
-        leftActions={[]}
-        rightActions={[]}
-      />
-    : <div>
-        <label>
-          <span>{label}</span>
-          <span>
-            {value}{unit && ` ${unit}`}
-          </span>
-        </label>
-      </div>
+  <ListItem
+    caption={label}
+    legend={unit ? `${value} ${unit}` : `${value}`}
+    leftActions={[]}
+    rightActions={[]}
+  />
 
-export const SettingValue = enhanceValue(SettingValueView) as React.ComponentClass<SettingValueProps>
+export const SettingValue = SettingValueView as React.StatelessComponent<SettingValueProps>

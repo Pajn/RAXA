@@ -1,6 +1,6 @@
-import * as React from 'react'
 import {Property} from 'raxa-common'
-import {SettingInput, SettingValue, SettingCheckbox} from '../ui/setting-input'
+import * as React from 'react'
+import {SettingCheckbox, SettingInput, SettingSlider, SettingValue} from '../ui/setting-input'
 
 export type PropertyProps = ModifyablePropertyProps
 export type ReadonlyPropertyProps = {
@@ -22,23 +22,20 @@ const GenericDisplay = ({property, value}: ReadonlyPropertyProps) =>
 
 const NumberInput = ({property, value, onChange}: PropertyProps) =>
   (property.min! + property.max!)
-    ? <div>
-        <input
-          type='range'
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          min={property.min}
-          max={property.max}
-        />
-        <span>
-          {value}{property.unit && ` ${property.unit}`}
-        </span>
-      </div>
-    : <SettingInput
+    ? <SettingSlider
         label={property.name || property.id}
-        type='number'
         value={value}
         onChange={onChange}
+        unit={property.unit}
+        min={property.min!}
+        max={property.max!}
+      />
+    : <SettingInput
+        label={property.name || property.id}
+        type="number"
+        value={value}
+        onChange={onChange}
+        unit={property.unit}
         min={property.min}
         max={property.max}
       />
@@ -68,6 +65,7 @@ const types = {
           label={props.property.name || props.property.id}
           value={props.value}
           onChange={props.onChange}
+          unit={props.property.unit}
         />
       : <GenericDisplay {...props} />
   },

@@ -35,8 +35,14 @@ export const DeviceType = buildType<Device>({
   fields: {
     id: {type: GraphQLString},
     name: {type: GraphQLString},
-    pluginId: {type: GraphQLString},
-    deviceClassId: {type: GraphQLString},
+    pluginId: {
+      type: GraphQLString,
+      isInput: false,
+    },
+    deviceClassId: {
+      type: GraphQLString,
+      isInput: false,
+    },
     deviceClass: {
       type: DeviceClassType,
       validate: joi.object({}),
@@ -45,7 +51,10 @@ export const DeviceType = buildType<Device>({
       },
     },
     config: {type: GraphQLJSON},
-    interfaceIds: {type: [GraphQLString]},
+    interfaceIds: {
+      type: [GraphQLString],
+      isInput: false,
+    },
     interfaces: {
       type: [InterfaceType],
       validate: joi.object({}),
@@ -101,10 +110,14 @@ export const deviceMutations = buildMutations({
       device: joi.object({
         id: joi.string().optional(),
         name: joi.string().required(),
-        pluginId: joi.string().required(),
-        deviceClassId: joi.string().required(),
+        pluginId: joi.string(),
+        deviceClassId: joi.string(),
         config: joi.object(),
-      }),
+      })
+        .xor('id', 'pluginId')
+        .xor('id', 'deviceClassId')
+        .and('pluginId', 'deviceClassId')
+      ,
     }),
     args: {
       device: {type: DeviceType},

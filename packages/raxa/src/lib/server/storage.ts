@@ -1,10 +1,10 @@
 import nedb from 'nedb-persist'
-import {Service, actions, defaultInterfaces, DeviceClass, Interface, PluginConfiguration, Device} from 'raxa-common'
-import {DeviceState, DeviceClassState, InterfaceState, PluginState, State, StatusState} from 'raxa-common/lib/state'
-import {validateDeviceClass, validateInterface, validateDevice} from 'raxa-common/lib/validations'
-import {createReducer, updateIn, Action, action} from 'redux-decorated'
-import {Store, createStore, combineReducers} from 'redux'
-import {persistStore, autoRehydrate} from 'redux-persist'
+import {Device, DeviceClass, Interface, PluginConfiguration, Service, actions, defaultInterfaces} from 'raxa-common'
+import {DeviceClassState, DeviceState, InterfaceState, PluginState, State, StatusState} from 'raxa-common/lib/state'
+import {validateDevice, validateDeviceClass, validateInterface} from 'raxa-common/lib/validations'
+import {Store, combineReducers, createStore} from 'redux'
+import {Action, action, createReducer, updateIn} from 'redux-decorated'
+import {autoRehydrate, persistStore} from 'redux-persist'
 import {PluginSupervisor} from './plugin-supervisor'
 
 const deviceReducer = createReducer<DeviceState>({})
@@ -14,7 +14,11 @@ const deviceReducer = createReducer<DeviceState>({})
   }))
   .when(actions.deviceUpdated, (state, {device}) => ({
     ...state,
-    [device.id!]: device,
+    [device.id!]: {
+      ...state[device.id!],
+      name: device.name,
+      config: Object.assign({}, state[device.id!].config, device.config),
+    },
   }))
   .build()
 
@@ -120,6 +124,16 @@ export class StorageService extends Service {
 
     this.log.info(`Upsert device ${device.id}`)
     const state = this.getState()
+
+    if (device.id) {
+      const oldDevice = state.devices[device.id]
+      Object.assign(device, {
+        pluginId: oldDevice.pluginId,
+        deviceClassId: oldDevice.deviceClassId,
+        interfaceIds: oldDevice.interfaceIds,
+      })
+    }
+
     device = validateDevice(state, device)
 
     if (device.id) {

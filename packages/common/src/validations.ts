@@ -66,7 +66,7 @@ export function validateDevice(state: State, device: Device): Device {
     throw raxaError({type: 'missingDeviceClass', deviceClassId: device.deviceClassId})
   }
   if (!deviceClass.config) {
-    if (device.config) throw 'no config allowed'
+    if (device.config) throw new Error('no config allowed')
     return device
   }
   const joiSchema = joi.object({
@@ -75,7 +75,7 @@ export function validateDevice(state: State, device: Device): Device {
     pluginId: joi.string().required(),
     deviceClassId: joi.string().required(),
     config: propertiesToJoi(deviceClass.config),
-    interfaces: joi.array().items(joi.string().required()),
+    interfaceIds: joi.array().items(joi.string().required()),
   })
   const result = joi.validate(device, joiSchema)
   if (result.error) {

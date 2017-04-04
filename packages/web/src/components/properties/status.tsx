@@ -1,7 +1,7 @@
-import * as React from 'react'
-import {compose} from 'recompose'
-import {InjectedGraphQLProps, gql, graphql} from 'react-apollo/lib'
 import {Interface, Modification} from 'raxa-common'
+import * as React from 'react'
+import {InjectedGraphQLProps, gql, graphql} from 'react-apollo/lib'
+import compose from 'recompose/compose'
 import {PropertyView} from './property'
 
 export type StatusProps = {
