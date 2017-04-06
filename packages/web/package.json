@@ -3,21 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/history": "^4.5.0",
     "@types/jest": "19.2.2",
     "@types/react": "15.0.20",
     "@types/react-dom": "0.14.23",
+    "@types/react-router": "^4.0.3",
+    "@types/react-router-dom": "^4.0.3",
     "@types/recompose": "^0.22.0",
     "@types/webpack": "2.2.13",
     "apollo-client": "^1.0.1",
     "deep-equal": "^1.0.1",
+    "flexbox-react": "^4.3.1",
     "graphql-tag": "^2.0.0",
+    "history": "^4.6.1",
     "react": "^15.4.2",
     "react-apollo": "^1.0.0",
     "react-dom": "^15.4.2",
     "react-form-helper": "^0.4.2",
+    "react-redux": "^5.0.3",
+    "react-router": "^4.0.0",
+    "react-router-dom": "^4.0.0",
     "react-toolbox": "^2.0.0-beta.7",
     "react-with-media": "^0.1.2",
     "recompose": "^0.22.0",
+    "redux": "^3.6.0",
+    "redux-decorated": "^0.2.0",
+    "redux-thunk": "^2.2.0",
     "styled-components": "^1.4.4",
     "styled-material": "^0.1.9"
   },
@@ -36,5 +47,17 @@
     "eject": "tscomp eject",
     "start": "tscomp start",
     "toolbox": "react-toolbox-themr"
+  },
+  "reactToolbox": {
+    "customProperties": {
+      "animation-duration": "0.3s",
+      "color-accent": "var(--palette-teal-500)",
+      "color-accent-dark": "var(--palette-teal-700)",
+      "color-primary": "var(--palette-purple-500)",
+      "color-primary-light": "var(--palette-purple-100)",
+      "color-primary-dark": "var(--palette-purple-700)",
+      "color-primary-contrast": "var(--color-dark-contrast)",
+      "color-accent-contrast": "var(--color-dark-contrast)"
+    }
   }
 }

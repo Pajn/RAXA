@@ -1,8 +1,8 @@
 import {GraphQLString} from 'graphql'
 import GraphQLJSON from 'graphql-type-json'
-import {buildQueries, buildMutations, buildType} from 'graphql-verified'
+import {buildMutations, buildQueries, buildType} from 'graphql-verified'
 import * as joi from 'joi'
-import {Device, DeviceStatus, Call, Modification} from 'raxa-common'
+import {Call, Device, DeviceStatus, Modification} from 'raxa-common'
 import {Context} from './context'
 import {DeviceClassType} from './device-class'
 import {InterfaceType} from './interface'
@@ -19,8 +19,8 @@ export const DeviceStatusType = buildType<DeviceStatus>({
   writeRules: false,
 })
 
-function flatMap<T, U>(array: T[], mapFunc: (x: T) => U[]) : U[] {
-  return array.reduce((cumulus: U[], next: T) => [...mapFunc(next), ...cumulus], <U[]> [])
+function flatMap<T, U>(array: Array<T>, mapFunc: (x: T) => Array<U>): Array<U> {
+  return array.reduce((cumulus: Array<U>, next: T) => [...mapFunc(next), ...cumulus], [] as Array<U>)
 }
 
 function getValue<T, A extends keyof T, B extends keyof T[A], C extends keyof T[A][B]>(object: T, path: [A, B, C]): T[A][B][C]
@@ -70,7 +70,7 @@ export const DeviceType = buildType<Device>({
       }),
       resolve(device: Device, {interfaceIds: specifiedInterfaces}, {storage}: Context) {
         const state = storage.getState()
-        const interfaces = (specifiedInterfaces as string[]) || device.interfaceIds
+        const interfaces = (specifiedInterfaces as Array<string>) || device.interfaceIds
         return interfaces && flatMap(interfaces, interfaceId => {
           const iface = state.interfaces[interfaceId]
           if (!iface.status) return []
@@ -94,6 +94,15 @@ export const DeviceType = buildType<Device>({
 })
 
 export const deviceQueries = buildQueries({
+  device: {
+    type: DeviceType,
+    validate: joi.object({
+      id: joi.string().required(),
+    }),
+    resolve(_, {id}, {storage}: Context) {
+      return storage.getState().devices[id]
+    },
+  },
   devices: {
     type: [DeviceType],
     validate: joi.object({}),
@@ -124,11 +133,11 @@ export const deviceMutations = buildMutations({
     },
     writeRules: false,
     async resolve(_, {device}: {device: Device}, {storage}: Context) {
-      storage.upsertDevice(device)
+      return storage.upsertDevice(device)
     },
   },
   callDevice: {
-    type: DeviceType,
+    type: DeviceStatusType,
     validate: joi.object({
       deviceId: joi.string(),
       interfaceId: joi.string(),
@@ -138,10 +147,14 @@ export const deviceMutations = buildMutations({
     writeRules: false,
     async resolve(_, call: Call, {plugins}: Context) {
       plugins.callDevice(call)
+      const state = storage.getState()
+      return state.status[modification.deviceId] &&
+        state.status[modification.deviceId][modification.interfaceId] &&
+        state.status[modification.deviceId][modification.interfaceId][modification.statusId]
     },
   },
   setDeviceStatus: {
-    type: DeviceType,
+    type: DeviceStatusType,
     validate: joi.object({
       deviceId: joi.string(),
       interfaceId: joi.string(),
@@ -149,8 +162,12 @@ export const deviceMutations = buildMutations({
       value: joi.string(),
     }),
     writeRules: false,
-    async resolve(_, modification: Modification, {plugins}: Context) {
-      plugins.setDeviceStatus(modification)
+    async resolve(_, modification: Modification, {plugins, storage}: Context) {
+      await plugins.setDeviceStatus(modification)
+      const state = storage.getState()
+      return state.status[modification.deviceId] &&
+        state.status[modification.deviceId][modification.interfaceId] &&
+        state.status[modification.deviceId][modification.interfaceId][modification.statusId]
     },
   },
 })

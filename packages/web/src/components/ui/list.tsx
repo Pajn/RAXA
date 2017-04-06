@@ -1,22 +1,32 @@
+import {isClick} from 'filter-key'
+import Flexbox from 'flexbox-react'
 import * as React from 'react'
 import {CSSProperties} from 'react'
 import {List as ToolboxList, ListItem as ToolboxListItem} from 'react-toolbox/lib/list'
 import compose from 'recompose/compose'
 import styled from 'styled-components'
 import {materialColors} from 'styled-material/dist/src/colors'
-import {Column} from 'styled-material/dist/src/layout'
 import {IsTouchProps, withIsTouch} from './mediaQueries'
 
-const DesktopList: React.ComponentClass<any> = styled<any>(Column)`
+const DesktopList: React.ComponentClass<any> = styled<any>(Flexbox)`
+  flex-direction: column;
+  padding: 8px;
 `
 
-const DesktopListItem: React.ComponentClass<any> = styled<any>(Column)`
-  height: ${({isMobile}) => isMobile ? 48 : 20}px;
+const DesktopListItem: React.ComponentClass<any> = styled<any>(Flexbox)`
+  box-sizing: border-box;
+  padding: 8px 4px;
+  height: ${({isMobile}) => isMobile ? 48 : 32}px;
+  outline: none;
 
-  ${({selected}) => selected && `background-color: ${materialColors['grey-100']};`}
-
-  &:active {
-    background-color: ${materialColors['grey-100']};
+  ${({selected}) => selected
+    ? `background-color: ${materialColors['grey-200']};`
+    : `
+      &:hover,
+      &:focus {
+        background-color: ${materialColors['grey-100']};
+      }
+    `
   }
 `
 
@@ -39,14 +49,18 @@ export type ListItemProps = {
   selectable?: boolean
 }
 
-export const ListItem = ({caption, legend, isTouch, ...props}: ListItemProps) =>
+export const ListItem = ({caption, legend, isTouch, selectable, ...props}: ListItemProps) =>
   isTouch
     ? <ToolboxListItem
         {...props}
         caption={caption}
         legend={legend}
       />
-    : <DesktopListItem {...props}>
+    : <DesktopListItem {...props}
+        role={selectable && 'button'}
+        tabIndex={selectable && 0}
+        onKeyPress={selectable && props.onClick && isClick(props.onClick)}
+      >
         <div>{caption}</div>
         {legend && <div>{legend}</div>}
       </DesktopListItem>

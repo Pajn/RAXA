@@ -1,10 +1,14 @@
 import {Interface, Modification} from 'raxa-common'
 import * as React from 'react'
 import {InjectedGraphQLProps, gql, graphql} from 'react-apollo/lib'
+import {connect} from 'react-redux'
 import compose from 'recompose/compose'
+import {action} from 'redux-decorated'
+import {actions} from '../../redux-snackbar/actions'
 import {PropertyView} from './property'
 
 export type StatusProps = {
+  id: string
   deviceId: string
   interfaceId: string
   statusId: string
@@ -19,6 +23,7 @@ export type PrivateStatusProps = StatusProps & InjectedGraphQLProps<StatusGraphq
 }
 
 export const enhance = compose(
+  connect(),
   graphql(gql`
     query($interfaceId: String!) {
       interface(id: $interfaceId) {
@@ -31,12 +36,29 @@ export const enhance = compose(
     mutation($deviceId: String!, $interfaceId: String!, $statusId: String!, $value: String!) {
       setDeviceStatus(deviceId: $deviceId, interfaceId: $interfaceId, statusId: $statusId, value: $value) {
         id
+        value
       }
     }
   `, {
-    props: ({mutate}) => ({
+    props: ({mutate, ownProps: {id, dispatch}}) => ({
       setDeviceStatus(modification: Modification) {
-        return mutate({variables: modification})
+        return mutate({
+          variables: modification,
+          optimisticResponse: {
+            __typename: 'Mutation',
+            setDeviceStatus: {
+              __typename: 'DeviceStatus',
+              id,
+              value: modification.value,
+            },
+          },
+        })
+          .catch(() => {
+            dispatch(action(actions.showSnackbar, {
+              label: 'Failed to update device status',
+              type: 'warning' as 'warning',
+            }))
+          })
       }
     })
   }),

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Dialog from 'react-toolbox/lib/dialog'
+import Dialog from 'react-toolbox/lib/dialog/Dialog'
 import {ListItem} from 'react-toolbox/lib/list'
 import compose from 'recompose/compose'
 import withHandlers from 'recompose/withHandlers'
@@ -46,6 +46,7 @@ export const DialogInputView = ({
     onClick={showDialog}
     rightActions={[
       <Dialog
+        key={1}
         active={dialogActive}
         onEscKeyDown={hideDialog}
         onOverlayClick={hideDialog}

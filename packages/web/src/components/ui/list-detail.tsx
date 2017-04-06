@@ -1,65 +1,128 @@
+import Flexbox from 'flexbox-react'
+import {History, Location} from 'history'
 import * as React from 'react'
-import {compose} from 'react-apollo/lib'
 import {GraphQLDataProps} from 'react-apollo/lib/graphql'
+import {Route, matchPath, withRouter} from 'react-router'
+import compose from 'recompose/compose'
+import lifecycle from 'recompose/lifecycle'
+import mapProps from 'recompose/mapProps'
 import withState from 'recompose/withState'
-import {Column} from 'styled-material/dist/src/layout'
 import {List, ListItem} from './list'
-import {TwoPane} from './two-pane'
-import {WithPushStateProps, withPushState} from './with-push-state'
+import {IsMobileProps, withIsMobile} from './mediaQueries'
+import {Section} from './scaffold/section'
 
 export type ListDetailProps<E, T> = {
+  path: string
   data?: T & GraphQLDataProps
   getItems: (data: T & GraphQLDataProps) => Array<E>
-  getTitle: (item: E) => string
+  getSection: (item: E) => {title: string, path: string}
   renderItem: (item: E, props: {isActive: boolean, activate: () => void}) => JSX.Element
   renderActiveItem: (item: E) => JSX.Element
 }
 
-export type PrivateListDetailProps = ListDetailProps<any, any> & WithPushStateProps<any> & {
-  activeItem: any
-  setActive: (item: any) => void
+export type PrivateListDetailProps = ListDetailProps<any, any> & IsMobileProps & {
+  inList: boolean
+  items: Array<{item: any, section: {title: string, path: string}}>
+  beenInList: boolean
+  setBeenInList: (value: boolean) => void
+  history: History
+  location: Location
 }
 
 const enhance = compose(
-  withState('activeItem', 'setActive', null),
-  withPushState({onBack: ({setActive}) => setActive(null)})
+  withIsMobile,
+  withRouter,
+  mapProps(props => {
+    const inList = !!matchPath(location.pathname, {path: props.path, exact: true})
+    const inItem = !!matchPath(location.pathname, {path: props.path})
+    return {
+      ...props,
+      inItem: inItem && !inList,
+      inList: !(inItem && !inList),
+      items: props.data && !props.data.loading && props.getItems(props.data)
+        .map(item => ({item, section: props.getSection(item)}))
+    }
+  }),
+  withState('beenInList', 'setBeenInList', false),
+  lifecycle({
+    componentWillReceiveProps(nextProps: PrivateListDetailProps) {
+      const {path, isMobile, beenInList, setBeenInList, inList, items, history, location} = nextProps
+      if (isMobile && !inList && !beenInList) {
+        // Make sure that we back to to the list
+        history.replace(path)
+        history.push(location.pathname, location.state)
+        setBeenInList(true)
+      } else if (inList && !beenInList) {
+        setBeenInList(true)
+      }
+      if (inList && !isMobile && items && items.length > 0) {
+        history.replace(items[0].section.path)
+      }
+    },
+  })
 )
 
 export const ListDetailView = ({
-  data, getItems, getTitle, renderItem, renderActiveItem,
-  activeItem, setActive, pushState,
-}: PrivateListDetailProps) =>
-  <TwoPane open={activeItem && {title: getTitle(activeItem)}} onBack={() => setActive(null)}>
-    <List selectable>
-      {!data || data.loading
-        ? <span>loading</span>
-        : getItems(data).map(item => {
-            const activate = () => {
-              pushState({data: item, title: ''})
-              setActive(item)
-            }
-            const child = renderItem(item, {
-              activate,
-              isActive: item === activeItem,
-            })
+  renderItem, renderActiveItem,
+  inList, items, history, location, isMobile,
+}: PrivateListDetailProps) => {
+  const onBack = () => history.goBack()
 
-            if (!child) return child
-            const c = child as React.ReactElement<any>
-            if (c.type === ListItem) {
-              return React.cloneElement(c, {
-                selected: c.props.selected === undefined
-                  ? item === activeItem
-                  : c.props.selected,
-                onClick: c.props.onClick || activate,
+  return (
+    <Flexbox>
+      {(!isMobile || inList) &&
+        <List selectable>
+          {!items
+            ? <span>loading</span>
+            : items.map(item => {
+                const activate = () => {
+                  if (inList) {
+                    history.push(item.section.path)
+                  } else {
+                    history.replace(item.section.path)
+                  }
+                }
+                const isActive = !!matchPath(location.pathname, {path: item.section.path})
+                const child = renderItem(item.item, {
+                  activate,
+                  isActive,
+                })
+
+                if (!child) return child
+                const c = child as React.ReactElement<any>
+                if (c.type === ListItem) {
+                    return React.cloneElement(c, {
+                      selected: c.props.selected === undefined
+                        ? isActive
+                        : c.props.selected,
+                      onClick: c.props.onClick || activate,
+                    })
+                  }
+                return child
               })
-            }
-            return child
-          })
+          }
+        </List>
       }
-    </List>
-    <Column style={{flex: 1}}>
-      {activeItem && renderActiveItem(activeItem)}
-    </Column>
-  </TwoPane>
+      {(isMobile || !inList) &&
+        <Flexbox flexDirection="column" flexGrow={1}>
+          {items && items.map(item =>
+            <Route
+              location={location}
+              key={item.section.path}
+              path={item.section.path}
+              render={() =>
+                isMobile
+                  ? <Section {...item.section} onBack={onBack}>
+                      {renderActiveItem(item.item)}
+                    </Section>
+                  : renderActiveItem(item.item)
+              }
+            />
+          )}
+        </Flexbox>
+      }
+    </Flexbox>
+  )
+}
 
 export const ListDetail = enhance(ListDetailView) as <E, T>(props: ListDetailProps<E, T>) => JSX.Element
