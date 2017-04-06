@@ -105,9 +105,23 @@ export const deviceQueries = buildQueries({
   },
   devices: {
     type: [DeviceType],
-    validate: joi.object({}),
-    resolve(_, {}, {storage}: Context) {
-      return Object.values(storage.getState().devices)
+    validate: joi.object({
+      interfaceIds: joi.array().items(joi.string().required()).allow(null),
+      deviceClassIds: joi.array().items(joi.string().required()).allow(null),
+    }),
+    resolve(_, {interfaceIds, deviceClassIds}: {interfaceIds: Array<string>, deviceClassIds: Array<string>}, {storage}: Context) {
+      const state = storage.getState()
+      let devices = Object.values(state.devices)
+      if (interfaceIds) {
+        devices = devices.filter(device => {
+          const a = device.interfaceIds || state.deviceClasses[device.deviceClassId].interfaceIds
+          return a.some(id => interfaceIds.includes(id))
+        })
+      }
+      if (deviceClassIds) {
+        devices = devices.filter(device => deviceClassIds.includes(device.deviceClassId))
+      }
+      return devices
     },
   },
 })
@@ -137,7 +151,7 @@ export const deviceMutations = buildMutations({
     },
   },
   callDevice: {
-    type: DeviceStatusType,
+    type: DeviceType,
     validate: joi.object({
       deviceId: joi.string(),
       interfaceId: joi.string(),
@@ -145,12 +159,10 @@ export const deviceMutations = buildMutations({
       arguments: joi.string(),
     }),
     writeRules: false,
-    async resolve(_, call: Call, {plugins}: Context) {
+    async resolve(_, call: Call, {storage, plugins}: Context) {
       plugins.callDevice(call)
       const state = storage.getState()
-      return state.status[modification.deviceId] &&
-        state.status[modification.deviceId][modification.interfaceId] &&
-        state.status[modification.deviceId][modification.interfaceId][modification.statusId]
+      return state.devices[call.deviceId]
     },
   },
   setDeviceStatus: {

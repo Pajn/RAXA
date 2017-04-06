@@ -1,13 +1,13 @@
-import SerialPort from 'serialport'
 import {
-  actions,
-  defaultInterfaces as raxaInterfaces,
-  isStatus,
   Call,
   Device,
   Modification,
   Plugin,
+  actions,
+  defaultInterfaces as raxaInterfaces,
+  isStatus,
 } from 'raxa-common'
+import SerialPort from 'serialport'
 import {
   C_INTERNAL,
   C_PRESENTATION,
@@ -18,8 +18,8 @@ import {
   I_SKETCH_NAME,
   I_TIME,
 
-  S_DIMMER,
   S_BINARY,
+  S_DIMMER,
   S_RGB_LIGHT,
   S_TEMP,
 
@@ -69,13 +69,13 @@ function isGateway(device: Device): device is SerialGateway {
   return device.deviceClassId === 'Serial MySensors Gateway'
 }
 
-function hex(value: number) {
-  let string = ''
+function toHex(value: number) {
+  let hex = ''
   if (value < 16) {
-    string += '0'
+    hex += '0'
   }
-  string += value.toString(16)
-  return string
+  hex += value.toString(16)
+  return hex
 }
 
 function encode(destination, sensor, command, acknowledge, type, payload) {
@@ -87,7 +87,7 @@ function encode(destination, sensor, command, acknowledge, type, payload) {
 
   if (command === 4) {
     for (let i = 0; i < payload.length; i++) {
-      message += hex(payload[i])
+      message += toHex(payload[i])
     }
   } else {
     message += payload
@@ -125,9 +125,9 @@ export default class MySensorsPlugin extends Plugin {
     } else if (isStatus(modification, raxaInterfaces.RGB.status.color)) {
       return send(
         V_RGB,
-        hex(modification.value.red) +
-        hex(modification.value.green) +
-        hex(modification.value.blue)
+        toHex(modification.value.red) +
+        toHex(modification.value.green) +
+        toHex(modification.value.blue)
       )
     }
 
@@ -159,7 +159,6 @@ export default class MySensorsPlugin extends Plugin {
   }
 
   private openGateway({id, config}: SerialGateway) {
-    console.log('openGateway', JSON.stringify({id}))
     const serialPort = config.serialPort
     const port = new SerialPort(serialPort, {
       baudrate: gwBaud,
@@ -208,7 +207,7 @@ export default class MySensorsPlugin extends Plugin {
     this.log.debug('received message', message)
 
     // Decoding message
-    const [sender, sensor, command, ack, type, payload]:
+    const [sender, sensor, command, /* ack */, type, payload]:
           [number, number, number, boolean, number, string] =
         message.split(';').map((p, i) => i === 5 ? p : +p) as any
 

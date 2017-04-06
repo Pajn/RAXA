@@ -20,8 +20,9 @@
       "config": {
         "gateway": {
           "id": "gateway",
-          "type": "string",
-          "modifiable": true
+          "type": "device",
+          "modifiable": true,
+          "interfaceIds": ["MySensors Gateway"]
         },
         "node": {
           "id": "node",
@@ -32,7 +33,7 @@
           "type": "integer"
         }
       },
-      "interfaceIds": ["MySensors Gateway"]
+      "interfaceIds": []
     }
   },
   "interfaces": {

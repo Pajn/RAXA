@@ -1,5 +1,5 @@
 import * as joi from 'joi'
-import {Call, Device, DeviceClass, Interface, Modification, Property} from './entities'
+import {Call, Device, DeviceClass, Interface, Modification, ObjectProperty, Property} from './entities'
 import {RaxaError, raxaError} from './errors'
 import {State} from './state'
 
@@ -10,11 +10,12 @@ export const propertiesSchema: joi.Schema = joi.object().pattern(/^/, joi.object
   optional: joi.boolean(),
   modifiable: joi.boolean(),
 }))
-  .when(joi.ref('type'), {is: 'string', then: joi.object({
-    defaultValue: joi.string(),
-  })})
   .when(joi.ref('type'), {is: 'boolean', then: joi.object({
     defaultValue: joi.boolean(),
+  })})
+  .when(joi.ref('type'), {is: 'device', then: joi.object({
+    interfaceIds: joi.array().items(joi.string().required()),
+    deviceClassIds: joi.array().items(joi.string().required()),
   })})
   .when(joi.ref('type'), {is: 'number', then: joi.object({
     min: joi.number(),
@@ -28,6 +29,9 @@ export const propertiesSchema: joi.Schema = joi.object().pattern(/^/, joi.object
     unit: joi.string(),
     defaultValue: joi.number().integer(),
   })})
+  .when(joi.ref('type'), {is: 'string', then: joi.object({
+    defaultValue: joi.string(),
+  })})
   .when(joi.ref('type'), {is: 'object', then: joi.object({
     properties: joi.lazy(() => propertiesSchema).required(),
     defaultValue: joi.object(),
@@ -40,8 +44,8 @@ function validateProperties(error: RaxaError['type'], properties: {[id: string]:
   }
   Object.values(properties)
     .filter(prop => prop.type === 'object' && prop.defaultValue)
-    .forEach(prop => {
-      const schema = propertiesToJoi(prop.properties!)
+    .forEach((prop: ObjectProperty<any>) => {
+      const schema = propertiesToJoi(prop.properties)
       const result = joi.validate(prop.defaultValue, schema)
       if (result.error) {
         throw raxaError({type: error as any, joiError: result.error})
@@ -88,7 +92,7 @@ export function validateDevice(state: State, device: Device): Device {
 export function validateDeviceClass(state: State, deviceClass: DeviceClass) {
   validateInterfaces(state, deviceClass.interfaceIds)
   if (deviceClass.config) {
-    validateProperties('invalidDeviceClass', deviceClass.config)
+    // validateProperties('invalidDeviceClass', deviceClass.config)
   }
 }
 

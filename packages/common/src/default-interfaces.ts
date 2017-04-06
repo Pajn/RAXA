@@ -1,14 +1,15 @@
 import {Interface} from '../lib/entities'
 
-export const defaultInterfaces: {[id: string]: Interface} = {
+export const defaultInterfaces = {
   Light: {
     id: 'Light',
     status: {
       on: {
         id: 'on',
-        type: 'boolean',
+        type: 'boolean' as 'boolean',
         modifiable: true,
         defaultValue: false,
+        interfaceId: 'Light',
       },
     },
   },
@@ -17,12 +18,13 @@ export const defaultInterfaces: {[id: string]: Interface} = {
     status: {
       level: {
         id: 'level',
-        type: 'integer',
+        type: 'integer' as 'integer',
         modifiable: true,
         max: 100,
         min: 0,
         defaultValue: 0,
         unit: '%',
+        interfaceId: 'Dimmer',
       },
     },
   },
@@ -31,7 +33,7 @@ export const defaultInterfaces: {[id: string]: Interface} = {
     status: {
       color: {
         id: 'color',
-        type: 'object',
+        type: 'object' as 'object',
         modifiable: true,
         defaultValue: {
           red: 0,
@@ -41,23 +43,24 @@ export const defaultInterfaces: {[id: string]: Interface} = {
         properties: {
           red: {
             id: 'red',
-            type: 'integer',
+            type: 'integer' as 'integer',
             min: 0,
             max: 255,
           },
           green: {
             id: 'green',
-            type: 'integer',
+            type: 'integer' as 'integer',
             min: 0,
             max: 255,
           },
           blue: {
             id: 'blue',
-            type: 'integer',
+            type: 'integer' as 'integer',
             min: 0,
             max: 255,
           },
         },
+        interfaceId: 'RGB',
       },
     },
   },
@@ -66,9 +69,12 @@ export const defaultInterfaces: {[id: string]: Interface} = {
     status: {
       temp: {
         id: 'temp',
-        type: 'number',
+        type: 'number' as 'number',
         unit: '°C',
+        interfaceId: 'Temperature',
       },
     },
   },
 }
+
+export const typedInterfaces: {[id: string]: Interface} = defaultInterfaces

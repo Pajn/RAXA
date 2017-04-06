@@ -7,7 +7,7 @@ import withState from 'recompose/withState'
 
 export type DialogInputProps = {
   label: string
-  legend: string
+  legend?: string
   value: any
   unit?: string
   onChange: (newValue: any) => void
@@ -36,13 +36,13 @@ const enhance = compose(
 )
 
 export const DialogInputView = ({
-  label, value, onChange, unit,
+  label, legend, value, onChange, unit,
   dialogActive, showDialog, hideDialog, tmpValue, setTmpValue, children
 }: PrivateDialogInputProps) =>
   <ListItem
     caption={label}
     leftActions={[]}
-    legend={unit ? `${value} ${unit}` : `${value}`}
+    legend={legend || (unit ? `${value} ${unit}` : `${value}`)}
     onClick={showDialog}
     rightActions={[
       <Dialog

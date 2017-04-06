@@ -1,4 +1,4 @@
-import {Awaitable, ServiceManager, Plugin, Service, Device, raxaError, Call, Modification, PluginDefinition} from 'raxa-common'
+import {Awaitable, Call, Device, Modification, Plugin, PluginDefinition, Service, ServiceManager, raxaError} from 'raxa-common'
 import {ServiceImplementation} from 'raxa-common/lib/service'
 import {validateAction} from 'raxa-common/lib/validations'
 import {StorageService} from './storage'
@@ -30,7 +30,7 @@ export class PluginSupervisor extends Service {
     const storage = this.serviceManager.runningServices.StorageService as StorageService
     await Promise.all(
       ['mysensors']
-        .filter(plugin => !storage.getState().plugins[plugin])
+        // .filter(plugin => !storage.getState().plugins[plugin])
         .map(plugin => this.installPlugin(plugin))
     )
 
@@ -63,13 +63,13 @@ export class PluginSupervisor extends Service {
     }
 
     Object.entries(pluginDefinition.interfaces).forEach(([id, iface]) => {
-      if (id !== iface.id) throw `Invalid interface id ${id} !== ${iface.id}`
+      if (id !== iface.id) throw new Error(`Invalid interface id ${id} !== ${iface.id}`)
       iface.pluginId = name
       storage.installInterface(iface)
     })
 
     Object.entries(pluginDefinition.deviceClasses).forEach(([id, deviceClass]) => {
-      if (id !== deviceClass.id) throw `Invalid device class id ${id} !== ${deviceClass.id}`
+      if (id !== deviceClass.id) throw new Error(`Invalid device class id ${id} !== ${deviceClass.id}`)
       deviceClass.pluginId = name
       storage.installDeviceClass(deviceClass)
     })
@@ -119,7 +119,7 @@ export class PluginSupervisor extends Service {
         statusId: modification.statusId,
       })
     }
-    //todo: validate status value
+    // todo: validate status value
     const updatedDevice = await this.getPlugin(device.pluginId)
       .onDeviceStatusModified(modification, device)
     if (updatedDevice) {
@@ -136,7 +136,7 @@ export class PluginSupervisor extends Service {
     if (!iface.methods || !iface.methods[call.method]) {
       throw raxaError({type: 'missingMethod', interfaceId: call.interfaceId, method: call.method})
     }
-    //todo: validate arguments
+    // todo: validate arguments
     const updatedDevice = await this.getPlugin(device.pluginId).onDeviceCalled(call, device)
     if (updatedDevice) {
       storage.updateDevice(device)

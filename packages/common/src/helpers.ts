@@ -13,7 +13,6 @@ export function isStatus(modification: Modification, status: Status) {
   return modification.interfaceId === status.interfaceId && modification.statusId === status.id
 }
 
-
 // export function mapObjects<O extends {[id: string]: T}, T, U>(objects: O, mapper: (object: T, key: string) => U): O & {[id: string]: U} {
 //   const declaredObjects = {}
 //   Object.entries(objects).forEach(([key, object]) => {

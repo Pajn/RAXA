@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {Checkbox} from 'react-toolbox/lib/checkbox'
+import {Dropdown} from 'react-toolbox/lib/dropdown'
 import {Input} from 'react-toolbox/lib/input'
 import {ListCheckbox, ListItem} from 'react-toolbox/lib/list'
 import {Slider} from 'react-toolbox/lib/slider'
@@ -35,7 +36,6 @@ export const SettingInputView = ({
         value={value}
         onChange={onChange}
         unit={unit}
-        legend={unit ? `${value} ${unit}` : `${value}`}
         children={(value, setValue) =>
           <Input
             type={type}
@@ -82,6 +82,41 @@ export const SettingCheckboxView = ({
       />
 
 export const SettingCheckbox = enhance(SettingCheckboxView) as React.ComponentClass<SettingCheckboxProps>
+
+export type SettingDropdownProps = SettingValueProps & {
+  source: Array<{value: string, label: string}>
+  onChange: (newValue: string) => void
+}
+export type PrivateSettingDropdownProps = SettingDropdownProps & IsMobileProps & {
+  children: any
+}
+
+export const SettingDropdownView = ({
+  label, source, value, onChange,
+  isMobile,
+}: PrivateSettingDropdownProps) =>
+  isMobile
+    ? <DialogInput
+        label={label}
+        value={value}
+        onChange={onChange}
+        legend={(source.find(s => s.value === value) || {label: ''}).label}
+        children={(value, setValue) =>
+          <Dropdown
+            source={source}
+            value={value}
+            onChange={setValue}
+          />
+        }
+      />
+    : <Dropdown
+        source={source}
+        label={label}
+        value={value}
+        onChange={onChange}
+      />
+
+export const SettingDropdown = enhance(SettingDropdownView) as React.ComponentClass<SettingDropdownProps>
 
 export type SettingSliderProps = SettingValueProps & {
   onChange: (newValue: any) => void

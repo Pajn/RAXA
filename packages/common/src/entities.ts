@@ -1,5 +1,4 @@
 export type Awaitable<T> = T|Promise<T>
-export type ValueType = 'string'|'integer'|'number'|'boolean'|'object'
 export type Variable = {$ref: string}
 
 export interface Device {
@@ -23,7 +22,7 @@ export interface Device {
   /**
    * A list with ids of the Interfaces that the Device implements.
    */
-  interfaceIds?: string[]
+  interfaceIds?: Array<string>
   /**
    * Variables of the device as required by the implemented interfaces.
    * Every implemented interface with variables have its own object with its variables.
@@ -54,7 +53,7 @@ export interface DeviceClass {
   /**
    * A list with names of the Interfaces that the Device created from this class implements.
    */
-  interfaceIds: string[]
+  interfaceIds: Array<string>
   /**
    * Static variables of the device as required by the implemented interfaces.
    * Every implemented interface with variables have its own object with its variables.
@@ -116,24 +115,59 @@ export interface Modification {
   value: any
 }
 
-export interface Property {
+export interface PropertyBase {
   id: string
-  type: ValueType
   name?: string
   shortDescription?: string
   description?: string
 
-  defaultValue?: any
   optional?: boolean
   modifiable?: boolean
+}
 
-  properties?: {[id: string]: Property}
+export interface BooleanProperty extends PropertyBase {
+  type: 'boolean'
+  defaultValue?: boolean
+}
+
+export interface DeviceProperty extends PropertyBase {
+  type: 'device'
+  interfaceIds?: Array<string>
+  deviceClassIds?: Array<string>
+}
+
+export interface NumberProperty extends PropertyBase {
+  type: 'number'|'integer'
+
+  defaultValue?: number
+
   min?: number
   max?: number
   unit?: string
 }
 
-export interface Status extends Property {
+export interface ObjectProperty<T> extends PropertyBase {
+  type: 'object'
+  defaultValue?: {[prop in keyof T]: T[prop]}
+  properties?: {[id in keyof T]: Property}
+}
+
+export interface StringProperty extends PropertyBase {
+  type: 'string'
+  defaultValue?: string
+  unit?: string
+}
+
+export type Property =
+  | BooleanProperty
+  | DeviceProperty
+  | NumberProperty
+  | ObjectProperty<any>
+  | StringProperty
+export type ValueType = Property['type']
+export const valueTypes: Array<ValueType> = ['boolean', 'device', 'number', 'integer', 'object', 'string']
+
+export type Status = Property & {
   interfaceId: string
 }
 
