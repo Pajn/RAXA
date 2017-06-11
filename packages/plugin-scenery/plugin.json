@@ -1,0 +1,33 @@
+{
+  "name": "MySensors",
+  "description": "Plugin for MySensors serial gateway",
+  "deviceClasses": {
+    "Scenery": {
+      "id": "Scenery",
+      "name": "Scenery",
+      "config": {
+        "modifications": {
+          "id": "modifications",
+          "type": "array",
+          "modifiable": true,
+          "items": {
+            "type": "modification"
+          }
+        }
+      },
+      "interfaceIds": [
+        "MySensors Gateway"
+      ]
+    }
+  },
+  "interfaces": {
+    "Scenery": {
+      "id": "Scenery",
+      "methods": {
+        "set": {
+          "arguments": {}
+        }
+      }
+    }
+  }
+}

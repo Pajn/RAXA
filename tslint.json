@@ -4,13 +4,28 @@
   ],
   "rules": {
     "no-string-throw": true,
-    "no-unused-variable": [true, "react"],
+    "no-unused-variable": [
+      true,
+      "react"
+    ],
     // "align": [true, "parameters", "statements", "arguments"],
-    "align": [true, "parameters", "statements"],
+    "align": [
+      true,
+      "parameters",
+      "statements"
+    ],
     "import-spacing": true,
     "no-angle-bracket-type-assertion": true,
-    "no-consecutive-blank-lines": [true],
-    "object-literal-key-quotes": [true, "as-needed"],
-    "object-literal-shorthand": true
+    "no-consecutive-blank-lines": [
+      true
+    ],
+    "object-literal-key-quotes": [
+      true,
+      "as-needed"
+    ],
+    "object-literal-shorthand": true,
+    "quotemark": [
+      false
+    ]
   }
 }

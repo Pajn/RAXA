@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import {FormHelper, Properties as FormHelperProperties} from 'react-form-helper'
 import compose from 'recompose/compose'
 import withState from 'recompose/withState'

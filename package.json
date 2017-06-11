@@ -10,12 +10,12 @@
   },
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "lerna": "2.0.0-beta.27",
-    "tslint": "^5.0.0",
-    "tslint-config-beanloop": "^0.1.0",
-    "typescript": "^2.2.2"
+    "lerna": "^2.0.0-rc.5",
+    "prettier": "^1.4.4",
+    "tslint": "^5.4.3",
+    "tslint-config-beanloop": "0.1.0",
+    "typescript": "next"
   }
 }

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import setDisplayName from 'recompose/setDisplayName'
 import wrapDisplayName from 'recompose/wrapDisplayName'
 

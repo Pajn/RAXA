@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
 import Snackbar from 'react-toolbox/lib/snackbar/Snackbar'
 import {action} from 'redux-decorated'

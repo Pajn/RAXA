@@ -19,14 +19,28 @@ export const DeviceStatusType = buildType<DeviceStatus>({
   writeRules: false,
 })
 
-function flatMap<T, U>(array: Array<T>, mapFunc: (x: T) => Array<U>): Array<U> {
-  return array.reduce((cumulus: Array<U>, next: T) => [...mapFunc(next), ...cumulus], [] as Array<U>)
+export function flatMap<T, U>(
+  array: Array<T>,
+  mapFunc: (x: T) => Array<U>,
+): Array<U> {
+  return array.reduce(
+    (cumulus: Array<U>, next: T) => [...mapFunc(next), ...cumulus],
+    [] as Array<U>,
+  )
 }
 
-function getValue<T, A extends keyof T, B extends keyof T[A], C extends keyof T[A][B]>(object: T, path: [A, B, C]): T[A][B][C]
-function getValue<T, A extends keyof T, B extends keyof T[A]>(object: T, path: [A, B]): T[A][B]
-function getValue<T, A extends keyof T>(object: T, path: [A]): T[A]
-function getValue(object: any, path: Array<string|number>): any {
+export function getValue<
+  T,
+  A extends keyof T,
+  B extends keyof T[A],
+  C extends keyof T[A][B]
+>(object: T, path: [A, B, C]): T[A][B][C]
+export function getValue<T, A extends keyof T, B extends keyof T[A]>(
+  object: T,
+  path: [A, B],
+): T[A][B]
+export function getValue<T, A extends keyof T>(object: T, path: [A]): T[A]
+export function getValue(object: any, path: Array<string | number>): any {
   return path.reduce((object, key) => object && object[key], object)
 }
 
@@ -67,22 +81,34 @@ export const DeviceType = buildType<Device>({
       type: [DeviceStatusType],
       validate: joi.object({
         interfaceIds: joi.array().items(joi.string().required()),
+        statusIds: joi.array().items(joi.string().required()),
       }),
-      resolve(device: Device, {interfaceIds: specifiedInterfaces}, {storage}: Context) {
+      resolve(
+        device: Device,
+        {
+          interfaceIds: specifiedInterfaces,
+          statusIds: specifiedStatusIds,
+        }: {interfaceIds: Array<string>; statusIds: Array<string>},
+        {storage}: Context,
+      ) {
         const state = storage.getState()
-        const interfaces = (specifiedInterfaces as Array<string>) || device.interfaceIds
-        return interfaces && flatMap(interfaces, interfaceId => {
-          const iface = state.interfaces[interfaceId]
-          if (!iface.status) return []
-          return Object.keys(iface.status).map(statusId => ({
-            id: `${device.id}:${interfaceId}:${statusId}`,
-            interfaceId,
-            statusId,
-            value: getValue(state.status, [device.id, interfaceId, statusId]),
-          }))
-        })
+        const interfaces = specifiedInterfaces || device.interfaceIds
+        return (
+          interfaces &&
+          flatMap(interfaces, interfaceId => {
+            const iface = state.interfaces[interfaceId]
+            if (!iface.status) return []
+            const statusIds = specifiedStatusIds || Object.keys(iface.status)
+            return statusIds.map(statusId => ({
+              id: `${device.id}:${interfaceId}:${statusId}`,
+              interfaceId,
+              statusId,
+              value: getValue(state.status, [device.id, interfaceId, statusId]),
+            }))
+          })
+        )
       },
-    }
+    },
     // variables?: {
     //     [interfaceId: string]: {
     //         [variableName: string]: any;
@@ -109,17 +135,28 @@ export const deviceQueries = buildQueries({
       interfaceIds: joi.array().items(joi.string().required()).allow(null),
       deviceClassIds: joi.array().items(joi.string().required()).allow(null),
     }),
-    resolve(_, {interfaceIds, deviceClassIds}: {interfaceIds: Array<string>, deviceClassIds: Array<string>}, {storage}: Context) {
+    resolve(
+      _,
+      {
+        interfaceIds,
+        deviceClassIds,
+      }: {interfaceIds: Array<string>; deviceClassIds: Array<string>},
+      {storage}: Context,
+    ) {
       const state = storage.getState()
       let devices = Object.values(state.devices)
       if (interfaceIds) {
         devices = devices.filter(device => {
-          const a = device.interfaceIds || state.deviceClasses[device.deviceClassId].interfaceIds
+          const a =
+            device.interfaceIds ||
+            state.deviceClasses[device.deviceClassId].interfaceIds
           return a.some(id => interfaceIds.includes(id))
         })
       }
       if (deviceClassIds) {
-        devices = devices.filter(device => deviceClassIds.includes(device.deviceClassId))
+        devices = devices.filter(device =>
+          deviceClassIds.includes(device.deviceClassId),
+        )
       }
       return devices
     },
@@ -130,17 +167,17 @@ export const deviceMutations = buildMutations({
   upsertDevice: {
     type: DeviceType,
     validate: joi.object({
-      device: joi.object({
-        id: joi.string().optional(),
-        name: joi.string().required(),
-        pluginId: joi.string(),
-        deviceClassId: joi.string(),
-        config: joi.object(),
-      })
+      device: joi
+        .object({
+          id: joi.string().optional(),
+          name: joi.string().required(),
+          pluginId: joi.string(),
+          deviceClassId: joi.string(),
+          config: joi.object(),
+        })
         .xor('id', 'pluginId')
         .xor('id', 'deviceClassId')
-        .and('pluginId', 'deviceClassId')
-      ,
+        .and('pluginId', 'deviceClassId'),
     }),
     args: {
       device: {type: DeviceType},
@@ -177,9 +214,13 @@ export const deviceMutations = buildMutations({
     async resolve(_, modification: Modification, {plugins, storage}: Context) {
       await plugins.setDeviceStatus(modification)
       const state = storage.getState()
-      return state.status[modification.deviceId] &&
+      return (
+        state.status[modification.deviceId] &&
         state.status[modification.deviceId][modification.interfaceId] &&
-        state.status[modification.deviceId][modification.interfaceId][modification.statusId]
+        state.status[modification.deviceId][modification.interfaceId][
+          modification.statusId
+        ]
+      )
     },
   },
 })

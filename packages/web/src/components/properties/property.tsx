@@ -1,28 +1,55 @@
-import {BooleanProperty, DeviceProperty, NumberProperty, Property, StringProperty} from 'raxa-common'
-import * as React from 'react'
-import {SettingCheckbox, SettingInput, SettingSlider, SettingValue} from '../ui/setting-input'
+import {
+  BooleanProperty,
+  DeviceProperty,
+  NumberProperty,
+  Property,
+  StringProperty,
+} from 'raxa-common'
+import React from 'react'
+import {
+  ArrayProperty,
+  ModificationProperty,
+} from '../../../../common/lib/entities'
+import {
+  SettingCheckbox,
+  SettingInput,
+  SettingSlider,
+  SettingValue,
+} from '../ui/setting-input'
+import {ArrayInput} from './array-property'
 import {DeviceDispay, DeviceInput} from './device-property'
+import {ModificationInput} from './modification-property'
 
-export type PropertyProps<T> = ModifyablePropertyProps<T>
-export type ReadonlyPropertyProps<T> = {
+export type PropertyProps<T, V = any> = ModifyablePropertyProps<T, V>
+export type ReadonlyPropertyProps<T, V = any> = {
   property: T
-  value: any
+  value: V
   label?: string
 }
 
-export type ModifyablePropertyProps<T> = ReadonlyPropertyProps<T> & {
+export type ModifyablePropertyProps<T, V = any> = ReadonlyPropertyProps<
+  T,
+  V
+> & {
   onChange: (newValue: any) => void
 }
 
-export const GenericDisplay = ({property, value}: ReadonlyPropertyProps<Property>) =>
+export const GenericDisplay = ({
+  property,
+  value,
+}: ReadonlyPropertyProps<Property>) =>
   <SettingValue
     label={property.name || property.id}
     value={value}
     unit={(property as {unit?: string}).unit}
   />
 
-const NumberInput = ({property, value, onChange}: PropertyProps<NumberProperty>) =>
-  (property.min! + property.max!)
+const NumberInput = ({
+  property,
+  value,
+  onChange,
+}: PropertyProps<NumberProperty>) =>
+  property.min! + property.max!
     ? <SettingSlider
         label={property.name || property.id}
         value={value}
@@ -42,13 +69,18 @@ const NumberInput = ({property, value, onChange}: PropertyProps<NumberProperty>)
       />
 
 const types = {
+  array(props: PropertyProps<ArrayProperty<any>>) {
+    return <ArrayInput {...props} />
+  },
   boolean(props: PropertyProps<BooleanProperty>) {
-    return <SettingCheckbox
-      label={props.property.name || props.property.id}
-      value={props.value}
-      onChange={props.onChange}
-      disabled={!props.property.modifiable}
-    />
+    return (
+      <SettingCheckbox
+        label={props.property.name || props.property.id}
+        value={props.value}
+        onChange={props.onChange}
+        disabled={!props.property.modifiable}
+      />
+    )
   },
   device(props: PropertyProps<DeviceProperty>) {
     return props.property.modifiable
@@ -59,6 +91,9 @@ const types = {
     return props.property.modifiable
       ? <NumberInput {...props} />
       : <GenericDisplay {...props} />
+  },
+  modification(props: PropertyProps<ModificationProperty>) {
+    return <ModificationInput {...props} />
   },
   number(props: PropertyProps<NumberProperty>) {
     return props.property.modifiable

@@ -1,6 +1,6 @@
 import {isClick} from 'filter-key'
 import Flexbox from 'flexbox-react'
-import * as React from 'react'
+import React from 'react'
 import {CSSProperties} from 'react'
 import {List as ToolboxList, ListItem as ToolboxListItem} from 'react-toolbox/lib/list'
 import compose from 'recompose/compose'

@@ -1,13 +1,18 @@
 import Flexbox from 'flexbox-react'
 import {History, Location} from 'history'
-import * as React from 'react'
+import React from 'react'
 import {withRouter} from 'react-router'
 import AppBar from 'react-toolbox/lib/app_bar/AppBar'
 import {ButtonProps} from 'react-toolbox/lib/button/Button'
 import Navigation from 'react-toolbox/lib/navigation/Navigation'
 import compose from 'recompose/compose'
 import {materialColors} from 'styled-material/dist/src/colors'
-import {ContextAction, ScaffoldContext, Section, scaffoldContextType} from './context'
+import {
+  ContextAction,
+  ScaffoldContext,
+  Section,
+  scaffoldContextType,
+} from './context'
 
 export type ScaffoldProps = {
   appName: string
@@ -21,9 +26,7 @@ export type State = {
   contextActions?: Array<ContextAction>
 }
 
-const enhance = compose(
-  withRouter,
-)
+const enhance = compose(withRouter)
 
 export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
   static childContextTypes = scaffoldContextType
@@ -59,7 +62,10 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
     // }
     if (index >= 0) {
       this.setState({
-        sections: [...this.state.sections.slice(0, index), ...this.state.sections.slice(index + 1)],
+        sections: [
+          ...this.state.sections.slice(0, index),
+          ...this.state.sections.slice(index + 1),
+        ],
       })
     }
   }
@@ -73,7 +79,7 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
         sections: [
           ...this.state.sections.slice(0, index),
           newSection,
-          ...this.state.sections.slice(index + 1)
+          ...this.state.sections.slice(index + 1),
         ],
       })
     }
@@ -102,33 +108,35 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
     const activeSection = this.activeSection
 
     return (
-      <Flexbox flexDirection="column">
+      <Flexbox flexDirection="column" flex="1">
         <AppBar
           title={activeSection ? activeSection.title : appName}
           leftIcon={activeSection && 'arrow_back'}
           onLeftIconClick={activeSection && activeSection.onBack}
         >
           {contextActions &&
-            <Navigation type="horizontal" actions={contextActions.map<ButtonProps>(action => ({
-              ...action,
-              inverse: true,
-              style: {
-                margin: 0,
-                minWidth: 0,
-                color: action.disabled
-                  ? materialColors['grey-500']
-                  : undefined,
-                background: action.disabled
-                  ? 'transparent'
-                  : undefined,
-              },
-            }))} />
-          }
+            <Navigation
+              type="horizontal"
+              actions={contextActions.map<ButtonProps>(action => ({
+                ...action,
+                inverse: true,
+                style: {
+                  margin: 0,
+                  minWidth: 0,
+                  color: action.disabled
+                    ? materialColors['grey-500']
+                    : undefined,
+                  background: action.disabled ? 'transparent' : undefined,
+                },
+              }))}
+            />}
         </AppBar>
         {children}
-      </Flexbox >
+      </Flexbox>
     )
   }
 }
 
-export const Scaffold = enhance(ScaffoldView) as React.ComponentClass<ScaffoldProps>
+export const Scaffold = enhance(ScaffoldView) as React.ComponentClass<
+  ScaffoldProps
+>

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import compose from 'recompose/compose'
 import getContext from 'recompose/getContext'
 import lifecycle from 'recompose/lifecycle'

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import {Checkbox} from 'react-toolbox/lib/checkbox'
 import {Dropdown} from 'react-toolbox/lib/dropdown'
 import {Input} from 'react-toolbox/lib/input'

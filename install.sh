@@ -2,21 +2,34 @@
 
 yarn
 
-cd common
-yarn
-yarn link
-cd ..
+lerna bootstrap
 
-yarn link raxa-common
+(
+  cd packages/common
+  yarn link
+)
 
-cd plugins
-for PLUGIN in *; do
-  if [ -d "${PLUGIN}" ]; then
-    cd "${PLUGIN}"
-    yarn link
-    cd ../..
-    yarn link "raxa-plugin-${PLUGIN}"
-    cd plugins
-  fi
-done
-cd ..
+(
+  cd packages/raxa
+  yarn link raxa-common
+)
+
+(
+  cd packages/web
+  yarn link raxa-common
+)
+
+(
+  cd packages
+  for PLUGIN in plugin-*; do
+    if [ -d "${PLUGIN}" ]; then
+      (
+        cd "${PLUGIN}"
+        yarn link
+        yarn link raxa-common
+        cd ../raxa
+        yarn link "raxa-plugin-${PLUGIN}"
+      )
+    fi
+  done
+)

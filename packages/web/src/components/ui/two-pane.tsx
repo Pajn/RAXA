@@ -1,5 +1,5 @@
 import Flexbox from 'flexbox-react'
-import * as React from 'react'
+import React from 'react'
 import compose from 'recompose/compose'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 import {Section as SectionType} from './scaffold/context'

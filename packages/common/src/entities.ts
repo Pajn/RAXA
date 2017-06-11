@@ -1,4 +1,4 @@
-export type Awaitable<T> = T|Promise<T>
+export type Awaitable<T> = T | Promise<T>
 export type Variable = {$ref: string}
 
 export interface Device {
@@ -125,6 +125,12 @@ export interface PropertyBase {
   modifiable?: boolean
 }
 
+export interface ArrayProperty<T> extends PropertyBase {
+  type: 'array'
+  defaultValue?: Array<T>
+  items: Property
+}
+
 export interface BooleanProperty extends PropertyBase {
   type: 'boolean'
   defaultValue?: boolean
@@ -136,8 +142,14 @@ export interface DeviceProperty extends PropertyBase {
   deviceClassIds?: Array<string>
 }
 
+export interface ModificationProperty extends PropertyBase {
+  type: 'modification'
+  interfaceIds?: Array<string>
+  deviceClassIds?: Array<string>
+}
+
 export interface NumberProperty extends PropertyBase {
-  type: 'number'|'integer'
+  type: 'number' | 'integer'
 
   defaultValue?: number
 
@@ -149,7 +161,7 @@ export interface NumberProperty extends PropertyBase {
 export interface ObjectProperty<T> extends PropertyBase {
   type: 'object'
   defaultValue?: {[prop in keyof T]: T[prop]}
-  properties?: {[id in keyof T]: Property}
+  properties: {[id in keyof T]: Property}
 }
 
 export interface StringProperty extends PropertyBase {
@@ -159,13 +171,24 @@ export interface StringProperty extends PropertyBase {
 }
 
 export type Property =
+  | ArrayProperty<any>
   | BooleanProperty
   | DeviceProperty
+  | ModificationProperty
   | NumberProperty
   | ObjectProperty<any>
   | StringProperty
 export type ValueType = Property['type']
-export const valueTypes: Array<ValueType> = ['boolean', 'device', 'number', 'integer', 'object', 'string']
+export const valueTypes: Array<ValueType> = [
+  'array',
+  'boolean',
+  'device',
+  'modification',
+  'number',
+  'integer',
+  'object',
+  'string',
+]
 
 export type Status = Property & {
   interfaceId: string

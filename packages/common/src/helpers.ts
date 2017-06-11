@@ -1,6 +1,10 @@
 import {Device, Interface, Modification, Status} from './entities'
 
-export function createModification(device: Device, status: Status, value): Modification {
+export function createModification(
+  device: Device,
+  status: Status,
+  value,
+): Modification {
   return {
     deviceId: device.id,
     interfaceId: status.interfaceId,
@@ -10,7 +14,10 @@ export function createModification(device: Device, status: Status, value): Modif
 }
 
 export function isStatus(modification: Modification, status: Status) {
-  return modification.interfaceId === status.interfaceId && modification.statusId === status.id
+  return (
+    modification.interfaceId === status.interfaceId &&
+    modification.statusId === status.id
+  )
 }
 
 // export function mapObjects<O extends {[id: string]: T}, T, U>(objects: O, mapper: (object: T, key: string) => U): O & {[id: string]: U} {

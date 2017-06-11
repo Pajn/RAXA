@@ -9,6 +9,7 @@ export type Section = {
 export type ContextAction = {
   disabled?: boolean
   label: string
+  href?: string
   icon?: string
   onClick?: () => void
 }
@@ -28,7 +29,9 @@ export type ScaffoldContext = {
   clearContextActions: () => void
 }
 
-export const scaffoldContextType: {[p in keyof ScaffoldContext]: Validator<ScaffoldContext[p]>} = {
+export const scaffoldContextType: {
+  [p in keyof ScaffoldContext]: Validator<ScaffoldContext[p]>
+} = {
   activeSection: PropTypes.object,
 
   pushSection: PropTypes.func,

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import Dialog from 'react-toolbox/lib/dialog/Dialog'
 import {ListItem} from 'react-toolbox/lib/list'
 import compose from 'recompose/compose'
