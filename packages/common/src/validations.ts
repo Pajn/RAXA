@@ -105,40 +105,55 @@ export function validateInterface(iface: Interface) {
 function propertiesToJoi(properties: {[id: string]: Property}) {
   const joiObject = {}
   Object.entries(properties).forEach(([key, value]) => {
-    let joiRule
-
-    switch (value.type) {
-      case 'string':
-        joiRule = joi.string()
-        break
-      case 'integer':
-        joiRule = joi.number().integer()
-        break
-        // fall through
-      case 'number':
-        let numberJoiRule: joi.NumberSchema = joiRule || joi.number()
-        if (value.min !== undefined) {
-          numberJoiRule = numberJoiRule.min(value.min)
-        }
-        if (value.max !== undefined) {
-          numberJoiRule = numberJoiRule.max(value.max)
-        }
-
-        joiRule = numberJoiRule
-        break
-      case 'boolean':
-        joiRule = joi.boolean()
-        break
-    }
-
-    if (!value.optional) {
-      joiRule = joiRule.required()
-    }
-
-    joiObject[key] = joiRule
+    joiObject[key] = propertyToJoi(value)
   })
 
   return joi.object(joiObject).required()
+}
+
+function propertyToJoi(property: Property) {
+  let joiRule
+
+  switch (property.type) {
+    case 'array':
+      joiRule = joi.array().items(propertyToJoi(property.items))
+      break
+    case 'boolean':
+      joiRule = joi.boolean()
+      break
+    case 'modification':
+      joiRule = joi.object({
+        deviceId: joi.string().required(),
+        interfaceId: joi.string().required(),
+        statusId: joi.string().required(),
+        value: joi.any().required(),
+      })
+      break
+    case 'integer':
+      joiRule = joi.number().integer()
+      break
+      // fall through
+    case 'number':
+      let numberJoiRule: joi.NumberSchema = joiRule || joi.number()
+      if (property.min !== undefined) {
+        numberJoiRule = numberJoiRule.min(property.min)
+      }
+      if (property.max !== undefined) {
+        numberJoiRule = numberJoiRule.max(property.max)
+      }
+
+      joiRule = numberJoiRule
+      break
+    case 'string':
+      joiRule = joi.string()
+      break
+  }
+
+  if (!property.optional) {
+    joiRule = joiRule.required()
+  }
+
+  return joiRule
 }
 
 export function validateAction(state: State, action: Call|Modification) {

@@ -70,9 +70,10 @@ const enhanceS = compose(
   graphql(
     gql`
       query {
-        deviceClasses {
+        deviceClasses(allowManualCreation: true) {
           id
           name
+          pluginId
           config
         }
       }
@@ -98,6 +99,8 @@ const enhanceS = compose(
               device: {
                 id: device.id,
                 name: device.name,
+                deviceClassId: device.deviceClassId,
+                pluginId: device.pluginId,
                 config: device.config,
               },
             },
@@ -134,15 +137,19 @@ export const DeviceDetailSettingsView = ({
             value: deviceClass.id,
           })),
           required: true,
-          onChange: (updatedDevice: GraphQlDevice) => ({
-            ...updatedDevice,
-            deviceClass:
+          onChange(updatedDevice: GraphQlDevice) {
+            const deviceClass =
               data.deviceClasses &&
-                data.deviceClasses.find(
-                  deviceClass => deviceClass.id === updatedDevice.deviceClassId,
-                ),
-            config: {},
-          }),
+              data.deviceClasses.find(
+                deviceClass => deviceClass.id === updatedDevice.deviceClassId,
+              )
+            return {
+              ...updatedDevice,
+              deviceClass,
+              pluginId: deviceClass && deviceClass.pluginId,
+              config: {},
+            }
+          },
         },
         {
           path: ['name'],

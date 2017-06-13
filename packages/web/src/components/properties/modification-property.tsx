@@ -24,6 +24,35 @@ export type PrivateModificationInputProps = ModificationInputProps & {
   selectedDevice?: GraphQlDevice
   selectedInterface?: Interface
   selectedStatus?: Property
+  interfaces?: Array<Interface>
+  statuses?: Array<Property>
+}
+
+const validInterface = (iface: Interface) =>
+  !!iface.status &&
+  Object.values(iface.status).some(status => !!status.modifiable)
+
+const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
+  const selectedInterface = selectedDevice.interfaces.find(
+    iface => iface.id === interfaceId,
+  )!
+  return {
+    interfaceId,
+    statusId: Object.values(selectedInterface.status).length === 1
+      ? Object.values(selectedInterface.status)[0].id
+      : undefined,
+  }
+}
+
+const setDevice = (deviceId: string, devices: Array<GraphQlDevice>) => {
+  const selectedDevice = devices.find(device => device.id === deviceId)!
+  const interfaces = selectedDevice.interfaces.filter(validInterface)
+  return {
+    deviceId,
+    ...interfaces.length > 0
+      ? setInterface(interfaces[0].id, selectedDevice)
+      : undefined,
+  }
 }
 
 export const enhanceModificationInput = compose(
@@ -40,6 +69,7 @@ export const enhanceModificationInput = compose(
         name
         interfaces {
           id
+          name
           status
         }
       }
@@ -68,6 +98,9 @@ export const enhanceModificationInput = compose(
         selectedDevice,
         selectedInterface,
         selectedStatus,
+        interfaces:
+          selectedDevice && selectedDevice.interfaces.filter(validInterface),
+        statuses: selectedInterface && Object.values(selectedInterface.status),
       }
     },
   ),
@@ -75,44 +108,52 @@ export const enhanceModificationInput = compose(
 
 export const ModificationInputView = ({
   data,
-  property,
   value,
   onChange,
   selectedDevice,
   selectedInterface,
   selectedStatus,
+  interfaces,
+  statuses,
 }: PrivateModificationInputProps) =>
   <div>
     <SettingDropdown
-      label={property.name || property.id}
+      label="Device"
       source={
         data && data.devices
-          ? data.devices.map(device => ({value: device.id, label: device.name}))
+          ? data.devices
+              .filter(device => device.interfaces.some(validInterface))
+              .map(device => ({value: device.id, label: device.name}))
           : []
       }
       value={value && value.deviceId}
-      onChange={deviceId => onChange({...value, deviceId})}
+      onChange={deviceId =>
+        onChange({...value, ...setDevice(deviceId, data.devices)})}
     />
     {selectedDevice &&
+      interfaces &&
+      interfaces.length > 1 &&
       <SettingDropdown
-        label={property.name || property.id}
-        source={selectedDevice.interfaces
-          .filter(iface => iface.status)
-          .map(iface => ({
-            value: iface.id,
-            label: iface.name,
-          }))}
+        label="Interface"
+        source={interfaces.map(iface => ({
+          value: iface.id,
+          label: iface.name || iface.id,
+        }))}
         value={value.interfaceId}
         onChange={interfaceId => {
-          onChange({...value, interfaceId})
+          onChange({
+            ...value,
+            ...setInterface(interfaceId, selectedDevice),
+          })
         }}
       />}
-    {selectedInterface &&
+    {statuses &&
+      statuses.length > 1 &&
       <SettingDropdown
-        label={property.name || property.id}
-        source={Object.values(selectedInterface.status).map(status => ({
+        label="Status"
+        source={statuses.map(status => ({
           value: status.id,
-          label: status.name,
+          label: status.name || status.id,
         }))}
         value={value.statusId}
         onChange={statusId => onChange({...value, statusId})}

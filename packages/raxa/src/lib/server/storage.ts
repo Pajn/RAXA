@@ -1,7 +1,26 @@
 import nedb from 'nedb-persist'
-import {Device, DeviceClass, Interface, PluginConfiguration, Service, actions, defaultInterfaces} from 'raxa-common'
-import {DeviceClassState, DeviceState, InterfaceState, PluginState, State, StatusState} from 'raxa-common/lib/state'
-import {validateDevice, validateDeviceClass, validateInterface} from 'raxa-common/lib/validations'
+import {
+  Device,
+  DeviceClass,
+  Interface,
+  PluginConfiguration,
+  Service,
+  actions,
+  defaultInterfaces,
+} from 'raxa-common'
+import {
+  DeviceClassState,
+  DeviceState,
+  InterfaceState,
+  PluginState,
+  State,
+  StatusState,
+} from 'raxa-common/lib/state'
+import {
+  validateDevice,
+  validateDeviceClass,
+  validateInterface,
+} from 'raxa-common/lib/validations'
 import {Store, combineReducers, createStore} from 'redux'
 import {Action, action, createReducer, updateIn} from 'redux-decorated'
 import {autoRehydrate, persistStore} from 'redux-persist'
@@ -55,13 +74,19 @@ const pluginReducer = createReducer<PluginState>({})
   }))
   .build()
 const statusReducer = createReducer<StatusState>({})
-  .when(actions.statusUpdated, (state, {deviceId, interfaceId, statusId, value}) =>
-    updateIn([deviceId, interfaceId, statusId] as any, value, state))
+  .when(
+    actions.statusUpdated,
+    (state, {deviceId, interfaceId, statusId, value}) =>
+      updateIn([deviceId, interfaceId, statusId] as any, value, state),
+  )
   .build()
 
 export class StorageService extends Service {
   private store: Store<State>
-  public dispatch: <P>(action: Action<P>, payload: P) => void = (a, payload) => {
+  public dispatch: <P>(action: Action<P>, payload: P) => void = (
+    a,
+    payload,
+  ) => {
     this.store.dispatch(action(a, payload))
   }
   public getState: () => State
@@ -80,12 +105,15 @@ export class StorageService extends Service {
     this.getState = this.store.getState
 
     await new Promise(resolve => {
-      persistStore(this.store, {storage: nedb({filename: 'db.json'}) as any}, resolve)
+      persistStore(
+        this.store,
+        {storage: nedb({filename: 'db.json'}) as any},
+        resolve,
+      )
     })
   }
 
-  async stop() {
-  }
+  async stop() {}
 
   public installInterface(iface: Interface) {
     this.log.info(`Installing interface ${iface.id}`)
@@ -98,9 +126,14 @@ export class StorageService extends Service {
     }
   }
 
-  public installDeviceClass(deviceClass: DeviceClass) {
+  public installDeviceClass(
+    deviceClass: DeviceClass & {allowManualCreation?: boolean},
+  ) {
     this.log.info(`Installing device class ${deviceClass.id}`)
     const state = this.getState()
+    if (deviceClass.allowManualCreation === undefined) {
+      deviceClass = {...deviceClass, allowManualCreation: false}
+    }
     validateDeviceClass(state, deviceClass)
     if (state.deviceClasses[deviceClass.id]) {
       this.dispatch(actions.deviceClassUpdated, {deviceClass})
@@ -120,9 +153,14 @@ export class StorageService extends Service {
   }
 
   public async upsertDevice(device: Device): Promise<Device> {
-    const plugins = this.serviceManager.runningServices.PluginSupervisor as PluginSupervisor
+    const plugins = this.serviceManager.runningServices
+      .PluginSupervisor as PluginSupervisor
 
-    this.log.info(`Upsert device ${device.id}`)
+    if (device.id) {
+      this.log.info(`Update device ${device.name} (${device.id})`)
+    } else {
+      this.log.info(`Create device ${device.name}`)
+    }
     const state = this.getState()
 
     if (device.id) {

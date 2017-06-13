@@ -42,6 +42,7 @@ export interface DeviceClass {
   name?: string
   shortDescription?: string
   description?: string
+  allowManualCreation: boolean
   /**
    * Id of the plugin that owns this DeviceClass.
    */

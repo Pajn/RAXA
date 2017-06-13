@@ -5,9 +5,11 @@
     "Scenery": {
       "id": "Scenery",
       "name": "Scenery",
+      "allowManualCreation": true,
       "config": {
         "modifications": {
           "id": "modifications",
+          "name": "Devices",
           "type": "array",
           "modifiable": true,
           "items": {

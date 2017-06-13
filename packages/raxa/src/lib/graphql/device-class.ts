@@ -1,4 +1,4 @@
-import {GraphQLString} from 'graphql'
+import {GraphQLBoolean, GraphQLString} from 'graphql'
 import GraphQLJSON from 'graphql-type-json'
 import {buildQueries, buildType} from 'graphql-verified'
 import * as joi from 'joi'
@@ -15,6 +15,7 @@ export const DeviceClassType = buildType<DeviceClass>({
     },
     shortDescription: {type: GraphQLString},
     description: {type: GraphQLString},
+    allowManualCreation: {type: GraphQLBoolean},
     pluginId: {type: GraphQLString},
     config: {type: GraphQLJSON},
     interfaceIds: {type: [GraphQLString]},
@@ -27,9 +28,18 @@ export const DeviceClassType = buildType<DeviceClass>({
 export const deviceClassQueries = buildQueries({
   deviceClasses: {
     type: [DeviceClassType],
-    validate: joi.object({}),
-    resolve(_, {}, {storage}: Context) {
-      return Object.values(storage.getState().deviceClasses)
+    validate: joi.object({
+      allowManualCreation: joi.boolean(),
+    }),
+    resolve(_, {allowManualCreation}, {storage}: Context) {
+      let deviceClasses = Object.values(storage.getState().deviceClasses)
+      if (allowManualCreation !== undefined) {
+        deviceClasses = deviceClasses.filter(
+          deviceClass =>
+            deviceClass.allowManualCreation === allowManualCreation,
+        )
+      }
+      return deviceClasses
     },
   },
 })

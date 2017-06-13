@@ -51,16 +51,14 @@ export const DeviceType = buildType<Device>({
     name: {type: GraphQLString},
     pluginId: {
       type: GraphQLString,
-      isInput: false,
     },
     deviceClassId: {
       type: GraphQLString,
-      isInput: false,
     },
     deviceClass: {
       type: DeviceClassType,
       validate: joi.object({}),
-      resolve({deviceClassId}, {}, {storage}: Context) {
+      resolve({deviceClassId}: Device, {}, {storage}: Context) {
         return storage.getState().deviceClasses[deviceClassId]
       },
     },
@@ -72,9 +70,9 @@ export const DeviceType = buildType<Device>({
     interfaces: {
       type: [InterfaceType],
       validate: joi.object({}),
-      resolve({interfaces}, {}, {storage}: Context) {
+      resolve({interfaceIds = []}: Device, {}, {storage}: Context) {
         const state = storage.getState()
-        return interfaces.map(iface => state.interfaces[iface])
+        return interfaceIds.map(iface => state.interfaces[iface])
       },
     },
     status: {
