@@ -120,15 +120,14 @@ const enhance = compose<DashboardPrivateProps, {}>(
   withLazyReducer<CellProps | undefined, CellProps | undefined>(
     'ghost',
     'setGhost',
-    (ghost, position) => {
-      return (ghost && !position) ||
+    (ghost, position) =>
+      (ghost && !position) ||
         (!ghost && position) ||
         (ghost &&
           position &&
           (position.x !== ghost.x || position.y !== ghost.y))
-        ? (console.log('update', ghost, position), position)
-        : ghost
-    },
+        ? position
+        : ghost,
     undefined,
   ),
   withHandlers<DashboardPrivateProps, DashboardPrivateProps>({
@@ -169,15 +168,15 @@ export const DashboardView = ({
     />
     <Workspace cols={10} rows={10} gap="16px" editMode={editMode}>
       {ghost && <Ghost {...ghost} />}
-      {widgets.map(props => {
+      {widgets.map((props, i) => {
         const WidgetType = widgetTypes[props.type]
         return (
           <Widget
+            key={i}
             {...props.position}
             editMode={editMode}
             setGhost={setGhost}
             setPosition={position => {
-              console.log('position', position)
               Object.assign(props.position, {
                 x: Math.min(10, Math.max(0, position.x)),
                 y: Math.min(10, Math.max(0, position.y)),

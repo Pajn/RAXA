@@ -1,4 +1,4 @@
-import {PropTypes, Validator} from 'react'
+import PropTypes from 'prop-types'
 
 export type Section = {
   path?: string
@@ -30,7 +30,7 @@ export type ScaffoldContext = {
 }
 
 export const scaffoldContextType: {
-  [p in keyof ScaffoldContext]: Validator<ScaffoldContext[p]>
+  [p in keyof ScaffoldContext]: PropTypes.Validator<ScaffoldContext[p]>
 } = {
   activeSection: PropTypes.object,
 

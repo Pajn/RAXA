@@ -1,6 +1,7 @@
 import glamorous from 'glamorous'
 import React from 'react'
-import {compose, withHandlers} from 'recompose'
+import {compose, pure, withHandlers} from 'recompose'
+import setDisplayName from 'recompose/setDisplayName'
 import {materialColors} from 'styled-material/dist/src/colors'
 import {
   InjectedInputEventsProps,
@@ -18,6 +19,7 @@ export type HandleProps = (
 export type HandlePrivateProps = HandleProps & InjectedInputEventsProps & {}
 
 const enhance = compose<HandleProps, HandleProps>(
+  pure,
   withInputEvents,
   withHandlers<
     HandlePrivateProps,
@@ -40,6 +42,7 @@ const enhance = compose<HandleProps, HandleProps>(
       })
     },
   })),
+  setDisplayName('HandleView'),
 )
 
 export const HandleView = glamorous.button<
@@ -69,12 +72,23 @@ export const HandleView = glamorous.button<
 
 export const Handle = enhance(HandleView)
 
-export const HandleContainer = glamorous.div<{
+export type HandleContainerProps = {
   visible: boolean
-}>(({visible}) => ({
+}
+
+const enhanceContainer = compose<HandleContainerProps, HandleContainerProps>(
+  pure,
+  setDisplayName('HandleContainerView'),
+)
+
+export const HandleContainerView = glamorous.div<
+  HandleContainerProps
+>(({visible}) => ({
   position: 'absolute',
   top: 0,
   left: 0,
+
+  boxSizing: 'border-box',
   width: '100%',
   height: '100%',
 
@@ -83,3 +97,5 @@ export const HandleContainer = glamorous.div<{
   opacity: visible ? 1 : 0,
   transition: 'opacity 150ms ease-in',
 }))
+
+export const HandleContainer = enhanceContainer(HandleContainerView)

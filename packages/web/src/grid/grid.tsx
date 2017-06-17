@@ -1,4 +1,3 @@
-import glamorous from 'glamorous'
 import React from 'react'
 import styled from 'styled-components'
 
@@ -50,7 +49,18 @@ export type CellProps = {
   height: number
 }
 
-export const Cell = glamorous.div<CellProps>(({x, y, width, height}) => ({
-  gridColumn: `${x + 1} / ${x + width + 1}`,
-  gridRow: `${y + 1} / ${y + height + 1}`,
-}))
+export const Cell = ({
+  x,
+  y,
+  width,
+  height,
+  ...htmlProps,
+}: CellProps & React.HTMLProps<HTMLDivElement>) =>
+  <div
+    {...htmlProps}
+    style={{
+      ...htmlProps.style,
+      gridColumn: `${x + 1} / ${x + width + 1}`,
+      gridRow: `${y + 1} / ${y + height + 1}`,
+    }}
+  />

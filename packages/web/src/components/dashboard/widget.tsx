@@ -1,8 +1,6 @@
 import React from 'react'
 import {Card} from 'react-toolbox/lib/card'
-import {compose} from 'recompose'
-import withHandlers from 'recompose/withHandlers'
-import withState from 'recompose/withState'
+import {compose, withHandlers, withState} from 'recompose'
 import {Cell, CellProps} from '../../grid/grid'
 import {
   InjectedInputEventsProps,
@@ -38,7 +36,10 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
   withState('translate', 'setTranslate', undefined),
   withState('transformOrigin', 'setTransformOrigin', undefined),
   withInputEvents,
-  withHandlers(
+  withHandlers<
+    WidgetWrapperPrivateProps,
+    WidgetWrapperPrivateProps
+  >(
     ({
       onClickEvents,
       onMoveEvents,
@@ -47,15 +48,10 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
       setTransformOrigin,
       cancelClickListeners,
       setPosition,
-    }: WidgetWrapperPrivateProps) => ({
-      startDrag: ({
-        translate,
-        x,
-        y,
-        width,
-        height,
-        setGhost,
-      }: WidgetWrapperPrivateProps) => (event: React.MouseEvent<any>) => {
+    }) => ({
+      startDrag: ({translate, x, y, width, height, setGhost}) => (
+        event: React.MouseEvent<any>,
+      ) => {
         event.stopPropagation()
         const startPosition = {x: event.clientX, y: event.clientY}
         setTransformOrigin(startPosition)
@@ -71,7 +67,6 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
             setGhost({x: x + cellDiffX, y: y + cellDiffY, width, height})
           },
           onCancel() {
-            console.log('onCancel')
             if (translate) {
               const cellDiffX = Math.round(translate.x / (48 + 16))
               const cellDiffY = Math.round(translate.y / (48 + 16))
@@ -81,9 +76,7 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
           },
         })
       },
-      doShowHandles: ({editMode}: WidgetWrapperPrivateProps) => (
-        event: React.MouseEvent<any>,
-      ) => {
+      doShowHandles: ({editMode}) => (event: React.MouseEvent<any>) => {
         event.stopPropagation()
         if (editMode) {
           cancelClickListeners()
@@ -108,10 +101,16 @@ export const WidgetView = ({
   transformOrigin,
   startDrag,
   doShowHandles,
-  ...cellProps,
+  x,
+  y,
+  width,
+  height,
 }: WidgetWrapperPrivateProps) =>
   <Cell
-    {...cellProps}
+    x={x}
+    y={y}
+    width={width}
+    height={height}
     style={
       editMode
         ? {

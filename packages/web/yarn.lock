@@ -2631,7 +2631,7 @@ fb-watchman@^1.8.0, fb-watchman@^1.9.0:
   dependencies:
     bser "1.0.2"
 
-fbjs@^0.8.1, fbjs@^0.8.5, fbjs@^0.8.7, fbjs@^0.8.8, fbjs@^0.8.9:
+fbjs@^0.8.1, fbjs@^0.8.4, fbjs@^0.8.5, fbjs@^0.8.7, fbjs@^0.8.8, fbjs@^0.8.9:
   version "0.8.12"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.12.tgz#10b5d92f76d45575fd63a217d4ea02bea2f8ed04"
   dependencies:
@@ -5894,6 +5894,13 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-addons-perf@^15.4.2:
+  version "15.4.2"
+  resolved "https://registry.yarnpkg.com/react-addons-perf/-/react-addons-perf-15.4.2.tgz#110bdcf5c459c4f77cb85ed634bcd3397536383b"
+  dependencies:
+    fbjs "^0.8.4"
+    object-assign "^4.1.0"
+
 react-apollo@^1.0.0:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/react-apollo/-/react-apollo-1.4.2.tgz#e8ee035310b564fd1b42ee7e4f116086b5b06834"
@@ -5953,9 +5960,9 @@ react-dev-utils@0.6.0-alpha.f55d2212:
     object-assign "^4.1.0"
     prop-types "~15.5.7"
 
-react-form-helper@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/react-form-helper/-/react-form-helper-0.4.2.tgz#bbed2a3e27554acf6641fd4376a9bed2386b09b4"
+react-form-helper@^0.4.7:
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/react-form-helper/-/react-form-helper-0.4.7.tgz#da89f2fc3f5312eb353e28080be8f08a8be202d1"
   dependencies:
     "@types/ramda" "^0.0.2"
     "@types/recompose" "^0.20.4"
@@ -6044,9 +6051,9 @@ react-transition-group@^1.1.3:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react-with-media@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/react-with-media/-/react-with-media-0.1.2.tgz#33e19678e128c1b3d4cc60def58571a53372d212"
+react-with-media@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/react-with-media/-/react-with-media-0.1.3.tgz#ef9f525c00adc7e7174ebc66d0b4ffdf06681171"
   dependencies:
     recompose "^0.21.2"
 
@@ -6136,6 +6143,15 @@ rechoir@^0.6.2:
 recompose@^0.21.2:
   version "0.21.2"
   resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.21.2.tgz#ff3fbdb2397b1c77c47d451be2a63b9295d44681"
+  dependencies:
+    change-emitter "^0.1.2"
+    fbjs "^0.8.1"
+    hoist-non-react-statics "^1.0.0"
+    symbol-observable "^1.0.4"
+
+recompose@^0.23.5:
+  version "0.23.5"
+  resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.23.5.tgz#72ac8261246bec378235d187467d02a721e8b1de"
   dependencies:
     change-emitter "^0.1.2"
     fbjs "^0.8.1"
