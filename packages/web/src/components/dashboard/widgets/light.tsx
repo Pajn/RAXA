@@ -6,13 +6,13 @@ import {gql, graphql} from 'react-apollo/lib'
 import {QueryProps} from 'react-apollo/lib/graphql'
 import {ContainerQuery} from 'react-container-query'
 import {Slider} from 'react-toolbox/lib/slider'
-import compose from 'recompose/compose'
-import mapProps from 'recompose/mapProps'
+import Switch from 'react-toolbox/lib/switch/Switch'
+import {compose, mapProps} from 'recompose'
 import {
   UpdateDeviceStatusInjectedProps,
   updateDeviceStatus,
 } from '../../../lib/mutations'
-import {WidgetProps} from '../widget'
+import {WidgetComponent, WidgetProps} from '../widget'
 
 const Container = glamorous.div({
   display: 'flex',
@@ -26,6 +26,10 @@ const NameRow = glamorous.div({
 })
 const DeviceName = glamorous.span({
   flex: 1,
+})
+const PowerSwitch = glamorous(Switch)({
+  flexShrink: 0,
+  ':not(#id)': {marginBottom: 5},
 })
 
 const interfaceIds = ['Light', 'Dimmer']
@@ -59,13 +63,29 @@ function asObject<T, K extends keyof T>(
 //   return object
 // }
 
-export const enhance = compose(
-  mapProps(({config}: LightWidgetProps) => ({
+export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
+  mapProps<Partial<PrivateLightWidgetProps>, LightWidgetProps>(({config}) => ({
     config,
     deviceId: config.deviceId,
     interfaceIds,
+    data: !config.deviceId
+      ? {
+          device: {
+            id: '',
+            name: 'Device',
+            interfaceIds: ['Light'],
+            status: [
+              {
+                interfaceId: 'Light',
+                value: 'true',
+              } as DeviceStatus,
+            ] as GraphQlDevice['status'],
+          } as GraphQlDevice,
+        } as PrivateLightWidgetProps['data']
+      : undefined,
   })),
-  graphql(gql`
+  graphql(
+    gql`
     query($deviceId: String!, $interfaceIds: [String!]) {
       device(id: $deviceId) {
         id
@@ -79,8 +99,13 @@ export const enhance = compose(
         }
       }
     }
-  `),
-  mapProps((props: PrivateLightWidgetProps): PrivateLightWidgetProps => ({
+  `,
+    {skip: props => !props.deviceId},
+  ),
+  mapProps<
+    PrivateLightWidgetProps,
+    PrivateLightWidgetProps
+  >((props: PrivateLightWidgetProps): PrivateLightWidgetProps => ({
     ...props,
     status:
       props.data.device && asObject(props.data.device.status, 'interfaceId'),
@@ -109,7 +134,7 @@ export const LightWidgetView = ({
           maxHeight: 48,
         },
         long: {
-          minWidth: 176,
+          minWidth: 240,
         },
       }}
     >
@@ -119,7 +144,7 @@ export const LightWidgetView = ({
             <NameRow>
               <DeviceName>{device.name}</DeviceName>
               {status
-                ? <Flexbox>
+                ? <Flexbox alignItems="center">
                     {long && device.interfaceIds!.includes('Dimmer')
                       ? <Flexbox>
                           <button onChange={() => setDimmer('25')}>
@@ -132,7 +157,8 @@ export const LightWidgetView = ({
                             100%
                           </button>
                         </Flexbox>
-                      : <button
+                      : <PowerSwitch
+                          checked={Boolean(status.Light.value)}
                           onClick={() => {
                             setDeviceStatus(status.Light.id, {
                               deviceId: device.id,
@@ -141,9 +167,7 @@ export const LightWidgetView = ({
                               value: (!Boolean(status.Light.value)).toString(),
                             })
                           }}
-                        >
-                          {Boolean(status.Light.value) ? 'Off' : 'On'}
-                        </button>}
+                        />}
                     {thin &&
                       device.interfaceIds!.includes('Dimmer') &&
                       <button>Dim</button>}
@@ -162,6 +186,10 @@ export const LightWidgetView = ({
   )
 }
 
-export const LightWidget: React.ComponentClass<LightWidgetProps> = enhance(
-  LightWidgetView,
-)
+export const LightWidget: WidgetComponent<
+  LightWidgetConfiguration
+> = Object.assign(enhance(LightWidgetView), {
+  uiName: 'Lamp',
+  defaultSize: {width: 2, height: 1},
+  demoConfig: {demo: true, deviceId: ''},
+})

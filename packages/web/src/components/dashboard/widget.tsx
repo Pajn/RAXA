@@ -1,47 +1,81 @@
 import React from 'react'
 import {Card} from 'react-toolbox/lib/card'
 import {compose, withHandlers, withState} from 'recompose'
-import {Cell, CellProps} from '../../grid/grid'
 import {
   InjectedInputEventsProps,
   withInputEvents,
 } from '../../with-input-events/with-input-events'
+import {connectState} from '../../with-lazy-reducer'
+import {
+  Cell,
+  CellProps,
+  xCellToPx,
+  xPxToCell,
+  yCellToPx,
+  yPxToCell,
+} from './grid'
 import {Handle, HandleContainer} from './handle'
+import {DashboardState, dashboardState} from './state'
 
 export type WidgetProps<T = any> = {
   config: T
 }
 
+export type WidgetComponent<T = any> = React.ComponentClass<WidgetProps<T>> & {
+  defaultSize: {width: number; height: number}
+  demoConfig: T
+  uiName: string
+}
+
 export type WidgetWrapperProps = CellProps & {
+  id: string
   children: React.ReactNode
   editMode?: boolean
-  setGhost: (position?: CellProps) => void
   setPosition: (position: CellProps) => void
 }
 
 export type WidgetWrapperPrivateProps = WidgetWrapperProps &
   InjectedInputEventsProps & {
     showHandles: boolean
-    setShowHandles: (showHandles: boolean) => void
+    setGhost: (position?: CellProps) => void
+    setActive: (active: boolean) => void
     translate?: {x: number; y: number}
     setTranslate: (translate?: {x: number; y: number}) => void
     scale?: {x: number; y: number}
     setScale: (translate?: {x: number; y: number}) => void
-    transformOrigin?: {x: number | string; y: number | string}
-    setTransformOrigin: (
-      transformOrigin?: {x: number | string; y: number | string},
-    ) => void
     startMove: (event: React.MouseEvent<any>) => void
     doShowHandles: (event: React.MouseEvent<any>) => void
     onResize: (
-      direction: 'width' | 'height',
-      negative?: 'negative',
-      done?: 'done',
-    ) => (delta: number) => void
+      done: boolean,
+    ) => (
+      delta: {x: number; y: number},
+      position: {
+        top?: boolean
+        left?: boolean
+        right?: boolean
+        bottom?: boolean
+      },
+    ) => void
+    dashboardState: DashboardState
   }
 
 export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
-  withState('showHandles', 'setShowHandles', false),
+  connectState(
+    dashboardState,
+    (state, props: WidgetWrapperProps) => ({
+      editMode: state.editMode,
+      showHandles: state.activeWidget === props.id,
+      dashboardState: state,
+    }),
+    (dispatch, props) => ({
+      setGhost: (ghost?: CellProps) => dispatch({type: 'setGhost', ghost}),
+      setActive: (active: boolean) =>
+        dispatch({
+          type: 'setActiveWidget',
+          widgetId: active ? props.id : undefined,
+        }),
+    }),
+  ),
   withState('translate', 'setTranslate', undefined),
   withState('scale', 'setScale', undefined),
   withState('transformOrigin', 'setTransformOrigin', undefined),
@@ -53,84 +87,104 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
     ({
       onClickEvents,
       onMoveEvents,
-      setShowHandles,
+      setActive,
       setTranslate,
       setScale,
-      setTransformOrigin,
       cancelClickListeners,
       setPosition,
+      setGhost,
     }) => ({
-      startMove: ({translate, x, y, width, height, setGhost}) => (
+      startMove: ({x, y, width, height, dashboardState}) => (
         event: React.MouseEvent<any>,
       ) => {
         event.stopPropagation()
         const startPosition = {x: event.clientX, y: event.clientY}
-        setTransformOrigin(startPosition)
+        const startGrid = {
+          x: xCellToPx(dashboardState, x),
+          y: yCellToPx(dashboardState, y),
+        }
 
         onMoveEvents({
           onMouseMove(event) {
-            const diffX = (event.clientX - startPosition.x) * (1 / 0.7)
-            const diffY = (event.clientY - startPosition.y) * (1 / 0.7)
-            translate = {x: diffX, y: diffY}
-            setTranslate(translate)
-            const cellDiffX = Math.round(translate.x / (48 + 16))
-            const cellDiffY = Math.round(translate.y / (48 + 16))
-            setGhost({x: x + cellDiffX, y: y + cellDiffY, width, height})
+            const deltaX = (event.clientX - startPosition.x) * (1 / 0.7)
+            const deltaY = (event.clientY - startPosition.y) * (1 / 0.7)
+            setTranslate({x: deltaX, y: deltaY})
+            setGhost({
+              x: xPxToCell(dashboardState, startGrid.x + deltaX),
+              y: yPxToCell(dashboardState, startGrid.y + deltaY),
+              width,
+              height,
+            })
           },
           onCancel() {
-            if (translate) {
-              const cellDiffX = Math.round(translate.x / (48 + 16))
-              const cellDiffY = Math.round(translate.y / (48 + 16))
-              setPosition({x: x + cellDiffX, y: y + cellDiffY, width, height})
-              setTranslate()
-            }
+            const deltaX = (event.clientX - startPosition.x) * (1 / 0.7)
+            const deltaY = (event.clientY - startPosition.y) * (1 / 0.7)
+            setTranslate()
+            setPosition({
+              x: xPxToCell(dashboardState, startGrid.x + deltaX),
+              y: yPxToCell(dashboardState, startGrid.y + deltaY),
+              width,
+              height,
+            })
           },
         })
       },
-      onResize: ({x, y, width, height, setGhost}) => (
-        direction,
-        negative,
-        done,
-      ) => delta => {
-        const normalizedDelta = negative ? -delta : delta
-        const origSize = (direction === 'width' ? width : height) * (48 + 16)
-        const cellDiff = (normalizedDelta + origSize) / origSize
-        let position: CellProps
-        if (direction === 'width') {
-          const newWidth = Math.round(cellDiff * width)
-          const newX = negative ? x : x - (newWidth - width)
-          position = {x: newX, y, width: newWidth, height}
-        } else {
-          const newHeight = Math.round(cellDiff * height)
-          const newY = negative ? y : y - (newHeight - height)
-          position = {x, y: newY, width, height: newHeight}
+      onResize: ({x, y, width, height, dashboardState}) => done => (
+        delta: {x: number; y: number},
+        position: {
+          top?: boolean
+          left?: boolean
+          right?: boolean
+          bottom?: boolean
+        },
+      ) => {
+        const startGrid = {
+          x: position.right ? x + width : x,
+          y: position.bottom ? y + height : y,
+        }
+        const currentGrid = {
+          x: xPxToCell(
+            dashboardState,
+            xCellToPx(dashboardState, startGrid.x) + delta.x * (1 / 0.7),
+          ),
+          y: yPxToCell(
+            dashboardState,
+            yCellToPx(dashboardState, startGrid.y) + delta.y * (1 / 0.7),
+          ),
+        }
+        const newPosition = {x, y, width, height}
+        if (position.top) {
+          const deltaY = startGrid.y - currentGrid.y
+          newPosition.y = y + deltaY
+          newPosition.height = height - deltaY
+        } else if (position.bottom) {
+          const deltaY = startGrid.y - currentGrid.y
+          newPosition.height = height + deltaY
+        }
+        if (position.left) {
+          const deltaX = startGrid.x - currentGrid.x
+          newPosition.x = x + deltaX
+          newPosition.width = width - deltaX
+        } else if (position.right) {
+          const deltaX = startGrid.x - currentGrid.x
+          newPosition.width = width + deltaX
         }
         if (done) {
           setScale()
           setTranslate()
-          setPosition(position)
+          setPosition(newPosition)
         } else {
-          let translate = -delta / 2
-          setGhost(position)
-          if (direction === 'width') {
-            setScale({x: cellDiff, y: 1})
-            setTranslate({x: translate, y: 0})
-            setTransformOrigin({x: '50%', y: negative ? '100%' : 0})
-          } else {
-            setScale({x: 1, y: cellDiff})
-            setTranslate({x: 0, y: translate})
-            setTransformOrigin({x: negative ? '100%' : 0, y: '50%'})
-          }
+          setGhost(newPosition)
         }
       },
       doShowHandles: ({editMode}) => (event: React.MouseEvent<any>) => {
         event.stopPropagation()
         if (editMode) {
           cancelClickListeners()
-          setShowHandles(true)
+          setActive(true)
           onClickEvents({
             onCancel() {
-              setShowHandles(false)
+              setActive(false)
             },
             onClick: () => {},
           })
@@ -146,7 +200,6 @@ export const WidgetView = ({
   showHandles,
   translate,
   scale,
-  transformOrigin,
   startMove,
   doShowHandles,
   onResize,
@@ -171,14 +224,11 @@ export const WidgetView = ({
                 (translate &&
                   `translate(${translate.x}px, ${translate.y}px)`) ||
                 (scale && `scale(${scale.x}, ${scale.y})`),
-            transformOrigin:
-              transformOrigin &&
-                `${transformOrigin.x}px, ${transformOrigin.y}px`,
           }
         : undefined
     }
-    onMouseDown={startMove}
-    onClick={doShowHandles}
+    onMouseDown={editMode ? startMove : undefined}
+    onClick={editMode ? doShowHandles : undefined}
   >
     <Card raised style={{padding: 8, height: '100%'}}>
       {children}
@@ -188,26 +238,54 @@ export const WidgetView = ({
         <Handle
           top
           visible={showHandles}
-          onDragMove={onResize('height')}
-          onDragDone={onResize('height', undefined, 'done')}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
         />
         <Handle
           left
           visible={showHandles}
-          onDragMove={onResize('width')}
-          onDragDone={onResize('width', undefined, 'done')}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
         />
         <Handle
           right
           visible={showHandles}
-          onDragMove={onResize('width', 'negative')}
-          onDragDone={onResize('width', 'negative', 'done')}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
         />
         <Handle
           bottom
           visible={showHandles}
-          onDragMove={onResize('height', 'negative')}
-          onDragDone={onResize('height', 'negative', 'done')}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
+        />
+        <Handle
+          top
+          left
+          visible={showHandles}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
+        />
+        <Handle
+          top
+          right
+          visible={showHandles}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
+        />
+        <Handle
+          bottom
+          left
+          visible={showHandles}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
+        />
+        <Handle
+          bottom
+          right
+          visible={showHandles}
+          onDragMove={onResize(false)}
+          onDragDone={onResize(true)}
         />
       </HandleContainer>}
   </Cell>

@@ -9,13 +9,29 @@ import {
 } from '../../with-input-events/with-input-events'
 
 export type HandleProps = (
-  | {top: true; left?: undefined; right?: undefined; bottom?: undefined}
-  | {left: true; top?: undefined; right?: undefined; bottom?: undefined}
-  | {right: true; top?: undefined; left?: undefined; bottom?: undefined}
-  | {bottom: true; top?: undefined; left?: undefined; right?: undefined}) & {
+  | {top: true; left?: true; right?: undefined; bottom?: undefined}
+  | {left: true; top?: undefined; right?: undefined; bottom?: true}
+  | {right: true; top?: true; left?: undefined; bottom?: undefined}
+  | {bottom: true; top?: undefined; left?: undefined; right?: true}) & {
   visible: boolean
-  onDragMove?: (delta: number) => void
-  onDragDone?: (delta: number) => void
+  onDragMove?: (
+    delta: {x: number; y: number},
+    position: {
+      top?: boolean;
+      left?: boolean;
+      right?: boolean;
+      bottom?: boolean;
+    },
+  ) => void
+  onDragDone?: (
+    delta: {x: number; y: number},
+    position: {
+      top?: boolean;
+      left?: boolean;
+      right?: boolean;
+      bottom?: boolean;
+    },
+  ) => void
 }
 
 export type HandlePrivateProps = HandleProps & InjectedInputEventsProps & {}
@@ -23,11 +39,8 @@ export type HandlePrivateProps = HandleProps & InjectedInputEventsProps & {}
 const enhance = compose<HandleProps, HandleProps>(
   pure,
   withInputEvents,
-  withHandlers<
-    HandlePrivateProps,
-    HandlePrivateProps
-  >(({top, bottom, onMoveEvents}) => ({
-    onMouseDown: ({onDragMove, onDragDone}) => (
+  withHandlers<HandlePrivateProps, HandlePrivateProps>(({onMoveEvents}) => ({
+    onMouseDown: ({onDragMove, onDragDone, top, left, right, bottom}) => (
       event: React.MouseEvent<HTMLButtonElement>,
     ) => {
       event.stopPropagation()
@@ -35,19 +48,35 @@ const enhance = compose<HandleProps, HandleProps>(
 
       onMoveEvents({
         onMouseMove(event) {
-          const diff = top || bottom
-            ? startPosition.y - event.clientY
-            : startPosition.x - event.clientX
           if (onDragMove !== undefined) {
-            onDragMove(diff)
+            onDragMove(
+              {
+                x: startPosition.x - event.clientX,
+                y: startPosition.y - event.clientY,
+              },
+              {
+                top,
+                left,
+                right,
+                bottom,
+              },
+            )
           }
         },
         onMouseUp(event) {
-          const diff = top || bottom
-            ? startPosition.y - event.clientY
-            : startPosition.x - event.clientX
           if (onDragDone !== undefined) {
-            onDragDone(diff)
+            onDragDone(
+              {
+                x: startPosition.x - event.clientX,
+                y: startPosition.y - event.clientY,
+              },
+              {
+                top,
+                left,
+                right,
+                bottom,
+              },
+            )
           }
         },
       })
@@ -77,7 +106,11 @@ export const HandleView = glamorous.button<
 
   ':hover, :active': {
     transform: visible ? `scale(1.1)` : `scale(0)`,
-    cursor: top || bottom ? 'ns-resize' : 'ew-resize',
+    cursor: (top && left) || (bottom && right)
+      ? 'nwse-resize'
+      : (top && right) || (bottom && left)
+        ? 'nesw-resize'
+        : top || bottom ? 'ns-resize' : 'ew-resize',
   },
 }))
 
@@ -98,6 +131,7 @@ export const HandleContainerView = glamorous.div<
   position: 'absolute',
   top: 0,
   left: 0,
+  zIndex: 1000,
 
   boxSizing: 'border-box',
   width: '100%',

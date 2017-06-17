@@ -175,18 +175,15 @@ export const inputEventsContainer = () => (
       for (const listener of this.state.clickListeners) {
         if (listener.onMouseDown !== undefined) {
           listener.onMouseDown(event)
-          if (!listener.onClick !== undefined)
-            this.deleteClickListener(listener)
+          if (listener.onClick === undefined) this.deleteClickListener(listener)
         }
         if (listener.onDown !== undefined) {
           listener.onDown(event)
-          if (!listener.onClick !== undefined)
-            this.deleteClickListener(listener)
+          if (listener.onClick === undefined) this.deleteClickListener(listener)
         }
         if (listener.onCancel !== undefined) {
           listener.onCancel(event)
-          if (!listener.onClick !== undefined)
-            this.deleteClickListener(listener)
+          if (listener.onClick === undefined) this.deleteClickListener(listener)
         }
       }
     }
@@ -194,18 +191,15 @@ export const inputEventsContainer = () => (
       for (const listener of this.state.clickListeners) {
         if (listener.onTouchStart !== undefined) {
           listener.onTouchStart(event)
-          if (!listener.onClick !== undefined)
-            this.deleteClickListener(listener)
+          if (listener.onClick === undefined) this.deleteClickListener(listener)
         }
         if (listener.onDown !== undefined) {
           listener.onDown(event)
-          if (!listener.onClick !== undefined)
-            this.deleteClickListener(listener)
+          if (listener.onClick === undefined) this.deleteClickListener(listener)
         }
         if (listener.onCancel !== undefined) {
           listener.onCancel(event)
-          if (!listener.onClick !== undefined)
-            this.deleteClickListener(listener)
+          if (listener.onClick === undefined) this.deleteClickListener(listener)
         }
       }
     }
