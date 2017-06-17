@@ -126,42 +126,46 @@ export const inputEventsContainer = () => (
     onMouseMove = (event: React.MouseEvent<any>) => {
       const {moveListener} = this.state
       if (moveListener) {
-        if (moveListener.onMouseMove) moveListener.onMouseMove(event)
-        if (moveListener.onMove) moveListener.onMove(event)
+        if (moveListener.onMouseMove !== undefined)
+          moveListener.onMouseMove(event)
+        if (moveListener.onMove !== undefined) moveListener.onMove(event)
       }
     }
     onTouchMove = (event: React.TouchEvent<any>) => {
       const {moveListener} = this.state
       if (moveListener) {
-        if (moveListener.onTouchMove) moveListener.onTouchMove(event)
-        if (moveListener.onMove) moveListener.onMove(event)
+        if (moveListener.onTouchMove !== undefined)
+          moveListener.onTouchMove(event)
+        if (moveListener.onMove !== undefined) moveListener.onMove(event)
       }
     }
     onMouseUp = (event: React.MouseEvent<any>) => {
       const {moveListener} = this.state
       if (moveListener) {
-        if (moveListener.onMouseUp) moveListener.onMouseUp(event)
+        if (moveListener.onMouseUp !== undefined) moveListener.onMouseUp(event)
         this.onMoveCancel(event)
       }
     }
     onTouchEnd = (event: React.TouchEvent<any>) => {
       const {moveListener} = this.state
       if (moveListener) {
-        if (moveListener.onTouchEnd) moveListener.onTouchEnd(event)
+        if (moveListener.onTouchEnd !== undefined)
+          moveListener.onTouchEnd(event)
         this.onMoveCancel(event)
       }
     }
     onTouchCancel = (event: React.TouchEvent<any>) => {
       const {moveListener} = this.state
       if (moveListener) {
-        if (moveListener.onTouchCancel) moveListener.onTouchCancel(event)
+        if (moveListener.onTouchCancel !== undefined)
+          moveListener.onTouchCancel(event)
         this.onMoveCancel(event)
       }
     }
 
     onClick = (event: React.MouseEvent<any>) => {
       for (const listener of this.state.clickListeners) {
-        if (listener.onClick) {
+        if (listener.onClick !== undefined) {
           listener.onClick(event)
           this.deleteClickListener(listener)
         }
@@ -169,33 +173,39 @@ export const inputEventsContainer = () => (
     }
     onMouseDown = (event: React.MouseEvent<any>) => {
       for (const listener of this.state.clickListeners) {
-        if (listener.onMouseDown) {
+        if (listener.onMouseDown !== undefined) {
           listener.onMouseDown(event)
-          if (!listener.onClick) this.deleteClickListener(listener)
+          if (!listener.onClick !== undefined)
+            this.deleteClickListener(listener)
         }
-        if (listener.onDown) {
+        if (listener.onDown !== undefined) {
           listener.onDown(event)
-          if (!listener.onClick) this.deleteClickListener(listener)
+          if (!listener.onClick !== undefined)
+            this.deleteClickListener(listener)
         }
-        if (listener.onCancel) {
+        if (listener.onCancel !== undefined) {
           listener.onCancel(event)
-          if (!listener.onClick) this.deleteClickListener(listener)
+          if (!listener.onClick !== undefined)
+            this.deleteClickListener(listener)
         }
       }
     }
     onTouchStart = (event: React.TouchEvent<any>) => {
       for (const listener of this.state.clickListeners) {
-        if (listener.onTouchStart) {
+        if (listener.onTouchStart !== undefined) {
           listener.onTouchStart(event)
-          if (!listener.onClick) this.deleteClickListener(listener)
+          if (!listener.onClick !== undefined)
+            this.deleteClickListener(listener)
         }
-        if (listener.onDown) {
+        if (listener.onDown !== undefined) {
           listener.onDown(event)
-          if (!listener.onClick) this.deleteClickListener(listener)
+          if (!listener.onClick !== undefined)
+            this.deleteClickListener(listener)
         }
-        if (listener.onCancel) {
+        if (listener.onCancel !== undefined) {
           listener.onCancel(event)
-          if (!listener.onClick) this.deleteClickListener(listener)
+          if (!listener.onClick !== undefined)
+            this.deleteClickListener(listener)
         }
       }
     }

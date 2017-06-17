@@ -125,7 +125,10 @@ const enhance = compose<DashboardPrivateProps, {}>(
         (!ghost && position) ||
         (ghost &&
           position &&
-          (position.x !== ghost.x || position.y !== ghost.y))
+          (position.x !== ghost.x ||
+            position.y !== ghost.y ||
+            position.width !== ghost.width ||
+            position.height !== ghost.height))
         ? position
         : ghost,
     undefined,

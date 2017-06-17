@@ -25,15 +25,25 @@ export type WidgetWrapperPrivateProps = WidgetWrapperProps &
     setShowHandles: (showHandles: boolean) => void
     translate?: {x: number; y: number}
     setTranslate: (translate?: {x: number; y: number}) => void
-    transformOrigin?: {x: number; y: number}
-    setTransformOrigin: (transformOrigin?: {x: number; y: number}) => void
-    startDrag: (event: React.MouseEvent<any>) => void
+    scale?: {x: number; y: number}
+    setScale: (translate?: {x: number; y: number}) => void
+    transformOrigin?: {x: number | string; y: number | string}
+    setTransformOrigin: (
+      transformOrigin?: {x: number | string; y: number | string},
+    ) => void
+    startMove: (event: React.MouseEvent<any>) => void
     doShowHandles: (event: React.MouseEvent<any>) => void
+    onResize: (
+      direction: 'width' | 'height',
+      negative?: 'negative',
+      done?: 'done',
+    ) => (delta: number) => void
   }
 
 export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
   withState('showHandles', 'setShowHandles', false),
   withState('translate', 'setTranslate', undefined),
+  withState('scale', 'setScale', undefined),
   withState('transformOrigin', 'setTransformOrigin', undefined),
   withInputEvents,
   withHandlers<
@@ -45,11 +55,12 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
       onMoveEvents,
       setShowHandles,
       setTranslate,
+      setScale,
       setTransformOrigin,
       cancelClickListeners,
       setPosition,
     }) => ({
-      startDrag: ({translate, x, y, width, height, setGhost}) => (
+      startMove: ({translate, x, y, width, height, setGhost}) => (
         event: React.MouseEvent<any>,
       ) => {
         event.stopPropagation()
@@ -76,6 +87,42 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
           },
         })
       },
+      onResize: ({x, y, width, height, setGhost}) => (
+        direction,
+        negative,
+        done,
+      ) => delta => {
+        const normalizedDelta = negative ? -delta : delta
+        const origSize = (direction === 'width' ? width : height) * (48 + 16)
+        const cellDiff = (normalizedDelta + origSize) / origSize
+        let position: CellProps
+        if (direction === 'width') {
+          const newWidth = Math.round(cellDiff * width)
+          const newX = negative ? x : x - (newWidth - width)
+          position = {x: newX, y, width: newWidth, height}
+        } else {
+          const newHeight = Math.round(cellDiff * height)
+          const newY = negative ? y : y - (newHeight - height)
+          position = {x, y: newY, width, height: newHeight}
+        }
+        if (done) {
+          setScale()
+          setTranslate()
+          setPosition(position)
+        } else {
+          let translate = -delta / 2
+          setGhost(position)
+          if (direction === 'width') {
+            setScale({x: cellDiff, y: 1})
+            setTranslate({x: translate, y: 0})
+            setTransformOrigin({x: '50%', y: negative ? '100%' : 0})
+          } else {
+            setScale({x: 1, y: cellDiff})
+            setTranslate({x: 0, y: translate})
+            setTransformOrigin({x: negative ? '100%' : 0, y: '50%'})
+          }
+        }
+      },
       doShowHandles: ({editMode}) => (event: React.MouseEvent<any>) => {
         event.stopPropagation()
         if (editMode) {
@@ -98,9 +145,11 @@ export const WidgetView = ({
   editMode,
   showHandles,
   translate,
+  scale,
   transformOrigin,
-  startDrag,
+  startMove,
   doShowHandles,
+  onResize,
   x,
   y,
   width,
@@ -116,14 +165,19 @@ export const WidgetView = ({
         ? {
             position: 'relative',
             transform:
-              translate && `translate(${translate.x}px, ${translate.y}px)`,
+              (translate &&
+                scale &&
+                `translate(${translate.x}px, ${translate.y}px) scale(${scale.x}, ${scale.y})`) ||
+                (translate &&
+                  `translate(${translate.x}px, ${translate.y}px)`) ||
+                (scale && `scale(${scale.x}, ${scale.y})`),
             transformOrigin:
               transformOrigin &&
                 `${transformOrigin.x}px, ${transformOrigin.y}px`,
           }
         : undefined
     }
-    onMouseDown={startDrag}
+    onMouseDown={startMove}
     onClick={doShowHandles}
   >
     <Card raised style={{padding: 8, height: '100%'}}>
@@ -131,10 +185,30 @@ export const WidgetView = ({
     </Card>
     {editMode &&
       <HandleContainer visible={showHandles}>
-        <Handle top visible={showHandles} />
-        <Handle left visible={showHandles} />
-        <Handle right visible={showHandles} />
-        <Handle bottom visible={showHandles} />
+        <Handle
+          top
+          visible={showHandles}
+          onDragMove={onResize('height')}
+          onDragDone={onResize('height', undefined, 'done')}
+        />
+        <Handle
+          left
+          visible={showHandles}
+          onDragMove={onResize('width')}
+          onDragDone={onResize('width', undefined, 'done')}
+        />
+        <Handle
+          right
+          visible={showHandles}
+          onDragMove={onResize('width', 'negative')}
+          onDragDone={onResize('width', 'negative', 'done')}
+        />
+        <Handle
+          bottom
+          visible={showHandles}
+          onDragMove={onResize('height', 'negative')}
+          onDragDone={onResize('height', 'negative', 'done')}
+        />
       </HandleContainer>}
   </Cell>
 

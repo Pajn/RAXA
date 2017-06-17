@@ -14,6 +14,8 @@ export type HandleProps = (
   | {right: true; top?: undefined; left?: undefined; bottom?: undefined}
   | {bottom: true; top?: undefined; left?: undefined; right?: undefined}) & {
   visible: boolean
+  onDragMove?: (delta: number) => void
+  onDragDone?: (delta: number) => void
 }
 
 export type HandlePrivateProps = HandleProps & InjectedInputEventsProps & {}
@@ -25,18 +27,27 @@ const enhance = compose<HandleProps, HandleProps>(
     HandlePrivateProps,
     HandlePrivateProps
   >(({top, bottom, onMoveEvents}) => ({
-    onMouseDown: () => (event: React.MouseEvent<HTMLButtonElement>) => {
+    onMouseDown: ({onDragMove, onDragDone}) => (
+      event: React.MouseEvent<HTMLButtonElement>,
+    ) => {
       event.stopPropagation()
       const startPosition = {x: event.clientX, y: event.clientY}
 
       onMoveEvents({
         onMouseMove(event) {
-          if (top || bottom) {
-            const diff = startPosition.y - event.clientY
-            console.log('Y', diff)
-          } else {
-            const diff = startPosition.x - event.clientX
-            console.log('X', diff)
+          const diff = top || bottom
+            ? startPosition.y - event.clientY
+            : startPosition.x - event.clientX
+          if (onDragMove !== undefined) {
+            onDragMove(diff)
+          }
+        },
+        onMouseUp(event) {
+          const diff = top || bottom
+            ? startPosition.y - event.clientY
+            : startPosition.x - event.clientX
+          if (onDragDone !== undefined) {
+            onDragDone(diff)
           }
         },
       })
