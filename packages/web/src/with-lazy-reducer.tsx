@@ -54,12 +54,10 @@ export type StorageConfiguration<TState, TAction, TOuterProps = any> = {
   reducer: reducer<TState, TAction>
 }
 type MapStateToProps<TState, TOuterProps, TInnerStateProps> =
-  | ((state: TState) => TInnerStateProps)
   | ((state: TState, props: TOuterProps) => TInnerStateProps)
   | string
   | undefined
 type MapDispatchToProps<TAction, TOuterProps, TInnerDispatchProps> =
-  | ((dispatch: (action: TAction) => void) => TInnerDispatchProps)
   | ((
       dispatch: (action: TAction) => void,
       props: TOuterProps,
@@ -247,9 +245,9 @@ export function provideState<TState, TAction, TOuterProps = Readonly<{}>>(
 export function connectState<
   TState,
   TAction,
-  TOuterProps,
-  TInnerStateProps,
-  TInnerDispatchProps
+  TOuterProps = {},
+  TInnerStateProps = {},
+  TInnerDispatchProps = {}
 >(
   configuration: StorageConfiguration<TState, TAction>,
   mapStateToProps?: MapStateToProps<TState, TOuterProps, TInnerStateProps>,

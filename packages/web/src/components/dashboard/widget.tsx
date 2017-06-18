@@ -1,3 +1,4 @@
+import {Property} from 'raxa-common'
 import React from 'react'
 import {Card} from 'react-toolbox/lib/card'
 import {compose, withHandlers, withState} from 'recompose'
@@ -22,16 +23,17 @@ export type WidgetProps<T = any> = {
 }
 
 export type WidgetComponent<T = any> = React.ComponentClass<WidgetProps<T>> & {
+  type: string
   defaultSize: {width: number; height: number}
   demoConfig: T
   uiName: string
+  config?: {[id: string]: Property}
 }
 
 export type WidgetWrapperProps = CellProps & {
   id: string
   children: React.ReactNode
   editMode?: boolean
-  setPosition: (position: CellProps) => void
 }
 
 export type WidgetWrapperPrivateProps = WidgetWrapperProps &
@@ -39,6 +41,7 @@ export type WidgetWrapperPrivateProps = WidgetWrapperProps &
     showHandles: boolean
     setGhost: (position?: CellProps) => void
     setActive: (active: boolean) => void
+    setPosition: (position: CellProps) => void
     translate?: {x: number; y: number}
     setTranslate: (translate?: {x: number; y: number}) => void
     scale?: {x: number; y: number}
@@ -74,11 +77,12 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
           type: 'setActiveWidget',
           widgetId: active ? props.id : undefined,
         }),
+      setPosition: (position: CellProps) =>
+        dispatch({type: 'updateWidget', widget: {id: props.id, position}}),
     }),
   ),
   withState('translate', 'setTranslate', undefined),
   withState('scale', 'setScale', undefined),
-  withState('transformOrigin', 'setTransformOrigin', undefined),
   withInputEvents,
   withHandlers<
     WidgetWrapperPrivateProps,

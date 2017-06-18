@@ -73,6 +73,7 @@ export const ButtonWidgetView = ({data: {device}}: PrivateButtonWidgetProps) =>
 export const ButtonWidget: WidgetComponent<
   ButtonWidgetConfiguration
 > = Object.assign(enhance(ButtonWidgetView), {
+  type: 'ButtonWidget',
   uiName: 'Button',
   defaultSize: {width: 2, height: 1},
   demoConfig: {

@@ -11,14 +11,9 @@ import {provideState} from '../../with-lazy-reducer'
 import {Size, withSize} from '../../with-size'
 import {ContextActions} from '../ui/scaffold/context-actions'
 import {Cell, Grid} from './grid'
-import {
-  DashboardAction,
-  DashboardState,
-  dashboardState,
-  widgetTypes,
-} from './state'
+import {DashboardAction, DashboardState, dashboardState} from './state'
+import {DashboardToolbox} from './toolbox/dashboard-toolbox'
 import {Widget} from './widget'
-import {WidgetDrawer} from './widget-drawer'
 
 const Container = glamorous.div({
   position: 'relative',
@@ -131,22 +126,15 @@ export const DashboardView = ({
       )}
       {state.ghost && <Ghost {...state.ghost} />}
       {state.widgets.map(props => {
-        const WidgetType = widgetTypes[props.type]
+        const WidgetType = state.widgetTypes[props.type]
         return (
-          <Widget
-            key={props.id}
-            id={props.id}
-            {...props.position}
-            setPosition={position => {
-              Object.assign(props.position, position)
-            }}
-          >
+          <Widget key={props.id} id={props.id} {...props.position}>
             <WidgetType config={props.config} />
           </Widget>
         )
       })}
     </Workspace>
-    {state.editMode && <WidgetDrawer widgetTypes={widgetTypes} />}
+    {state.editMode && <DashboardToolbox />}
   </Container>
 
 export const Dashboard = enhance(DashboardView)

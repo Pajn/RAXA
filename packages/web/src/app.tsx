@@ -1,6 +1,6 @@
 import React from 'react'
 import {ApolloProvider} from 'react-apollo'
-import {Route} from 'react-router'
+import {Route, Switch} from 'react-router'
 import {BrowserRouter} from 'react-router-dom'
 import ThemeProvider from 'react-toolbox/lib/ThemeProvider'
 import {Dashboard} from './components/dashboard/dashboard'
@@ -16,8 +16,10 @@ export const App = () =>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Scaffold appName="RAXA">
-          <Route exact path="/" component={Dashboard} />
-          <Route path="/settings" component={DeviceSettings} />
+          <Switch>
+            <Route path="/settings" component={DeviceSettings} />
+            <Route path="/" component={Dashboard} />
+          </Switch>
           <ReduxSnackbar />
         </Scaffold>
       </BrowserRouter>

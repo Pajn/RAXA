@@ -189,7 +189,17 @@ export const LightWidgetView = ({
 export const LightWidget: WidgetComponent<
   LightWidgetConfiguration
 > = Object.assign(enhance(LightWidgetView), {
+  type: 'LightWidget',
   uiName: 'Lamp',
   defaultSize: {width: 2, height: 1},
-  demoConfig: {demo: true, deviceId: ''},
+  demoConfig: {deviceId: ''},
+  config: {
+    deviceId: {
+      id: 'deviceId',
+      type: 'device' as 'device',
+      name: 'Device',
+      interfaceIds,
+      modifiable: true,
+    },
+  },
 })

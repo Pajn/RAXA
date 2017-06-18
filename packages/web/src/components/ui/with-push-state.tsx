@@ -1,6 +1,5 @@
 import React from 'react'
-import setDisplayName from 'recompose/setDisplayName'
-import wrapDisplayName from 'recompose/wrapDisplayName'
+import {wrapDisplayName} from 'recompose'
 
 export type State<T> = {
   data: T
@@ -8,54 +7,61 @@ export type State<T> = {
   url?: string
 }
 
-export type WithPushStateProps<T> = {
-  pushState: (state: State<T>) => void,
-  state?: T
+export type InjectedPushStateProps<T> = {
+  pushState: (state: State<T>) => void
+  replaceState: (state: State<T>) => void
+  popState: () => void
+  state?: State<T>
 }
 
-export const withPushState = ({onBack}: {onBack: (ownProps: any) => void}) => WrappedComponent =>
-  setDisplayName(wrapDisplayName(WrappedComponent, 'withPushState'))(
-    class extends React.Component<any, {state: Array<State<any>>}> {
-      state = {state: [] as Array<State<any>>}
-      isActiveState = false
+export const withPushState = () => WrappedComponent =>
+  class extends React.Component<any, {state?: State<any>}> {
+    static displayName = wrapDisplayName(WrappedComponent, 'withPushState')
 
-      pushState = (state: State<any>) => {
-        this.isActiveState = true
-        this.state.state.unshift(state)
-        history.pushState(state.data, state.title, state.url)
-      }
-      onPushState = (e: PopStateEvent) => this.checkActiveState(e)
-      onPopState = (e: PopStateEvent) => {
-        if (this.isActiveState) {
-          e.preventDefault()
-          e.stopImmediatePropagation()
-          this.state.state.shift()
-          onBack(this.props)
-        }
-        this.checkActiveState(e)
-      }
+    state = {state: undefined}
 
-      private checkActiveState(e: PopStateEvent) {
-        const activeState = this.state.state[0]
-        this.isActiveState =
-          activeState && e.state &&
-          e.state.title === activeState.title &&
-          e.state.data === activeState.data &&
-          e.state.url === activeState.url
-      }
-
-      componentDidMount() {
-        window.addEventListener('pushstate', this.onPushState, true)
-        window.addEventListener('popstate', this.onPopState, true)
-      }
-
-      componentWillUnmount() {
-        window.removeEventListener('pushstate', this.onPushState, true)
-        window.removeEventListener('popstate', this.onPopState, true)
-      }
-
-      render() {
-        return <WrappedComponent {...this.props} pushState={this.pushState} />
+    pushState = (state: State<any>) => {
+      history.pushState({state, type: 'withPushState'}, state.title, state.url)
+      this.setState({state})
+    }
+    replaceState_ = (state: State<any>) => {
+      history.replaceState(
+        {state, type: 'withPushState'},
+        state.title,
+        state.url,
+      )
+      this.setState({state})
+    }
+    popState = () => {
+      history.back()
+      this.setState({state: undefined})
+    }
+    onPopState = (e: PopStateEvent) => {
+      console.log('onPopState', e.state)
+      if (e.state && e.state.type === 'withPushState') {
+        this.setState({state: e.state.state})
+      } else {
+        this.setState({state: undefined})
       }
     }
-  )
+
+    componentDidMount() {
+      window.addEventListener('popstate', this.onPopState, true)
+    }
+
+    componentWillUnmount() {
+      window.removeEventListener('popstate', this.onPopState, true)
+    }
+
+    render() {
+      return (
+        <WrappedComponent
+          {...this.props}
+          pushState={this.pushState}
+          replaceState={this.replaceState_}
+          popState={this.popState}
+          state={this.state.state}
+        />
+      )
+    }
+  }

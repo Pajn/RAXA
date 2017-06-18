@@ -29,7 +29,6 @@ const Value = styled.span``
 const Unit = styled.span``
 
 export type DisplayWidgetConfiguration = {
-  demo?: boolean
   deviceId: string
   interfaceId: string
   statusId: string
@@ -51,7 +50,7 @@ export const enhance = compose<PrivateDisplayWidgetProps, DisplayWidgetProps>(
     interfaceId: config.interfaceId,
     interfaceIds: [config.interfaceId],
     statusIds: [config.statusId],
-    data: config.demo
+    data: !config.deviceId
       ? {
           device: {
             id: '',
@@ -85,7 +84,7 @@ export const enhance = compose<PrivateDisplayWidgetProps, DisplayWidgetProps>(
       }
     }
   `,
-    {skip: props => props.config.demo},
+    {skip: (props: PrivateDisplayWidgetProps) => !props.config.deviceId},
   ),
   mapProps<PrivateDisplayWidgetProps, PrivateDisplayWidgetProps>(props => ({
     ...props,
@@ -129,10 +128,10 @@ export const DisplayWidgetView = ({
 export const DisplayWidget: WidgetComponent<
   DisplayWidgetConfiguration
 > = Object.assign(enhance(DisplayWidgetView), {
+  type: 'DisplayWidget',
   uiName: 'Temperature',
   defaultSize: {width: 2, height: 1},
   demoConfig: {
-    demo: true,
     deviceId: '',
     interfaceId: 'Temperature',
     statusId: 'temp',

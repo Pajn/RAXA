@@ -1,4 +1,3 @@
-import {keyframes} from 'glamor'
 import glamorous from 'glamorous'
 import React from 'react'
 import {Card} from 'react-toolbox/lib/card'
@@ -7,33 +6,17 @@ import {Title} from 'styled-material/dist/src/typography'
 import {
   InjectedInputEventsProps,
   withInputEvents,
-} from '../../with-input-events/with-input-events'
-import {connectState} from '../../with-lazy-reducer'
-import {CellProps, xPxToCell, yPxToCell} from './grid'
-import {DashboardState, dashboardState} from './state'
-import {WidgetComponent} from './widget'
-
-const fadeInUp = keyframes({
-  '0%': {
-    opacity: 0,
-    transform: 'translateY(100%)',
-  },
-  '100%': {
-    opacity: 1,
-    transform: '',
-  },
-})
-
-const Container = glamorous.div({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'absolute',
-  bottom: 0,
-  width: '100%',
-
-  animation: `${fadeInUp} 300ms ease-out`,
-})
+} from '../../../with-input-events/with-input-events'
+import {connectState} from '../../../with-lazy-reducer'
+import {CellProps, xPxToCell, yPxToCell} from '../grid'
+import {
+  DashboardState,
+  WidgetConfig,
+  WidgetTypes,
+  dashboardState,
+} from '../state'
+import {WidgetComponent} from '../widget'
+import {ToolboxContainer} from './ui'
 
 const WidgetDisplayContainer = glamorous.div({
   position: 'relative',
@@ -73,6 +56,7 @@ type WidgetDisplayPrivateProps = WidgetDisplayProps &
     grabWidget: (event: React.MouseEvent<any>) => void
     dashboardState: DashboardState
     setGhost: (ghost: CellProps) => void
+    addWidget: (widget: WidgetConfig) => void
   }
 
 function lerp(start: number, end: number, t: number) {
@@ -80,13 +64,21 @@ function lerp(start: number, end: number, t: number) {
 }
 
 const enhanceDisplay = compose<WidgetDisplayPrivateProps, WidgetDisplayProps>(
-  connectState(dashboardState, 'dashboardState', dispatch => ({
+  connectState(dashboardState, 'dashboardState', (dispatch): Partial<
+    WidgetDisplayPrivateProps
+  > => ({
     setGhost: ghost => dispatch({type: 'setGhost', ghost}),
+    addWidget: widget => dispatch({type: 'addWidget', widget}),
   })),
   withState('position', 'setPosition', undefined),
   withInputEvents,
   withHandlers(
-    ({onMoveEvents, setPosition, setGhost}: WidgetDisplayPrivateProps) => ({
+    ({
+      onMoveEvents,
+      setPosition,
+      setGhost,
+      addWidget,
+    }: WidgetDisplayPrivateProps) => ({
       grabWidget: ({widget, dashboardState}: WidgetDisplayPrivateProps) => (
         event: React.MouseEvent<void>,
       ) => {
@@ -129,16 +121,19 @@ const enhanceDisplay = compose<WidgetDisplayPrivateProps, WidgetDisplayProps>(
             }
             if (rendered) {
               setPosition({x: deltaX, y: deltaY})
-              // const height = 24 + dashboardState.gridSize.endY * 0.7
               setGhost(widgetPos(event))
             }
           },
           onMouseUp(event) {
-            console.log(event.target)
             setPosition()
             const widgetPosition = widgetPos(event)
             if (widgetPosition) {
-              // add widget
+              addWidget({
+                id: Date.now().toString(),
+                type: widget.type,
+                config: widget.demoConfig,
+                position: widgetPosition,
+              })
             }
           },
         })
@@ -169,16 +164,20 @@ const WidgetDisplayView = ({
 
 const WidgetDisplay = enhanceDisplay(WidgetDisplayView)
 
-export type WidgetDrawerProps = {widgetTypes: {[name: string]: WidgetComponent}}
-export type WidgetDrawerPrivateProps = WidgetDrawerProps & {}
+export type WidgetDrawerProps = {}
+export type WidgetDrawerPrivateProps = WidgetDrawerProps & {
+  widgetTypes: WidgetTypes
+}
 
-export const enhance = compose<WidgetDrawerPrivateProps, WidgetDrawerProps>()
+export const enhance = compose<WidgetDrawerPrivateProps, WidgetDrawerProps>(
+  connectState(dashboardState, state => ({widgetTypes: state.widgetTypes})),
+)
 
 export const WidgetDrawerView = ({widgetTypes}: WidgetDrawerPrivateProps) =>
-  <Container>
+  <ToolboxContainer>
     {Object.entries(widgetTypes).map(([id, widget]) =>
       <WidgetDisplay key={id} widget={widget} />,
     )}
-  </Container>
+  </ToolboxContainer>
 
 export const WidgetDrawer = enhance(WidgetDrawerView)

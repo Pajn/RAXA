@@ -1,3 +1,4 @@
+import {updateIn} from 'redux-decorated'
 import {StorageConfiguration} from '../../with-lazy-reducer'
 import {Size} from '../../with-size'
 import {CellProps} from './grid'
@@ -6,10 +7,11 @@ import {ButtonWidget} from './widgets/button'
 import {DisplayWidget} from './widgets/display'
 import {LightWidget} from './widgets/light'
 
-export const widgetTypes: {[name: string]: WidgetComponent} = {
-  ButtonWidget,
-  DisplayWidget,
-  LightWidget,
+export type WidgetTypes = {[name: string]: WidgetComponent}
+export type WidgetConfig = WidgetProps & {
+  id: string
+  type: string
+  position: CellProps
 }
 
 export type DashboardState = {
@@ -32,19 +34,16 @@ export type DashboardState = {
   activeWidget?: string
   editMode: boolean
   ghost?: CellProps
-  widgets: Array<
-    WidgetProps & {
-      id: string
-      type: keyof typeof widgetTypes
-      position: CellProps
-    }
-  >
+  widgets: Array<WidgetConfig>
+  widgetTypes: WidgetTypes
 }
 export type DashboardAction =
   | {type: 'setActiveWidget'; widgetId?: string}
   | {type: 'setGhost'; ghost?: CellProps}
   | {type: 'setEditMode'; editMode: boolean}
   | {type: 'setGridSize'; size: Size}
+  | {type: 'addWidget'; widget: WidgetConfig}
+  | {type: 'updateWidget'; widget: Partial<WidgetConfig> & {id: string}}
 
 const widgets: DashboardState['widgets'] = [
   {
@@ -103,6 +102,12 @@ const widgets: DashboardState['widgets'] = [
   },
 ]
 
+const widgetTypes: WidgetTypes = {
+  ButtonWidget,
+  DisplayWidget,
+  LightWidget,
+}
+
 export const dashboardState: StorageConfiguration<
   DashboardState,
   DashboardAction
@@ -127,8 +132,10 @@ export const dashboardState: StorageConfiguration<
     },
     editMode: true,
     widgets,
+    widgetTypes,
   },
   reducer(state, action) {
+    console.log('action', action)
     switch (action.type) {
       case 'setActiveWidget':
         return {...state, activeWidget: action.widgetId}
@@ -190,6 +197,25 @@ export const dashboardState: StorageConfiguration<
             endX,
             endY,
           },
+        }
+      case 'addWidget':
+        return {
+          ...state,
+          activeWidget: action.widget.id,
+          widgets: state.widgets.concat(action.widget),
+        }
+      case 'updateWidget':
+        const index = state.widgets.findIndex(
+          widget => widget.id === action.widget.id,
+        )
+        return {
+          ...state,
+          activeWidget: action.widget.id,
+          widgets: updateIn(
+            index,
+            {...state.widgets[index], ...action.widget},
+            state.widgets,
+          ),
         }
     }
   },
