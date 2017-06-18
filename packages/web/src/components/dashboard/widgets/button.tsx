@@ -10,6 +10,7 @@ import {gql, graphql} from 'react-apollo/lib'
 import {QueryProps} from 'react-apollo/lib/graphql'
 import {compose, mapProps} from 'recompose'
 import styled from 'styled-components'
+import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
 
 const Container = glamorous.div({
@@ -24,14 +25,15 @@ const DeviceName = styled.span`
 export type ButtonWidgetConfiguration = {
   deviceId: string
   interfaceId: string
-  methodId: string
+  method: string
 }
 export type ButtonWidgetProps = WidgetProps<ButtonWidgetConfiguration>
-export type PrivateButtonWidgetProps = ButtonWidgetProps & {
-  data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
-  status?: DeviceStatus
-  statusDefinition?: NumberProperty
-}
+export type PrivateButtonWidgetProps = ButtonWidgetProps &
+  CallDeviceInjectedProps & {
+    data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
+    status?: DeviceStatus
+    statusDefinition?: NumberProperty
+  }
 
 export const enhance = compose<PrivateButtonWidgetProps, ButtonWidgetProps>(
   mapProps<
@@ -60,13 +62,26 @@ export const enhance = compose<PrivateButtonWidgetProps, ButtonWidgetProps>(
   `,
     {skip: props => !props.config.deviceId},
   ),
+  callDevice(),
   mapProps<PrivateButtonWidgetProps, PrivateButtonWidgetProps>(props => ({
     ...props,
   })),
 )
 
-export const ButtonWidgetView = ({data: {device}}: PrivateButtonWidgetProps) =>
-  <Container>
+export const ButtonWidgetView = ({
+  data: {device},
+  callDevice,
+  config,
+}: PrivateButtonWidgetProps) =>
+  <Container
+    onClick={() =>
+      callDevice({
+        deviceId: config.deviceId,
+        interfaceId: config.interfaceId,
+        method: config.method,
+        arguments: undefined,
+      })}
+  >
     <DeviceName>{device && device.name}</DeviceName>
   </Container>
 
@@ -74,11 +89,20 @@ export const ButtonWidget: WidgetComponent<
   ButtonWidgetConfiguration
 > = Object.assign(enhance(ButtonWidgetView), {
   type: 'ButtonWidget',
-  uiName: 'Button',
+  uiName: 'Scenery',
   defaultSize: {width: 2, height: 1},
   demoConfig: {
     deviceId: '',
-    interfaceId: 'Temperature',
-    methodId: 'temp',
+    interfaceId: 'Scenery',
+    method: 'set',
+  },
+  config: {
+    deviceId: {
+      id: 'deviceId',
+      type: 'device' as 'device',
+      name: 'Device',
+      interfaceIds: ['Scenery'],
+      modifiable: true,
+    },
   },
 })

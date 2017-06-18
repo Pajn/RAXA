@@ -79,6 +79,7 @@ export const WidgetConfigurationView = ({
               required: !config.optional && config.modifiable,
             }))}
             onSave={updateWidget}
+            onChange={(widget, valid) => valid && updateWidget(widget)}
           />}
       </div>
     </Container>

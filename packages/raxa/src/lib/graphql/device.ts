@@ -191,7 +191,7 @@ export const deviceMutations = buildMutations({
       deviceId: joi.string(),
       interfaceId: joi.string(),
       method: joi.string(),
-      arguments: joi.string(),
+      // arguments: joi.string(),
     }),
     writeRules: false,
     async resolve(_, call: Call, {storage, plugins}: Context) {
