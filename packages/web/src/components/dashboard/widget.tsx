@@ -120,7 +120,7 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
               height,
             })
           },
-          onCancel() {
+          onMouseUp(event) {
             const deltaX = (event.clientX - startPosition.x) * (1 / 0.7)
             const deltaY = (event.clientY - startPosition.y) * (1 / 0.7)
             setTranslate()
@@ -234,7 +234,7 @@ export const WidgetView = ({
     onMouseDown={editMode ? startMove : undefined}
     onClick={editMode ? doShowHandles : undefined}
   >
-    <Card style={{padding: 8, height: '100%'}}>
+    <Card style={{position: 'relative', padding: 8, height: '100%'}}>
       {children}
     </Card>
     {editMode &&

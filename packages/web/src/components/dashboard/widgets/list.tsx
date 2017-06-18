@@ -17,6 +17,7 @@ const Container = glamorous.div<{row: boolean}>(({row}) => ({
 }))
 
 const DeviceWrapper = glamorous.div<{row: boolean}>(({row}) => ({
+  position: 'relative',
   boxSizing: 'border-box',
   padding: row ? 16 : 8,
   height: 56,
@@ -27,7 +28,6 @@ const DeviceWrapper = glamorous.div<{row: boolean}>(({row}) => ({
     : 'none',
 
   '& + &': {
-    marginTop: row ? undefined : 8,
     marginLeft: row ? 24 : undefined,
     paddingTop: row ? undefined : 16,
     borderTop: row ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
@@ -97,9 +97,9 @@ export const ListWidgetView = ({data}: ListWidgetPrivateProps) =>
                   : null,
             )
             .map(
-              innerWidget =>
+              (innerWidget, i) =>
                 innerWidget &&
-                <DeviceWrapper row={row}>{innerWidget}</DeviceWrapper>,
+                <DeviceWrapper key={i} row={row}>{innerWidget}</DeviceWrapper>,
             )}
       </Container>}
   </ContainerQuery>

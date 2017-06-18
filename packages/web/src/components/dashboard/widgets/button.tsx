@@ -15,10 +15,17 @@ import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
 
 const Container = glamorous.div({
-  position: 'relative',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
   display: 'flex',
   alignItems: 'center',
+
+  padding: 8,
   height: '100%',
+  overflow: 'hidden',
 })
 const DeviceName = styled.span`
   flex: 1;
@@ -35,6 +42,7 @@ export type PrivateButtonWidgetProps = ButtonWidgetProps &
     data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
     status?: DeviceStatus
     statusDefinition?: NumberProperty
+    children?: React.ReactChild
   }
 
 export const enhance = compose<PrivateButtonWidgetProps, ButtonWidgetProps>(
@@ -52,6 +60,7 @@ export const enhance = compose<PrivateButtonWidgetProps, ButtonWidgetProps>(
           } as GraphQlDevice,
         } as PrivateButtonWidgetProps['data']
       : undefined,
+    ripple: true,
   })),
   graphql(
     gql`
@@ -72,8 +81,11 @@ export const ButtonWidgetView = ({
   data: {device},
   callDevice,
   config,
+  children,
+  ...props,
 }: PrivateButtonWidgetProps) =>
   <Container
+    {...props}
     onClick={() =>
       callDevice({
         deviceId: config.deviceId,
@@ -83,6 +95,7 @@ export const ButtonWidgetView = ({
       })}
   >
     <DeviceName>{device && device.name}</DeviceName>
+    {children}
   </Container>
 
 export const ButtonWidget: WidgetComponent<
