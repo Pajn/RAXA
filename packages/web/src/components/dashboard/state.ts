@@ -6,6 +6,7 @@ import {WidgetComponent, WidgetProps} from './widget'
 import {ButtonWidget} from './widgets/button'
 import {DisplayWidget} from './widgets/display'
 import {LightWidget} from './widgets/light'
+import {ListWidget} from './widgets/list'
 
 export type WidgetTypes = {[name: string]: WidgetComponent}
 export type WidgetConfig = WidgetProps & {
@@ -100,12 +101,39 @@ const widgets: DashboardState['widgets'] = [
       deviceId: '1490977902528',
     },
   },
+  {
+    id: '5',
+    type: 'ListWidget',
+    position: {
+      x: 0,
+      y: 9,
+      width: 15,
+      height: 2,
+    },
+    config: {
+      interfaceIds: ['Scenery'],
+    },
+  },
+  {
+    id: '6',
+    type: 'ListWidget',
+    position: {
+      x: 10,
+      y: 0,
+      width: 5,
+      height: 7,
+    },
+    config: {
+      interfaceIds: ['Scenery', 'Light', 'Dimmer'],
+    },
+  },
 ]
 
 const widgetTypes: WidgetTypes = {
   ButtonWidget,
   DisplayWidget,
   LightWidget,
+  ListWidget,
 }
 
 export const dashboardState: StorageConfiguration<
@@ -115,10 +143,10 @@ export const dashboardState: StorageConfiguration<
   id: 'dashboard',
   initialState: {
     gridSettings: {
-      cols: 10,
-      rows: 10,
-      cellHeight: 48,
-      cellWidth: 48,
+      cols: 15,
+      rows: 11,
+      cellHeight: 56,
+      cellWidth: 56,
       maxGap: 24,
     },
     gridSize: {
@@ -130,7 +158,7 @@ export const dashboardState: StorageConfiguration<
       endX: 0,
       endY: 0,
     },
-    editMode: true,
+    editMode: false,
     widgets,
     widgetTypes,
   },

@@ -17,19 +17,19 @@ export type HandleProps = (
   onDragMove?: (
     delta: {x: number; y: number},
     position: {
-      top?: boolean;
-      left?: boolean;
-      right?: boolean;
-      bottom?: boolean;
+      top?: boolean
+      left?: boolean
+      right?: boolean
+      bottom?: boolean
     },
   ) => void
   onDragDone?: (
     delta: {x: number; y: number},
     position: {
-      top?: boolean;
-      left?: boolean;
-      right?: boolean;
-      bottom?: boolean;
+      top?: boolean
+      left?: boolean
+      right?: boolean
+      bottom?: boolean
     },
   ) => void
 }

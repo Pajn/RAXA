@@ -234,7 +234,7 @@ export const WidgetView = ({
     onMouseDown={editMode ? startMove : undefined}
     onClick={editMode ? doShowHandles : undefined}
   >
-    <Card raised style={{padding: 8, height: '100%'}}>
+    <Card style={{padding: 8, height: '100%'}}>
       {children}
     </Card>
     {editMode &&

@@ -15,6 +15,8 @@ import {DashboardAction, DashboardState, dashboardState} from './state'
 import {DashboardToolbox} from './toolbox/dashboard-toolbox'
 import {Widget} from './widget'
 
+const debugGrid = false
+
 const Container = glamorous.div({
   position: 'relative',
   display: 'flex',
@@ -36,7 +38,7 @@ const Workspace = glamorous(
 
   backgroundColor: 'white',
 
-  filter: editMode ? `brightness(0.9)` : undefined,
+  filter: editMode ? `brightness(0.98)` : undefined,
   transform: editMode ? `translateY(24px) scale(0.7)` : undefined,
   transformOrigin: '50% 0',
   transition: `
@@ -104,11 +106,9 @@ export const DashboardView = ({
 }: DashboardPrivateProps) =>
   <Container
     onClick={
-      haveInputListeners
-        ? undefined
-        : () => {
-            setEditMode(false)
-          }
+      state.editMode && !haveInputListeners
+        ? () => setEditMode(false)
+        : undefined
     }
     {...eventListeners}
     onContextMenu={onContextMenu}
@@ -119,11 +119,12 @@ export const DashboardView = ({
       ]}
     />
     <Workspace editMode={state.editMode}>
-      {Array.from({length: state.gridSettings.cols}).map((_, col) =>
-        Array.from({length: state.gridSettings.rows}).map((_, row) =>
-          <Ghost x={col} y={row} width={1} height={1} />,
-        ),
-      )}
+      {debugGrid &&
+        Array.from({length: state.gridSettings.cols}).map((_, col) =>
+          Array.from({length: state.gridSettings.rows}).map((_, row) =>
+            <Ghost x={col} y={row} width={1} height={1} />,
+          ),
+        )}
       {state.ghost && <Ghost {...state.ghost} />}
       {state.widgets.map(props => {
         const WidgetType = state.widgetTypes[props.type]

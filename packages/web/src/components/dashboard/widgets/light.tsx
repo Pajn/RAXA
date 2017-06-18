@@ -22,7 +22,7 @@ const Container = glamorous.div({
 const NameRow = glamorous.div({
   display: 'flex',
   alignItems: 'center',
-  height: 32,
+  height: 40,
 })
 const DeviceName = glamorous.span({
   flex: 1,
@@ -191,7 +191,7 @@ export const LightWidget: WidgetComponent<
 > = Object.assign(enhance(LightWidgetView), {
   type: 'LightWidget',
   uiName: 'Lamp',
-  defaultSize: {width: 2, height: 1},
+  defaultSize: {width: 4, height: 1},
   demoConfig: {deviceId: ''},
   config: {
     deviceId: {

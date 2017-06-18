@@ -19,7 +19,7 @@ const Container = glamorous.div({
 const StatusRow = glamorous.div({
   display: 'flex',
   alignItems: 'center',
-  height: 32,
+  height: 40,
 })
 const DeviceName = styled.span`
   flex: 1;

@@ -66,6 +66,13 @@ export const DeviceType = buildType<Device>({
     interfaceIds: {
       type: [GraphQLString],
       isInput: false,
+      validate: joi.object({}),
+      resolve({interfaceIds, deviceClassId}: Device, {}, {storage}: Context) {
+        return (
+          interfaceIds ||
+          storage.getState().deviceClasses[deviceClassId].interfaceIds
+        )
+      },
     },
     interfaces: {
       type: [InterfaceType],

@@ -8,12 +8,14 @@ import {
 import React from 'react'
 import {gql, graphql} from 'react-apollo/lib'
 import {QueryProps} from 'react-apollo/lib/graphql'
+import Ripple from 'react-toolbox/lib/ripple'
 import {compose, mapProps} from 'recompose'
 import styled from 'styled-components'
 import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
 
 const Container = glamorous.div({
+  position: 'relative',
   display: 'flex',
   alignItems: 'center',
   height: '100%',
@@ -63,9 +65,7 @@ export const enhance = compose<PrivateButtonWidgetProps, ButtonWidgetProps>(
     {skip: props => !props.config.deviceId},
   ),
   callDevice(),
-  mapProps<PrivateButtonWidgetProps, PrivateButtonWidgetProps>(props => ({
-    ...props,
-  })),
+  Ripple({spread: 3}),
 )
 
 export const ButtonWidgetView = ({
