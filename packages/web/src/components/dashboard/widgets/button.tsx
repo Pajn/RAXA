@@ -6,7 +6,7 @@ import {
   NumberProperty,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import {QueryProps} from 'react-apollo/lib/graphql'
 import Ripple from 'react-toolbox/lib/ripple'
 import {compose, mapProps} from 'recompose'

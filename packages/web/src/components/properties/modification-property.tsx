@@ -7,7 +7,7 @@ import {
 } from 'raxa-common/lib/entities'
 import React from 'react'
 import {QueryProps} from 'react-apollo'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import compose from 'recompose/compose'
 import mapProps from 'recompose/mapProps'
 import {SettingDropdown} from '../ui/setting-input'

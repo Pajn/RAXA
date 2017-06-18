@@ -1,5 +1,5 @@
 import {Call, Modification} from 'raxa-common'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import {Dispatch, connect} from 'react-redux'
 import compose from 'recompose/compose'
 import {action} from 'redux-decorated'

@@ -1,6 +1,6 @@
 import {Interface} from 'raxa-common'
 import React from 'react'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import {connect} from 'react-redux'
 import compose from 'recompose/compose'
 import {

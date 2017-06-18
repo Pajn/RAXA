@@ -5,7 +5,7 @@ import {
   GraphQlDeviceClass,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import {QueryProps} from 'react-apollo/lib/graphql'
 import BadIconButton from 'react-toolbox/lib/button/IconButton'
 import {

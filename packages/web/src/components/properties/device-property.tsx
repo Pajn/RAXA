@@ -1,7 +1,7 @@
 import {Device, DeviceProperty} from 'raxa-common'
 import React from 'react'
 import {QueryProps} from 'react-apollo'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import compose from 'recompose/compose'
 import mapProps from 'recompose/mapProps'
 import {SettingDropdown} from '../ui/setting-input'
@@ -13,14 +13,17 @@ export type PrivateDeviceDispayProps = DeviceDispayProps & {
 }
 
 export const enhanceDeviceDisplay = compose(
-  graphql(gql`
+  graphql(
+    gql`
     query($value: String!) {
       device(id: $value) {
         id
         name
       }
     }
-  `, {skip: ({value}) => !value})
+  `,
+    {skip: ({value}) => !value},
+  ),
 )
 
 export const DeviceDispayView = ({data, property}: PrivateDeviceDispayProps) =>
@@ -29,7 +32,9 @@ export const DeviceDispayView = ({data, property}: PrivateDeviceDispayProps) =>
     value={data && data.device && data.device.name}
   />
 
-export const DeviceDispay = enhanceDeviceDisplay(DeviceDispayView) as React.ComponentClass<DeviceDispayProps>
+export const DeviceDispay = enhanceDeviceDisplay(
+  DeviceDispayView,
+) as React.ComponentClass<DeviceDispayProps>
 
 export type DeviceInputProps = PropertyProps<DeviceProperty>
 export type PrivateDeviceInputProps = DeviceInputProps & {
@@ -49,15 +54,26 @@ export const enhanceDeviceInput = compose(
         name
       }
     }
-  `)
+  `),
 )
 
-export const DeviceInputView = ({data, property, value, onChange}: PrivateDeviceInputProps) =>
+export const DeviceInputView = ({
+  data,
+  property,
+  value,
+  onChange,
+}: PrivateDeviceInputProps) =>
   <SettingDropdown
     label={property.name || property.id}
-    source={(data && data.devices) ? data.devices.map(device => ({value: device.id, label: device.name})) : []}
+    source={
+      data && data.devices
+        ? data.devices.map(device => ({value: device.id, label: device.name}))
+        : []
+    }
     value={value}
     onChange={onChange}
   />
 
-export const DeviceInput = enhanceDeviceInput(DeviceInputView) as React.ComponentClass<DeviceInputProps>
+export const DeviceInput = enhanceDeviceInput(
+  DeviceInputView,
+) as React.ComponentClass<DeviceInputProps>

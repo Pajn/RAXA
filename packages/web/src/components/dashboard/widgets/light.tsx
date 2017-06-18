@@ -2,17 +2,20 @@ import Flexbox from 'flexbox-react'
 import glamorous from 'glamorous'
 import {DeviceStatus, GraphQlDevice, Interface} from 'raxa-common/lib/entities'
 import React from 'react'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import {QueryProps} from 'react-apollo/lib/graphql'
 import {ContainerQuery} from 'react-container-query'
 import {Slider} from 'react-toolbox/lib/slider'
 import Switch from 'react-toolbox/lib/switch/Switch'
-import {compose, mapProps} from 'recompose'
+import {compose, mapProps, withState} from 'recompose'
+import {updateIn} from 'redux-decorated'
 import {
   UpdateDeviceStatusInjectedProps,
   updateDeviceStatus,
 } from '../../../lib/mutations'
+import {withThrottledMutation} from '../../../with-throttled-mutation'
 import {WidgetComponent, WidgetProps} from '../widget'
+import {DimButton, DimLevelButton} from './ui/light-button'
 
 const Container = glamorous.div({
   display: 'flex',
@@ -25,7 +28,10 @@ const NameRow = glamorous.div({
   height: 40,
 })
 const DeviceName = glamorous.span({
-  flex: 1,
+  flexGrow: 1,
+})
+const DetailControl = glamorous.span({
+  flex: 3,
 })
 const PowerSwitch = glamorous(Switch)({
   flexShrink: 0,
@@ -42,6 +48,9 @@ export type PrivateLightWidgetProps = LightWidgetProps &
   UpdateDeviceStatusInjectedProps & {
     data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
     status?: {[id: string]: DeviceStatus}
+    showDetail: boolean
+    setShowDetail: (showDetail: boolean) => void
+    setDimmer: (value: string) => void
   }
 
 function asObject<T, K extends keyof T>(
@@ -54,14 +63,6 @@ function asObject<T, K extends keyof T>(
   }
   return object
 }
-
-// function statusListAsObject(array: Iterable<DeviceStatus>): {[interfaceId: string]: {[statusId: string]: DeviceStatus}} {
-//   const object = {}
-//   for (const element of array) {
-//     object[element.id] = element
-//   }
-//   return object
-// }
 
 export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
   mapProps<Partial<PrivateLightWidgetProps>, LightWidgetProps>(({config}) => ({
@@ -111,22 +112,37 @@ export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
       props.data.device && asObject(props.data.device.status, 'interfaceId'),
   })),
   updateDeviceStatus(),
+  withState('showDetail', 'setShowDetail', false),
+  withThrottledMutation<PrivateLightWidgetProps>(
+    100,
+    'status',
+    'setDimmer',
+    (value, {status, data: {device}, setDeviceStatus}) => {
+      if (!status || !device) {
+        throw Error('Device not loaded')
+      }
+      return setDeviceStatus(status.Dimmer.id, {
+        deviceId: device.id,
+        interfaceId: status.Dimmer.interfaceId,
+        statusId: status.Dimmer.statusId,
+        value,
+      })
+    },
+    {
+      mapValue: (value, {status}) =>
+        updateIn(['Dimmer', 'value'], value, status!),
+    },
+  ),
 )
 
 export const LightWidgetView = ({
   data: {device},
   status,
   setDeviceStatus,
+  showDetail,
+  setShowDetail,
+  setDimmer,
 }: PrivateLightWidgetProps) => {
-  function setDimmer(value: string) {
-    if (!status || !device) return Promise.reject('Device not loaded')
-    return setDeviceStatus(status.Dimmer.id, {
-      deviceId: device.id,
-      interfaceId: status.Dimmer.interfaceId,
-      statusId: status.Dimmer.statusId,
-      value,
-    })
-  }
   return (
     <ContainerQuery
       query={{
@@ -141,45 +157,55 @@ export const LightWidgetView = ({
       {({thin, long}) =>
         <Container>
           {device &&
-            <NameRow>
-              <DeviceName>{device.name}</DeviceName>
-              {status
-                ? <Flexbox alignItems="center">
-                    {long && device.interfaceIds!.includes('Dimmer')
-                      ? <Flexbox>
-                          <button onChange={() => setDimmer('25')}>
-                            25%
-                          </button>
-                          <button onChange={() => setDimmer('50')}>
-                            50%
-                          </button>
-                          <button onChange={() => setDimmer('100')}>
-                            100%
-                          </button>
-                        </Flexbox>
-                      : <PowerSwitch
-                          checked={Boolean(status.Light.value)}
-                          onClick={() => {
-                            setDeviceStatus(status.Light.id, {
-                              deviceId: device.id,
-                              interfaceId: status.Light.interfaceId,
-                              statusId: status.Light.statusId,
-                              value: (!Boolean(status.Light.value)).toString(),
-                            })
-                          }}
-                        />}
-                    {thin &&
-                      device.interfaceIds!.includes('Dimmer') &&
-                      <button>Dim</button>}
-                  </Flexbox>
-                : <div />}
-            </NameRow>}
+            (showDetail && status
+              ? <NameRow>
+                  <DeviceName>{device.name}</DeviceName>
+                  <DetailControl>
+                    <Slider value={+status.Dimmer.value} onChange={setDimmer} />
+                  </DetailControl>
+                </NameRow>
+              : <NameRow>
+                  <DeviceName>{device.name}</DeviceName>
+                  {status
+                    ? <Flexbox alignItems="center">
+                        {long && device.interfaceIds!.includes('Dimmer')
+                          ? <Flexbox>
+                              <DimLevelButton
+                                onClick={() => setDimmer('25')}
+                                level={0.25}
+                              />
+                              <DimLevelButton
+                                onClick={() => setDimmer('25')}
+                                level={0.5}
+                              />
+                              <DimLevelButton
+                                onClick={() => setDimmer('25')}
+                                level={1}
+                              />
+                            </Flexbox>
+                          : <PowerSwitch
+                              checked={Boolean(status.Light.value)}
+                              onChange={value => {
+                                setDeviceStatus(status.Light.id, {
+                                  deviceId: device.id,
+                                  interfaceId: status.Light.interfaceId,
+                                  statusId: status.Light.statusId,
+                                  value: value.toString(),
+                                })
+                              }}
+                            />}
+                        {thin &&
+                          device.interfaceIds!.includes('Dimmer') &&
+                          <DimButton onClick={() => setShowDetail(true)} />}
+                      </Flexbox>
+                    : <div />}
+                </NameRow>)}
           {device &&
             status &&
             !thin &&
             device.interfaceIds!.includes('Dimmer') &&
             <Flexbox flexDirection="column">
-              <Slider onChange={setDimmer} />
+              <Slider value={+status.Dimmer.value} onChange={setDimmer} />
             </Flexbox>}
         </Container>}
     </ContainerQuery>

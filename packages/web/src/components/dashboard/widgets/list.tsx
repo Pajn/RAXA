@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import {GraphQlDevice} from 'raxa-common/lib/entities'
 import React from 'react'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import {ContainerQuery} from 'react-container-query'
 import {compose, mapProps} from 'recompose'
 import {WidgetComponent, WidgetProps} from '../widget'

@@ -1,6 +1,6 @@
 import {Device} from 'raxa-common'
 import React from 'react'
-import {gql, graphql} from 'react-apollo/lib'
+import {gql, graphql} from 'react-apollo'
 import {compose} from 'recompose'
 
 export type DeviceNameProps = {id: string}
