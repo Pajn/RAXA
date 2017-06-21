@@ -10,7 +10,6 @@ import {QueryProps} from 'react-apollo/lib/graphql'
 import BadIconButton from 'react-toolbox/lib/button/IconButton'
 import {
   List,
-  ListDivider,
   ListItem as ToolboxListItem,
   ListSubHeader,
 } from 'react-toolbox/lib/list'
@@ -123,7 +122,6 @@ export const DeviceDetailSettingsView = ({
     {!isMobile && <Title>{device.id ? device.name : 'New Device'}</Title>}
     {device.id &&
       <ToolboxListItem caption="Type" legend={device.deviceClass.name} />}
-    {device.id && <ListDivider />}
     <ListSubHeader caption="Properties" />
     <SettingForm
       value={device}
@@ -173,7 +171,6 @@ export const DeviceDetailSettingsView = ({
     data.device &&
     data.device.status &&
     data.device.status.length > 0 && [
-      <ListDivider key={1} />,
       <ListSubHeader key={2} caption="Status" />,
       data.device.status.map(status =>
         <StatusView

@@ -31,7 +31,7 @@ const DeviceName = glamorous.span({
   flexGrow: 1,
 })
 const DetailControl = glamorous.span({
-  flex: 3,
+  flex: 10,
 })
 const PowerSwitch = glamorous(Switch)({
   flexShrink: 0,
@@ -159,44 +159,49 @@ export const LightWidgetView = ({
           {device &&
             (showDetail && status
               ? <NameRow>
-                  <DeviceName>{device.name}</DeviceName>
+                  {long && <DeviceName>{device.name}</DeviceName>}
                   <DetailControl>
-                    <Slider value={+status.Dimmer.value} onChange={setDimmer} />
+                    <Slider
+                      value={+status.Dimmer.value}
+                      onChange={setDimmer}
+                      onDragStop={() => setShowDetail(false)}
+                    />
                   </DetailControl>
                 </NameRow>
               : <NameRow>
                   <DeviceName>{device.name}</DeviceName>
                   {status
                     ? <Flexbox alignItems="center">
-                        {long && device.interfaceIds!.includes('Dimmer')
-                          ? <Flexbox>
-                              <DimLevelButton
-                                onClick={() => setDimmer('25')}
-                                level={0.25}
-                              />
-                              <DimLevelButton
-                                onClick={() => setDimmer('25')}
-                                level={0.5}
-                              />
-                              <DimLevelButton
-                                onClick={() => setDimmer('25')}
-                                level={1}
-                              />
-                            </Flexbox>
-                          : <PowerSwitch
-                              checked={Boolean(status.Light.value)}
-                              onChange={value => {
-                                setDeviceStatus(status.Light.id, {
-                                  deviceId: device.id,
-                                  interfaceId: status.Light.interfaceId,
-                                  statusId: status.Light.statusId,
-                                  value: value.toString(),
-                                })
-                              }}
-                            />}
+                        {long &&
+                          device.interfaceIds!.includes('Dimmer') &&
+                          <Flexbox>
+                            <DimLevelButton
+                              onClick={() => setDimmer('25')}
+                              level={0.25}
+                            />
+                            <DimLevelButton
+                              onClick={() => setDimmer('25')}
+                              level={0.5}
+                            />
+                            <DimLevelButton
+                              onClick={() => setDimmer('25')}
+                              level={1}
+                            />
+                          </Flexbox>}
                         {thin &&
                           device.interfaceIds!.includes('Dimmer') &&
                           <DimButton onClick={() => setShowDetail(true)} />}
+                        <PowerSwitch
+                          checked={Boolean(status.Light.value)}
+                          onChange={value => {
+                            setDeviceStatus(status.Light.id, {
+                              deviceId: device.id,
+                              interfaceId: status.Light.interfaceId,
+                              statusId: status.Light.statusId,
+                              value: value.toString(),
+                            })
+                          }}
+                        />
                       </Flexbox>
                     : <div />}
                 </NameRow>)}

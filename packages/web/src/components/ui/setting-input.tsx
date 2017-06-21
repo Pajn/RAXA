@@ -2,18 +2,17 @@ import React from 'react'
 import {Checkbox} from 'react-toolbox/lib/checkbox'
 import {Dropdown} from 'react-toolbox/lib/dropdown'
 import {Input} from 'react-toolbox/lib/input'
-import {ListCheckbox, ListItem} from 'react-toolbox/lib/list'
+import {ListCheckbox, ListItem, ListItemLayout} from 'react-toolbox/lib/list'
 import {Slider} from 'react-toolbox/lib/slider'
+import {withState} from 'recompose'
 import compose from 'recompose/compose'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
 const asPercent = (min: number, max: number, value: number) =>
-  Math.round((100 * (+value - min)) / (max - min))
+  Math.round(100 * (+value - min) / (max - min))
 
-export const enhance = compose(
-  withIsMobile,
-)
+export const enhance = compose(withIsMobile)
 
 export type SettingInputProps = SettingValueProps & {
   type?: 'number'
@@ -22,12 +21,17 @@ export type SettingInputProps = SettingValueProps & {
   max?: number
   min?: number
 }
-export type PrivateSettingInputProps = SettingInputProps & IsMobileProps & {
-  children: any
-}
+export type PrivateSettingInputProps = SettingInputProps &
+  IsMobileProps & {
+    children: any
+  }
 
 export const SettingInputView = ({
-  label, type, value, onChange, unit,
+  label,
+  type,
+  value,
+  onChange,
+  unit,
   isMobile,
 }: PrivateSettingInputProps) =>
   isMobile
@@ -37,21 +41,19 @@ export const SettingInputView = ({
         onChange={onChange}
         unit={unit}
         children={(value, setValue) =>
-          <Input
-            type={type}
-            value={value}
-            onChange={setValue}
-          />
+          <Input type={type} value={value} onChange={setValue} />}
+      />
+    : <ListItemLayout
+        leftActions={[]}
+        rightActions={[]}
+        itemContent={
+          <Input label={label} type={type} value={value} onChange={onChange} />
         }
       />
-    : <Input
-        label={label}
-        type={type}
-        value={value}
-        onChange={onChange}
-      />
 
-export const SettingInput = enhance(SettingInputView) as React.ComponentClass<SettingInputProps>
+export const SettingInput = enhance(SettingInputView) as React.ComponentClass<
+  SettingInputProps
+>
 
 export type SettingCheckboxProps = {
   label: string
@@ -59,13 +61,17 @@ export type SettingCheckboxProps = {
   onChange: (newValue: boolean) => void
   disabled?: boolean
 }
-export type PrivateSettingCheckboxProps = SettingCheckboxProps & IsMobileProps & {
-  children: any
-}
+export type PrivateSettingCheckboxProps = SettingCheckboxProps &
+  IsMobileProps & {
+    children: any
+  }
 
 export const SettingCheckboxView = ({
-  label, value, onChange, disabled,
-  isMobile
+  label,
+  value,
+  onChange,
+  disabled,
+  isMobile,
 }: PrivateSettingCheckboxProps) =>
   isMobile
     ? <ListCheckbox
@@ -81,18 +87,24 @@ export const SettingCheckboxView = ({
         disabled={disabled}
       />
 
-export const SettingCheckbox = enhance(SettingCheckboxView) as React.ComponentClass<SettingCheckboxProps>
+export const SettingCheckbox = enhance(
+  SettingCheckboxView,
+) as React.ComponentClass<SettingCheckboxProps>
 
 export type SettingDropdownProps = SettingValueProps & {
-  source: Array<{value: string, label: string}>
+  source: Array<{value: string; label: string}>
   onChange: (newValue: string) => void
 }
-export type PrivateSettingDropdownProps = SettingDropdownProps & IsMobileProps & {
-  children: any
-}
+export type PrivateSettingDropdownProps = SettingDropdownProps &
+  IsMobileProps & {
+    children: any
+  }
 
 export const SettingDropdownView = ({
-  label, source, value, onChange,
+  label,
+  source,
+  value,
+  onChange,
   isMobile,
 }: PrivateSettingDropdownProps) =>
   isMobile
@@ -102,21 +114,24 @@ export const SettingDropdownView = ({
         onChange={onChange}
         legend={(source.find(s => s.value === value) || {label: ''}).label}
         children={(value, setValue) =>
+          <Dropdown source={source} value={value} onChange={setValue} />}
+      />
+    : <ListItemLayout
+        leftActions={[]}
+        rightActions={[]}
+        itemContent={
           <Dropdown
             source={source}
+            label={label}
             value={value}
-            onChange={setValue}
+            onChange={onChange}
           />
         }
       />
-    : <Dropdown
-        source={source}
-        label={label}
-        value={value}
-        onChange={onChange}
-      />
 
-export const SettingDropdown = enhance(SettingDropdownView) as React.ComponentClass<SettingDropdownProps>
+export const SettingDropdown = enhance(
+  SettingDropdownView,
+) as React.ComponentClass<SettingDropdownProps>
 
 export type SettingSliderProps = SettingValueProps & {
   onChange: (newValue: any) => void
@@ -124,13 +139,28 @@ export type SettingSliderProps = SettingValueProps & {
   max: number
   min: number
 }
-export type PrivateSettingSliderProps = SettingSliderProps & IsMobileProps & {
-  children: any
-}
+export type PrivateSettingSliderProps = SettingSliderProps &
+  IsMobileProps & {
+    children: any
+    tmpValue: any
+    setTmpValue: (value: any) => void
+  }
+
+export const enhanceSlider = compose(
+  withIsMobile,
+  withState('tmpValue', 'setTmpValue', undefined),
+)
 
 export const SettingSliderView = ({
-  label, value, onChange, unit, max, min,
+  label,
+  value,
+  onChange,
+  unit,
+  max,
+  min,
   isMobile,
+  tmpValue,
+  setTmpValue,
 }: PrivateSettingSliderProps) =>
   isMobile
     ? <DialogInput
@@ -138,58 +168,72 @@ export const SettingSliderView = ({
         value={+value}
         onChange={onChange}
         unit={unit}
-        legend={unit
-          ? `${value} ${unit}`
-          : `${asPercent(min, max, +value)} %`
-        }
+        legend={unit ? `${value} ${unit}` : `${asPercent(min, max, +value)} %`}
         children={(value, setValue) =>
           <div>
+            <Slider value={value} onChange={setValue} max={max} min={min} />
+            {unit ? `${value} ${unit}` : `${asPercent(min, max, +value)} %`}
+          </div>}
+      />
+    : <ListItemLayout
+        caption={label}
+        leftActions={[]}
+        rightActions={[]}
+        legend={
+          (
             <Slider
-              value={value}
-              onChange={setValue}
+              value={tmpValue === undefined ? +value : tmpValue}
+              onChange={setTmpValue}
+              onDragStop={() => {
+                setTmpValue(undefined)
+                onChange(tmpValue)
+              }}
               max={max}
               min={min}
             />
-            {unit
-              ? `${value} ${unit}`
-              : `${asPercent(min, max, +value)} %`
-            }
-          </div>
+          ) as any
         }
       />
-    : <div>
-        <label>
-          <span>{label}</span>
-          <span>
-            <Slider
-              value={+value}
-              onChange={onChange}
-              max={max}
-              min={min}
-            />
-          </span>
-        </label>
-      </div>
 
-export const SettingSlider = enhance(SettingSliderView) as React.ComponentClass<SettingSliderProps>
+export const SettingSlider = enhanceSlider(
+  SettingSliderView,
+) as React.ComponentClass<SettingSliderProps>
 
 export type SettingValueProps = {
   label: string
   value: any
   unit?: string
 }
-export type PrivateSettingValueProps = SettingValueProps & IsMobileProps & {
-  children: any
-}
+export type PrivateSettingValueProps = SettingValueProps &
+  IsMobileProps & {
+    children: any
+  }
 
 export const SettingValueView = ({
-  label, value, unit,
+  label,
+  value,
+  unit,
+  isMobile,
 }: PrivateSettingValueProps) =>
-  <ListItem
-    caption={label}
-    legend={unit ? `${value} ${unit}` : `${value}`}
-    leftActions={[]}
-    rightActions={[]}
-  />
+  isMobile
+    ? <ListItem
+        caption={label}
+        legend={unit ? `${value} ${unit}` : `${value}`}
+        leftActions={[]}
+        rightActions={[]}
+      />
+    : <ListItem
+        leftActions={[]}
+        rightActions={[]}
+        itemContent={
+          <Input
+            label={label}
+            value={unit ? `${value} ${unit}` : `${value}`}
+            disabled
+          />
+        }
+      />
 
-export const SettingValue = SettingValueView as React.StatelessComponent<SettingValueProps>
+export const SettingValue = enhance(
+  SettingValueView,
+) as React.StatelessComponent<SettingValueProps>

@@ -3,6 +3,7 @@ import React from 'react'
 import {compose} from 'recompose'
 import {withHandlers} from 'recompose'
 import lifecycle from 'recompose/lifecycle'
+import {materialColors} from 'styled-material/dist/src/colors'
 import {
   InjectedInputEventsContainerProps,
   inputEventsContainer,
@@ -36,7 +37,7 @@ const Workspace = glamorous(
   display: 'flex',
   flex: 1,
 
-  backgroundColor: 'white',
+  backgroundColor: materialColors['grey-100'],
 
   filter: editMode ? `brightness(0.98)` : undefined,
   transform: editMode ? `translateY(24px) scale(0.7)` : undefined,
@@ -47,10 +48,6 @@ const Workspace = glamorous(
   `,
 }))
 
-// const Ghost = glamorous(Cell)({
-//   backgroundColor: 'rgba(0, 0, 0, 0.12)',
-//   borderRadius: 3,
-// })
 const Ghost = props =>
   <Cell
     {...props}
