@@ -1,6 +1,6 @@
 import glamorous from 'glamorous'
+import {purple} from 'material-definitions'
 import React from 'react'
-import {materialColors} from 'styled-material/dist/src/colors'
 import {RTCard} from '../../../../toolbox/theme.js'
 
 export const CircleButton = glamorous(
@@ -48,7 +48,7 @@ export const CircleButton = glamorous(
 })
 
 export const DimButton = ({
-  color = materialColors['purple-500'],
+  color = purple[500],
   ...props,
 }: {
   color?: string
@@ -64,7 +64,7 @@ export const DimButton = ({
   </CircleButton>
 
 export const DimLevelButton = ({
-  color = materialColors['purple-500'],
+  color = purple[500],
   level,
   ...props,
 }: {

@@ -1,8 +1,8 @@
 import glamorous from 'glamorous'
+import {blue} from 'material-definitions'
 import React from 'react'
 import {compose, pure, withHandlers} from 'recompose'
 import setDisplayName from 'recompose/setDisplayName'
-import {materialColors} from 'styled-material/dist/src/colors'
 import {
   InjectedInputEventsProps,
   withInputEvents,
@@ -95,7 +95,7 @@ export const HandleView = glamorous.button<
   width: 22.8,
   height: 22.8,
 
-  background: materialColors['blue-400'],
+  background: blue[400],
   border: 0,
   borderRadius: '50%',
 
@@ -137,7 +137,7 @@ export const HandleContainerView = glamorous.div<
   width: '100%',
   height: '100%',
 
-  border: `4px solid ${materialColors['blue-400']}`,
+  border: `4px solid ${blue[400]}`,
 
   opacity: visible ? 1 : 0,
   transition: 'opacity 150ms ease-in',

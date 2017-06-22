@@ -1,11 +1,14 @@
 import {isClick} from 'filter-key'
 import Flexbox from 'flexbox-react'
+import {grey} from 'material-definitions'
 import React from 'react'
 import {CSSProperties} from 'react'
-import {List as ToolboxList, ListItem as ToolboxListItem} from 'react-toolbox/lib/list'
+import {
+  List as ToolboxList,
+  ListItem as ToolboxListItem,
+} from 'react-toolbox/lib/list'
 import compose from 'recompose/compose'
 import styled from 'styled-components'
-import {materialColors} from 'styled-material/dist/src/colors'
 import {IsTouchProps, withIsTouch} from './mediaQueries'
 
 const DesktopList: React.ComponentClass<any> = styled<any>(Flexbox)`
@@ -16,21 +19,29 @@ const DesktopList: React.ComponentClass<any> = styled<any>(Flexbox)`
 const DesktopListItem: React.ComponentClass<any> = styled<any>(Flexbox)`
   box-sizing: border-box;
   padding: 8px 4px;
-  height: ${({isMobile}) => isMobile ? 48 : 32}px;
+  height: ${({isMobile}) => (isMobile ? 48 : 32)}px;
   outline: none;
 
-  ${({selected}) => selected
-    ? `background-color: ${materialColors['grey-200']};`
-    : `
+  ${({selected}) =>
+    selected
+      ? `background-color: ${grey[200]};`
+      : `
       &:hover,
       &:focus {
-        background-color: ${materialColors['grey-100']};
+        background-color: ${grey[100]};
       }
-    `
-  }
+    `}
 `
 
-const Container = ({isMobile, style, children}: {isMobile: boolean, style?: CSSProperties, children?}) =>
+const Container = ({
+  isMobile,
+  style,
+  children,
+}: {
+  isMobile: boolean
+  style?: CSSProperties
+  children?
+}) =>
   isMobile
     ? <ToolboxList style={style}>
         {children}
@@ -49,14 +60,17 @@ export type ListItemProps = {
   selectable?: boolean
 }
 
-export const ListItem = ({caption, legend, isTouch, selectable, ...props}: ListItemProps) =>
+export const ListItem = ({
+  caption,
+  legend,
+  isTouch,
+  selectable,
+  ...props,
+}: ListItemProps) =>
   isTouch
-    ? <ToolboxListItem
+    ? <ToolboxListItem {...props} caption={caption} legend={legend} />
+    : <DesktopListItem
         {...props}
-        caption={caption}
-        legend={legend}
-      />
-    : <DesktopListItem {...props}
         role={selectable && 'button'}
         tabIndex={selectable && 0}
         onKeyPress={selectable && props.onClick && isClick(props.onClick)}
@@ -69,15 +83,19 @@ export type ListProps = {
   width?: number
   selectable?: boolean
 }
-export type PrivateListProps = ListProps & IsTouchProps & {
-  children: any
-}
+export type PrivateListProps = ListProps &
+  IsTouchProps & {
+    children: any
+  }
 
-export const enhance = compose(
-  withIsTouch,
-)
+export const enhance = compose(withIsTouch)
 
-export const ListView = ({isTouch, width = 250, selectable, children}: PrivateListProps) =>
+export const ListView = ({
+  isTouch,
+  width = 250,
+  selectable,
+  children,
+}: PrivateListProps) =>
   <Container isMobile={isTouch} style={isTouch ? {} : {width}}>
     {React.Children.map(children, child => {
       if (!child) return child
@@ -87,7 +105,7 @@ export const ListView = ({isTouch, width = 250, selectable, children}: PrivateLi
           isTouch,
           selectable: c.props.selectable === undefined
             ? selectable
-            : c.props.selectable
+            : c.props.selectable,
         })
       }
       return child

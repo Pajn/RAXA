@@ -1,8 +1,8 @@
 import glamorous from 'glamorous'
+import {title} from 'material-definitions'
 import React from 'react'
 import {Card} from 'react-toolbox/lib/card'
 import {compose, withHandlers, withState} from 'recompose'
-import {Title} from 'styled-material/dist/src/typography'
 import {
   InjectedInputEventsProps,
   withInputEvents,
@@ -43,7 +43,8 @@ const WidgetCard = glamorous(Card)({
   padding: 8,
 })
 
-const WidgetName = glamorous(Title)({
+const WidgetName = glamorous.span({
+  ...title,
   padding: 8,
   color: 'white',
 })

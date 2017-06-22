@@ -35,6 +35,10 @@
   version "0.0.34"
   resolved "https://registry.yarnpkg.com/@types/isomorphic-fetch/-/isomorphic-fetch-0.0.34.tgz#3c3483e606c041378438e951464f00e4e60706d6"
 
+"@types/jest@20.0.1":
+  version "20.0.1"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.1.tgz#8643a195d925a00f7bdee5257d12c3aac743f3b4"
+
 "@types/jest@^19.2.4":
   version "19.2.4"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-19.2.4.tgz#543651712535962b7dc615e18e4a381fc2687442"
@@ -118,7 +122,7 @@
   dependencies:
     "@types/source-map" "*"
 
-"@types/webpack@^2.2.15":
+"@types/webpack@2.2.16", "@types/webpack@^2.2.15":
   version "2.2.16"
   resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-2.2.16.tgz#9ca93f468ab3a8eb4b6f45f589acf58c8133aa9b"
   dependencies:
@@ -4544,6 +4548,10 @@ marked@^0.3.6:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.6.tgz#b2c6c618fccece4ef86c4fc6cb8a7cbf5aeda8d7"
 
+material-definitions@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/material-definitions/-/material-definitions-0.2.0.tgz#9a52bebc2b616a3fd98dfd38acd4118e664105df"
+
 math-expression-evaluator@^1.2.14:
   version "1.2.17"
   resolved "https://registry.yarnpkg.com/math-expression-evaluator/-/math-expression-evaluator-1.2.17.tgz#de819fdbcd84dccd8fae59c6aeb79615b9d266ac"
@@ -6837,6 +6845,13 @@ strip-bom@^3.0.0:
 strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
+
+style-definitions@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/style-definitions/-/style-definitions-0.1.0.tgz#e3b56969e9c50a431bdb9cbe6dea463ac814c7a6"
+  dependencies:
+    "@types/jest" "20.0.1"
+    "@types/webpack" "2.2.16"
 
 style-loader@0.13.2:
   version "0.13.2"

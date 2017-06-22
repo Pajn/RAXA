@@ -1,5 +1,6 @@
 import Flexbox from 'flexbox-react'
 import glamorous from 'glamorous'
+import {grey, red} from 'material-definitions'
 import {insert, remove} from 'ramda'
 import {
   ArrayProperty,
@@ -14,7 +15,6 @@ import {Card} from 'react-toolbox/lib/card'
 import {ListDivider} from 'react-toolbox/lib/list'
 import {compose, mapProps, withState} from 'recompose'
 import {updateIn} from 'redux-decorated'
-import {materialColors} from 'styled-material/dist/src/colors'
 import {fadeIn} from '../../lib/styles'
 import {InjectedIdProps, withIds} from '../../with-id'
 import {DeviceName} from '../device-name'
@@ -24,7 +24,7 @@ const IconButton: any = BadIconButton
 
 const CardContainer = glamorous.div({
   padding: 16,
-  backgroundColor: materialColors['grey-100'],
+  backgroundColor: grey[100],
 })
 
 const TitleBar = glamorous.span({
@@ -54,7 +54,7 @@ const UndoContainer = glamorous.div({
   height: '100%',
   zIndex: 1000,
 
-  backgroundColor: materialColors['red-500'],
+  backgroundColor: red[500],
 
   ...fadeIn(),
 })

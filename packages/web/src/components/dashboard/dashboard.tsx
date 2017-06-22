@@ -1,9 +1,9 @@
 import glamorous from 'glamorous'
+import {grey} from 'material-definitions'
 import React from 'react'
 import {compose} from 'recompose'
 import {withHandlers} from 'recompose'
 import lifecycle from 'recompose/lifecycle'
-import {materialColors} from 'styled-material/dist/src/colors'
 import {
   InjectedInputEventsContainerProps,
   inputEventsContainer,
@@ -37,7 +37,7 @@ const Workspace = glamorous(
   display: 'flex',
   flex: 1,
 
-  backgroundColor: materialColors['grey-100'],
+  backgroundColor: grey[100],
 
   filter: editMode ? `brightness(0.98)` : undefined,
   transform: editMode ? `translateY(24px) scale(0.7)` : undefined,

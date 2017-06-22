@@ -1,12 +1,12 @@
 import Flexbox from 'flexbox-react'
 import {History, Location} from 'history'
+import {grey} from 'material-definitions'
 import React from 'react'
 import {withRouter} from 'react-router'
 import AppBar from 'react-toolbox/lib/app_bar/AppBar'
 import {ButtonProps} from 'react-toolbox/lib/button/Button'
 import Navigation from 'react-toolbox/lib/navigation/Navigation'
 import compose from 'recompose/compose'
-import {materialColors} from 'styled-material/dist/src/colors'
 import {
   ContextAction,
   ScaffoldContext,
@@ -123,9 +123,7 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
                 style: {
                   margin: 0,
                   minWidth: 0,
-                  color: action.disabled
-                    ? materialColors['grey-500']
-                    : undefined,
+                  color: action.disabled ? grey[500] : undefined,
                   background: action.disabled ? 'transparent' : undefined,
                 },
               }))}
