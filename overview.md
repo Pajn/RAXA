@@ -3,38 +3,42 @@
 ## UI
 
 ### Scenarios
-- Creates a device
-- List of calls
+x Creates a device
+x List of calls
 
 ### Dashboard
-- Andoird Grid system
-- Draggable
-- Resizeable
+x Android Grid system
+x Draggable
+x Resizeable
 - Different mobile and tablet layouts
 - Different layouts between devices
 - Wallpaper
 - Widget design?
 - More (scroll?, pages?)
 - Hide top bar
-- Longpress/Doubletap on background to open settings
+x Longpress/Doubletap on background to open settings
+- Pinch to open settings
+- touch move/resize
+- Handle different window sizes
 
 #### Widgets
 ##### Lamp
-- On/Off
-- Name
-- Toggable dimmer / dimmer below
-- Dimmer presets
+x On/Off
+x Name
+x Toggable dimmer / dimmer below
+- Customizable Dimmer presets
 
 ##### Color
 - On/Off
 - Presets
 - Color picker
 - Dimmer
+- gradient
 
 ##### Termperature
-- Name
-- Value
-- Unit
+x Name
+x Value
+x Unit
 - Graph (range settings)
 
 ##### Weather
@@ -45,13 +49,13 @@
 ##### Clock
 
 ##### Scenario List
-- List all senarios (filters?, order?)
+x List all senarios (filters?, order?)
 - Set
-- Name
+x Name
 
 ##### Scenario
 - Set
-- Name
+x Name
 - (brighten / darken)
 
 ##### Now playing
@@ -78,6 +82,7 @@
 - Bug reporting (inc. web and other plugins)
 
 ## Other
-- LED list
+x LED list
 - Android widgets
 - Google now integration
+- Geofencing

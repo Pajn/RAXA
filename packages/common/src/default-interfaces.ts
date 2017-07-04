@@ -33,33 +33,11 @@ export const defaultInterfaces = {
     status: {
       color: {
         id: 'color',
-        type: 'object' as 'object',
+        type: 'integer' as 'integer',
         modifiable: true,
-        defaultValue: {
-          red: 0,
-          green: 0,
-          blue: 0,
-        },
-        properties: {
-          red: {
-            id: 'red',
-            type: 'integer' as 'integer',
-            min: 0,
-            max: 255,
-          },
-          green: {
-            id: 'green',
-            type: 'integer' as 'integer',
-            min: 0,
-            max: 255,
-          },
-          blue: {
-            id: 'blue',
-            type: 'integer' as 'integer',
-            min: 0,
-            max: 255,
-          },
-        },
+        defaultValue: 0,
+        min: 0,
+        max: 0xffffff,
         interfaceId: 'RGB',
       },
     },

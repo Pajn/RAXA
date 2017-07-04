@@ -9,9 +9,9 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
-"@types/node@^4.0.27-alpha":
-  version "4.2.11"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-4.2.11.tgz#869d379530cd2fda2ca7ba3252a5177ac813848f"
+"@types/node@^8.0.7":
+  version "8.0.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.7.tgz#fb0ad04b5b6f6eabe0372a32a8f1fbba5c130cae"
 
 acorn@4.X:
   version "4.0.13"

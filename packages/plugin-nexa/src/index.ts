@@ -1,13 +1,13 @@
 /* tslint:disable:no-bitwise */
 import {
-  createModification,
-  interfaces,
-  isStatus,
   Call,
-  Config,
   Device,
   Modification,
   Plugin,
+  actions,
+  createModification,
+  defaultInterfaces,
+  isStatus,
 } from 'raxa-common'
 
 const ON = 0
@@ -37,30 +37,33 @@ const DEVICE_CODE_MAX = 67234433
 
 export interface NexaDevice extends Device {
   config: {
-    sender: Config<number>,
-    houseCode: Config<number>,
-    deviceCode: Config<number>,
-    onLevel: Config<number>,
-    [field: string]: Config<any>,
+    sender: string
+    houseCode: number
+    deviceCode: number
+    onLevel: number
   }
 
   status: {
-    Lamp: {on: boolean},
-    DimLevelLamp: {level: number},
-    [interfaceName: string]: {},
+    Light: {on: boolean}
+    Dimmer: {level: number}
+    [interfaceName: string]: {}
   }
 }
 
 export default class NexaPlugin extends Plugin {
   onDeviceCreated(device: NexaDevice) {
     if (this.className(device).startsWith('NexaSelfLearning')) {
-      device.config.deviceCode.value = Math.floor(Math.random() * DEVICE_CODE_MAX)
+      device.config.deviceCode = Math.floor(Math.random() * DEVICE_CODE_MAX)
       return device
     }
   }
 
   onDeviceCalled(call: Call, device: NexaDevice) {
-    const modification = createModification(device, interfaces.Light.status.on, true)
+    const modification = createModification(
+      device,
+      defaultInterfaces.Light.status.on,
+      true,
+    )
     if (this.className(device) === 'NexaCodeSwitch') {
       return this.codeSwitchModified(modification, device)
     } else {
@@ -77,79 +80,125 @@ export default class NexaPlugin extends Plugin {
   }
 
   private className(device: Device) {
-    return this.getState().deviceClasses[device.deviceClass].name
+    return this.state.scalar('deviceClasses', {
+      where: {id: device.deviceClassId},
+    }).name
   }
 
-  private sendPulse(pulse: Array<number>, senderId: number) {
-    super.callDevice({
+  private sendPulse(pulse: Array<number>, senderId: string) {
+    return this.callDevice({
       deviceId: senderId,
       interfaceId: '433MHzPulse',
       method: 'send',
       arguments: {
-        pulse: pulse,
+        pulse,
         repeats: 8,
         pause: 10,
       },
     })
   }
 
-  private codeSwitchModified(modification: Modification, device: NexaDevice) {
-    if (isStatus(modification, interfaces.Light.status.on)) {
-      let senderId = device.config.sender.value
-      let houseCode = HOUSE_CODES[device.config.houseCode.value]
-      let deviceCode = device.config.deviceCode.value - 1
+  private async codeSwitchModified(
+    modification: Modification,
+    device: NexaDevice,
+  ) {
+    if (isStatus(modification, defaultInterfaces.Light.status.on)) {
+      let senderId = device.config.sender
+      let houseCode = HOUSE_CODES[device.config.houseCode]
+      let deviceCode = device.config.deviceCode - 1
 
       let action = modification.value ? ON : OFF
 
-      this.sendPulse(codeSwitchPulse(houseCode, deviceCode, action), senderId)
-
-      device.status.Lamp.on = action === ON
-
-      return device
+      await this.sendPulse(
+        codeSwitchPulse(houseCode, deviceCode, action),
+        senderId,
+      ).then(() => {
+        return this.dispatch(actions.statusUpdated, {
+          deviceId: device.id,
+          interfaceId: 'Light',
+          statusId: 'on',
+          value: modification.value,
+        })
+      })
     }
   }
 
-  private selfLearningModified(modification: Modification, device: NexaDevice, forceOn = false) {
-    const senderId = device.config.sender.value
-    const deviceCode = device.config.deviceCode.value
+  private async selfLearningModified(
+    modification: Modification,
+    device: NexaDevice,
+    forceOn = false,
+  ) {
+    const senderId = device.config.sender
+    const deviceCode = device.config.deviceCode
 
     if (this.className(device) === 'NexaSelfLearningDimable') {
-      if (!forceOn && isStatus(modification, interfaces.Light.status.on)) {
+      if (
+        !forceOn &&
+        isStatus(modification, defaultInterfaces.Light.status.on)
+      ) {
         modification = createModification(
           device,
-          interfaces.Dimmer.status.level,
-          device.config.onLevel.value
+          defaultInterfaces.Dimmer.status.level,
+          device.config.onLevel,
         )
       }
 
-      if (isStatus(modification, interfaces.Dimmer.status.level)) {
+      if (isStatus(modification, defaultInterfaces.Dimmer.status.level)) {
         const dimLevel = modification.value
 
-        this.sendPulse(selfLearningPulse(deviceCode, 7, DIM, dimLevel), senderId)
+        this.log.debug(`Dimming device ${device.name} to level ${dimLevel}`)
+        await this.sendPulse(
+          selfLearningPulse(deviceCode, 7, DIM, dimLevel),
+          senderId,
+        )
+          .then(() => {
+            return this.dispatch(actions.statusUpdated, {
+              deviceId: device.id,
+              interfaceId: 'Light',
+              statusId: 'on',
+              value: true,
+            })
+          })
+          .then(() => {
+            return this.dispatch(actions.statusUpdated, {
+              deviceId: device.id,
+              interfaceId: 'Dimmer',
+              statusId: 'level',
+              value: dimLevel,
+            })
+          })
 
-        device.status.Lamp.on = true
-        device.status.DimLevelLamp.level = dimLevel
-
-        return device
+        return
       }
     }
 
-    if (isStatus(modification, interfaces.Light.status.on)) {
+    if (isStatus(modification, defaultInterfaces.Light.status.on)) {
       let action = modification.value ? ON : OFF
 
-      this.sendPulse(selfLearningPulse(deviceCode, 7, action), senderId)
+      this.log.debug(
+        `Turning ${action === ON ? 'on' : 'off'} device ${device.name}`,
+      )
 
-      device.status.Lamp.on = action === ON
-      if (this.className(device) === 'NexaSelfLearningDimable') {
-        device.status.DimLevelLamp.level = 0
-      }
-
-      return device
+      await this.sendPulse(
+        selfLearningPulse(deviceCode, 7, action),
+        senderId,
+      ).then(() => {
+        return this.dispatch(actions.statusUpdated, {
+          deviceId: device.id,
+          interfaceId: 'Light',
+          statusId: 'on',
+          value: modification.value,
+        })
+      })
     }
   }
 }
 
-function codeSwitchPulse(houseCode: number, deviceCode: number, action: number): Array<number> {
+function codeSwitchPulse(
+  houseCode: number,
+  deviceCode: number,
+  action: number,
+): Array<number> {
   let pulse = []
 
   for (let i = 0; i < 4; i++) {
@@ -217,15 +266,19 @@ function codeSwitchPulse(houseCode: number, deviceCode: number, action: number):
   return pulse
 }
 
-function selfLearningPulse(deviceCode: number, groupCode: number,
-                           action: number, dimLevel?: number): Array<number> {
+function selfLearningPulse(
+  deviceCode: number,
+  groupCode: number,
+  action: number,
+  dimLevel?: number,
+): Array<number> {
   const ONE = [29, 17]
   const ZERO = [29, 92]
 
   let pulse = [29, 255]
 
   for (let i = 25; i >= 0; i--) {
-    if ((deviceCode & 1 << i) !== 0) {
+    if ((deviceCode & (1 << i)) !== 0) {
       pulse = pulse.concat(ONE, ZERO)
     } else {
       pulse = pulse.concat(ZERO, ONE)
@@ -248,7 +301,7 @@ function selfLearningPulse(deviceCode: number, groupCode: number,
   }
 
   for (let i = 3; i >= 0; --i) {
-    if ((groupCode & 1 << i) !== 0) {
+    if ((groupCode & (1 << i)) !== 0) {
       pulse = pulse.concat(ONE, ZERO)
     } else {
       pulse = pulse.concat(ZERO, ONE)
@@ -257,7 +310,7 @@ function selfLearningPulse(deviceCode: number, groupCode: number,
 
   if (action === DIM) {
     for (let i = 3; i >= 0; --i) {
-      if ((dimLevel & 1 << i) !== 0) {
+      if ((dimLevel & (1 << i)) !== 0) {
         pulse = pulse.concat(ZERO, ONE)
       } else {
         pulse = pulse.concat(ONE, ZERO)

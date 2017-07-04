@@ -7,7 +7,7 @@ import {
   Service,
   actions,
   defaultInterfaces,
-} from 'raxa-common'
+} from 'raxa-common/cjs'
 import {
   DeviceClassState,
   DeviceState,
@@ -15,12 +15,12 @@ import {
   PluginState,
   State,
   StatusState,
-} from 'raxa-common/lib/state'
+} from 'raxa-common/cjs/state'
 import {
   validateDevice,
   validateDeviceClass,
   validateInterface,
-} from 'raxa-common/lib/validations'
+} from 'raxa-common/cjs/validations'
 import {Store, combineReducers, createStore} from 'redux'
 import {Action, action, createReducer, updateIn} from 'redux-decorated'
 import {autoRehydrate, persistStore} from 'redux-persist'
@@ -153,8 +153,8 @@ export class StorageService extends Service {
   }
 
   public async upsertDevice(device: Device): Promise<Device> {
-    const plugins = this.serviceManager.runningServices
-      .PluginSupervisor as PluginSupervisor
+    const plugins = (this.serviceManager.runningServices
+      .PluginSupervisor as any) as PluginSupervisor
 
     if (device.id) {
       this.log.info(`Update device ${device.name} (${device.id})`)

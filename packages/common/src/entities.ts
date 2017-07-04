@@ -42,7 +42,7 @@ export interface DeviceClass {
   name?: string
   shortDescription?: string
   description?: string
-  allowManualCreation: boolean
+  allowManualCreation?: boolean
   /**
    * Id of the plugin that owns this DeviceClass.
    */
@@ -78,7 +78,7 @@ export interface Interface {
   variables?: {[variable: string]: {}}
 }
 
-export interface Call {
+export interface Call<TArgs = any> {
   /**
    * Id of the Device to be called.
    */
@@ -94,10 +94,10 @@ export interface Call {
   /**
    * Arguments to the method.
    */
-  arguments: any
+  arguments: TArgs
 }
 
-export interface Modification {
+export interface Modification<TValue = any> {
   /**
    * Id of the Device to be modified.
    */
@@ -113,7 +113,7 @@ export interface Modification {
   /**
    * New value of the status.
    */
-  value: any
+  value: TValue
 }
 
 export interface PropertyBase {
@@ -130,6 +130,8 @@ export interface ArrayProperty<T> extends PropertyBase {
   type: 'array'
   defaultValue?: Array<T>
   items: Property
+  minLength?: number
+  maxLength?: number
 }
 
 export interface BooleanProperty extends PropertyBase {
@@ -197,6 +199,8 @@ export type Status = Property & {
 
 export interface PluginDefinition {
   id: string
+  name: string
+  description: string
   deviceClasses: {[id: string]: DeviceClass}
   interfaces: {[id: string]: Interface}
 }

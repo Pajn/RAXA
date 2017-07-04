@@ -1,6 +1,6 @@
 import {graphiqlHapi, graphqlHapi} from 'graphql-server-hapi'
 import {Server} from 'hapi'
-import {Service} from 'raxa-common'
+import {Service} from 'raxa-common/cjs'
 import {Context} from '../graphql/context'
 import {schema} from '../graphql/schema'
 import {PluginSupervisor} from './plugin-supervisor'

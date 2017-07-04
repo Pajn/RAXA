@@ -31,7 +31,7 @@
     "source-map-support": "^0.4.15"
   },
   "devDependencies": {
-    "tscomp": "^0.10.0"
+    "tscomp": "^0.11.2"
   },
   "tscomp": {
     "mode": "server"

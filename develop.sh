@@ -13,5 +13,11 @@ if [ $? != 0 ]; then
   byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
   byobu-tmux -L raxa new-window -t raxa -c packages/plugin-scenery -n "plugin-scenery "
   byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
+  byobu-tmux -L raxa new-window -t raxa -c packages/plugin-ledstrip -n "plugin-ledstrip "
+  byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
+  byobu-tmux -L raxa new-window -t raxa -c packages/plugin-raxa-tellsticknet -n "plugin-raxa-tellsticknet "
+  byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
+  byobu-tmux -L raxa new-window -t raxa -c packages/plugin-nexa -n "plugin-nexa "
+  byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
 fi
 byobu-tmux -L raxa attach -t raxa

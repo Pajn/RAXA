@@ -8,9 +8,9 @@ import {
   Service,
   ServiceManager,
   raxaError,
-} from 'raxa-common'
-import {ServiceImplementation} from 'raxa-common/lib/service'
-import {validateAction} from 'raxa-common/lib/validations'
+} from 'raxa-common/cjs'
+import {ServiceImplementation} from 'raxa-common/cjs/service'
+import {validateAction} from 'raxa-common/cjs/validations'
 import {StorageService} from './storage'
 
 class PluginManager extends ServiceManager {
@@ -19,8 +19,8 @@ class PluginManager extends ServiceManager {
   configureService(service: ServiceImplementation, plugin: Plugin) {
     super.configureService(service, plugin)
     plugin.upsertDevice = (device: Device) => {
-      const storage = this.supervisor.serviceManager.runningServices
-        .StorageService as StorageService
+      const storage = (this.supervisor.serviceManager.runningServices
+        .StorageService as any) as StorageService
       return storage.upsertDevice(device)
     }
     plugin.setDeviceStatus = (modification: Modification) =>
@@ -38,10 +38,11 @@ export class PluginSupervisor extends Service {
     this.pluginServiceManager.supervisor = this
     this.pluginServiceManager.runningServices.StorageService = this.serviceManager.runningServices.StorageService
 
-    const storage = this.serviceManager.runningServices
-      .StorageService as StorageService
+    const storage = (this.serviceManager.runningServices
+      .StorageService as any) as StorageService
     await Promise.all(
-      ['mysensors', 'scenery']
+      // ['mysensors', 'scenery', 'ledstrip', 'nexa', 'raxa-tellsticknet']
+      ['scenery', 'ledstrip', 'nexa', 'raxa-tellsticknet']
         // .filter(plugin => !storage.getState().plugins[plugin])
         .map(plugin => this.installPlugin(plugin)),
     )
@@ -60,11 +61,13 @@ export class PluginSupervisor extends Service {
   }
 
   private async installPlugin(name: string) {
-    const storage = this.serviceManager.runningServices
-      .StorageService as StorageService
+    const storage = (this.serviceManager.runningServices
+      .StorageService as any) as StorageService
 
     this.log.info(`Installing plugin ${name}`)
-    const pluginDefinition = require(`raxa-plugin-${name}/plugin.json`) as PluginDefinition
+    const pluginDefinitionModule = require(`raxa-plugin-${name}/plugin`)
+    const pluginDefinition = (pluginDefinitionModule.default ||
+      pluginDefinitionModule) as PluginDefinition
     let plugin = require(`raxa-plugin-${name}`)
     if (plugin.default) {
       plugin = plugin.default
@@ -130,8 +133,8 @@ export class PluginSupervisor extends Service {
   }
 
   public async setDeviceStatus(modification: Modification) {
-    const storage = this.serviceManager.runningServices
-      .StorageService as StorageService
+    const storage = (this.serviceManager.runningServices
+      .StorageService as any) as StorageService
     const state = storage.getState()
     validateAction(state, modification)
     const device = state.devices[modification.deviceId]
@@ -153,8 +156,8 @@ export class PluginSupervisor extends Service {
   }
 
   public async callDevice(call: Call) {
-    const storage = this.serviceManager.runningServices
-      .StorageService as StorageService
+    const storage = (this.serviceManager.runningServices
+      .StorageService as any) as StorageService
     const state = storage.getState()
     validateAction(state, call)
     const device = state.devices[call.deviceId]

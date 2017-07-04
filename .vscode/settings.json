@@ -13,5 +13,6 @@
   // Controls the printing of spaces inside object literals
   "prettier.bracketSpacing": false,
   // Whether to add a semicolon at the end of every line
-  "prettier.semi": false
+  "prettier.semi": false,
+  "prettier.jsonEnable": []
 }

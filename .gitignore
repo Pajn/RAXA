@@ -1,4 +1,6 @@
 packages/*/lib/
+packages/*/cjs/
+dist/
 build/
 node_modules/
 old/

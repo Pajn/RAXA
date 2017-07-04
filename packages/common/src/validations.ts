@@ -1,43 +1,80 @@
 import * as joi from 'joi'
-import {Call, Device, DeviceClass, Interface, Modification, ObjectProperty, Property} from './entities'
+import {
+  Call,
+  Device,
+  DeviceClass,
+  Interface,
+  Modification,
+  ObjectProperty,
+  Property,
+} from './entities'
 import {RaxaError, raxaError} from './errors'
 import {State} from './state'
 
-export const propertiesSchema: joi.Schema = joi.object().pattern(/^/, joi.object({
-  id: joi.string().required(),
-  type: joi.string().only('string', 'integer', 'number', 'boolean', 'object').required(),
+export const propertiesSchema: joi.Schema = joi
+  .object()
+  .pattern(
+    /^/,
+    joi.object({
+      id: joi.string().required(),
+      type: joi
+        .string()
+        .only('string', 'integer', 'number', 'boolean', 'object')
+        .required(),
 
-  optional: joi.boolean(),
-  modifiable: joi.boolean(),
-}))
-  .when(joi.ref('type'), {is: 'boolean', then: joi.object({
-    defaultValue: joi.boolean(),
-  })})
-  .when(joi.ref('type'), {is: 'device', then: joi.object({
-    interfaceIds: joi.array().items(joi.string().required()),
-    deviceClassIds: joi.array().items(joi.string().required()),
-  })})
-  .when(joi.ref('type'), {is: 'number', then: joi.object({
-    min: joi.number(),
-    max: joi.number(),
-    unit: joi.string(),
-    defaultValue: joi.number(),
-  })})
-  .when(joi.ref('type'), {is: 'integer', then: joi.object({
-    min: joi.number().integer(),
-    max: joi.number().integer(),
-    unit: joi.string(),
-    defaultValue: joi.number().integer(),
-  })})
-  .when(joi.ref('type'), {is: 'string', then: joi.object({
-    defaultValue: joi.string(),
-  })})
-  .when(joi.ref('type'), {is: 'object', then: joi.object({
-    properties: joi.lazy(() => propertiesSchema).required(),
-    defaultValue: joi.object(),
-  })})
+      optional: joi.boolean(),
+      modifiable: joi.boolean(),
+    }),
+  )
+  .when(joi.ref('type'), {
+    is: 'boolean',
+    then: joi.object({
+      defaultValue: joi.boolean(),
+    }),
+  })
+  .when(joi.ref('type'), {
+    is: 'device',
+    then: joi.object({
+      interfaceIds: joi.array().items(joi.string().required()),
+      deviceClassIds: joi.array().items(joi.string().required()),
+    }),
+  })
+  .when(joi.ref('type'), {
+    is: 'number',
+    then: joi.object({
+      min: joi.number(),
+      max: joi.number(),
+      unit: joi.string(),
+      defaultValue: joi.number(),
+    }),
+  })
+  .when(joi.ref('type'), {
+    is: 'integer',
+    then: joi.object({
+      min: joi.number().integer(),
+      max: joi.number().integer(),
+      unit: joi.string(),
+      defaultValue: joi.number().integer(),
+    }),
+  })
+  .when(joi.ref('type'), {
+    is: 'string',
+    then: joi.object({
+      defaultValue: joi.string(),
+    }),
+  })
+  .when(joi.ref('type'), {
+    is: 'object',
+    then: joi.object({
+      properties: joi.lazy(() => propertiesSchema).required(),
+      defaultValue: joi.object(),
+    }),
+  })
 
-function validateProperties(error: RaxaError['type'], properties: {[id: string]: Property}) {
+function validateProperties(
+  error: RaxaError['type'],
+  properties: {[id: string]: Property},
+) {
   const result = joi.validate(properties, propertiesSchema)
   if (result.error) {
     throw raxaError({type: error as any, joiError: result.error})
@@ -67,7 +104,10 @@ export function validateDevice(state: State, device: Device): Device {
   }
   const deviceClass = state.deviceClasses[device.deviceClassId]
   if (!deviceClass) {
-    throw raxaError({type: 'missingDeviceClass', deviceClassId: device.deviceClassId})
+    throw raxaError({
+      type: 'missingDeviceClass',
+      deviceClassId: device.deviceClassId,
+    })
   }
   if (!deviceClass.config) {
     if (device.config) throw new Error('no config allowed')
@@ -83,7 +123,7 @@ export function validateDevice(state: State, device: Device): Device {
   })
   const result = joi.validate(device, joiSchema)
   if (result.error) {
-     throw raxaError({type: 'invalidDevice', joiError: result.error})
+    throw raxaError({type: 'invalidDevice', joiError: result.error})
   }
 
   return result.value
@@ -121,6 +161,9 @@ function propertyToJoi(property: Property) {
     case 'boolean':
       joiRule = joi.boolean()
       break
+    case 'device':
+      joiRule = joi.string()
+      break
     case 'modification':
       joiRule = joi.object({
         deviceId: joi.string().required(),
@@ -132,7 +175,7 @@ function propertyToJoi(property: Property) {
     case 'integer':
       joiRule = joi.number().integer()
       break
-      // fall through
+    // fall through
     case 'number':
       let numberJoiRule: joi.NumberSchema = joiRule || joi.number()
       if (property.min !== undefined) {
@@ -156,13 +199,18 @@ function propertyToJoi(property: Property) {
   return joiRule
 }
 
-export function validateAction(state: State, action: Call|Modification) {
+export function validateAction(state: State, action: Call | Modification) {
   const device = state.devices[action.deviceId]
   const iface = state.interfaces[action.interfaceId]
-  if (!device) throw raxaError({type: 'missingDevice', deviceId: action.deviceId})
-  if (!iface) throw raxaError({type: 'missingInterface', interfaceId: action.interfaceId})
+  if (!device)
+    throw raxaError({type: 'missingDevice', deviceId: action.deviceId})
+  if (!iface)
+    throw raxaError({type: 'missingInterface', interfaceId: action.interfaceId})
   const deviceClass = state.deviceClasses[device.deviceClassId]
-  if (!(device.interfaceIds || deviceClass.interfaceIds).includes(action.interfaceId)) {
+  if (
+    !(device.interfaceIds || deviceClass.interfaceIds)
+      .includes(action.interfaceId)
+  ) {
     throw Error('Device does not implement inteface')
   }
 }
