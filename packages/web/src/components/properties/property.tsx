@@ -1,15 +1,13 @@
 import {
+  ArrayProperty,
   BooleanProperty,
   DeviceProperty,
+  ModificationProperty,
   NumberProperty,
   Property,
   StringProperty,
 } from 'raxa-common'
 import React from 'react'
-import {
-  ArrayProperty,
-  ModificationProperty,
-} from '../../../../common/lib/entities'
 import {
   SettingCheckbox,
   SettingInput,
@@ -57,6 +55,7 @@ const NumberInput = ({
         unit={property.unit}
         min={property.min!}
         max={property.max!}
+        step={property.type === 'integer' ? 1 : undefined}
       />
     : <SettingInput
         label={property.name || property.id}

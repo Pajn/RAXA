@@ -2,7 +2,15 @@ import {GraphQLString} from 'graphql'
 import GraphQLJSON from 'graphql-type-json'
 import {buildMutations, buildQueries, buildType} from 'graphql-verified'
 import * as joi from 'joi'
-import {Call, Device, DeviceStatus, Modification} from 'raxa-common'
+import {
+  Call,
+  Device,
+  DeviceClass,
+  DeviceStatus,
+  GraphQlDevice,
+  Modification,
+  raxaError,
+} from 'raxa-common'
 import {Context} from './context'
 import {DeviceClassType} from './device-class'
 import {InterfaceType} from './interface'
@@ -44,6 +52,37 @@ export function getValue(object: any, path: Array<string | number>): any {
   return path.reduce((object, key) => object && object[key], object)
 }
 
+function statusedForDevice(
+  device: Device,
+  {
+    interfaceIds: specifiedInterfaces,
+    statusIds: specifiedStatusIds,
+  }: {interfaceIds?: Array<string>; statusIds?: Array<string>},
+  {storage}: Context,
+) {
+  const state = storage.getState()
+  const interfaces = specifiedInterfaces || device.interfaceIds
+  console.log('interfaces', interfaces)
+  return (
+    interfaces &&
+    flatMap(interfaces, interfaceId => {
+      const iface = state.interfaces[interfaceId]
+      if (!iface) {
+        throw raxaError({type: 'missingInterface', interfaceId})
+      }
+      if (!iface.status) return []
+      const statusIds = specifiedStatusIds || Object.keys(iface.status)
+      console.log('statusIds', statusIds)
+      return statusIds.map(statusId => ({
+        id: `${device.id}:${interfaceId}:${statusId}`,
+        interfaceId,
+        statusId,
+        value: getValue(state.status, [device.id, interfaceId, statusId]),
+      }))
+    })
+  )
+}
+
 export const DeviceType = buildType<Device>({
   name: 'Device',
   fields: {
@@ -58,8 +97,20 @@ export const DeviceType = buildType<Device>({
     deviceClass: {
       type: DeviceClassType,
       validate: joi.object({}),
-      resolve({deviceClassId}: Device, {}, {storage}: Context) {
+      resolve({deviceClassId}: Device, {}, {storage}: Context): DeviceClass {
         return storage.getState().deviceClasses[deviceClassId]
+      },
+    },
+    types: {
+      type: [GraphQLString],
+      validate: joi.object({}),
+      resolve(
+        {types, deviceClassId}: Device,
+        {},
+        {storage}: Context,
+      ): GraphQlDevice['types'] {
+        if (types) return types
+        return storage.getState().deviceClasses[deviceClassId].types
       },
     },
     config: {type: GraphQLJSON},
@@ -88,31 +139,7 @@ export const DeviceType = buildType<Device>({
         interfaceIds: joi.array().items(joi.string().required()),
         statusIds: joi.array().items(joi.string().required()),
       }),
-      resolve(
-        device: Device,
-        {
-          interfaceIds: specifiedInterfaces,
-          statusIds: specifiedStatusIds,
-        }: {interfaceIds: Array<string>; statusIds: Array<string>},
-        {storage}: Context,
-      ) {
-        const state = storage.getState()
-        const interfaces = specifiedInterfaces || device.interfaceIds
-        return (
-          interfaces &&
-          flatMap(interfaces, interfaceId => {
-            const iface = state.interfaces[interfaceId]
-            if (!iface.status) return []
-            const statusIds = specifiedStatusIds || Object.keys(iface.status)
-            return statusIds.map(statusId => ({
-              id: `${device.id}:${interfaceId}:${statusId}`,
-              interfaceId,
-              statusId,
-              value: getValue(state.status, [device.id, interfaceId, statusId]),
-            }))
-          })
-        )
-      },
+      resolve: statusedForDevice,
     },
     // variables?: {
     //     [interfaceId: string]: {
@@ -208,7 +235,7 @@ export const deviceMutations = buildMutations({
     },
   },
   setDeviceStatus: {
-    type: DeviceStatusType,
+    type: [DeviceStatusType],
     validate: joi.object({
       deviceId: joi.string(),
       interfaceId: joi.string(),
@@ -216,16 +243,19 @@ export const deviceMutations = buildMutations({
       value: joi.string(),
     }),
     writeRules: false,
-    async resolve(_, modification: Modification, {plugins, storage}: Context) {
-      await plugins.setDeviceStatus(modification)
-      const state = storage.getState()
-      return (
-        state.status[modification.deviceId] &&
-        state.status[modification.deviceId][modification.interfaceId] &&
-        state.status[modification.deviceId][modification.interfaceId][
-          modification.statusId
-        ]
-      )
+    async resolve(
+      _,
+      modification: Modification,
+      context: Context,
+    ): Promise<Array<DeviceStatus> | undefined> {
+      await context.plugins.setDeviceStatus(modification)
+      const device = context.storage.getState().devices[modification.deviceId]
+      if (!device.interfaceIds) {
+        device.interfaceIds = context.storage.getState().deviceClasses[
+          device.deviceClassId
+        ].interfaceIds
+      }
+      return statusedForDevice(device, {}, context)
     },
   },
 })

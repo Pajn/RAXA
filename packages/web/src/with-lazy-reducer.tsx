@@ -2,17 +2,18 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {ComponentEnhancer, wrapDisplayName} from 'recompose'
 
-type reducer<TState, TAction> = (s: TState, a: TAction) => TState
+type Reducer<TState, TAction> = (s: TState, a: TAction) => TState
+
 export function withLazyReducer<TState, TAction>(
   stateName: string,
   dispatchName: string,
-  reducer: reducer<TState, TAction>,
+  reducer: Reducer<TState, TAction>,
   initialState: TState,
 ): ComponentEnhancer<any, any>
 export function withLazyReducer<TOutter, TState, TAction>(
   stateName: string,
   dispatchName: string,
-  reducer: reducer<TState, TAction>,
+  reducer: Reducer<TState, TAction>,
   initialState: (props: TOutter) => TState,
 ): ComponentEnhancer<any, TOutter>
 export function withLazyReducer(
@@ -51,7 +52,7 @@ export function withLazyReducer(
 export type StorageConfiguration<TState, TAction, TOuterProps = any> = {
   id: string
   initialState: TState | ((props: TOuterProps) => TState)
-  reducer: reducer<TState, TAction>
+  reducer: Reducer<TState, TAction>
 }
 type MapStateToProps<TState, TOuterProps, TInnerStateProps> =
   | ((state: TState, props: TOuterProps) => TInnerStateProps)

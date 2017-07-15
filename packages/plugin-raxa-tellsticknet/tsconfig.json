@@ -4,7 +4,8 @@
     "module": "es2015",
     "moduleResolution": "node",
     "target": "es2015",
-    "sourceMap": true
+    "sourceMap": true,
+    "outDir": "lib"
   },
   "exclude": [
     "node_modules"

@@ -21,7 +21,13 @@ import {
   validateDeviceClass,
   validateInterface,
 } from 'raxa-common/cjs/validations'
-import {Store, combineReducers, createStore} from 'redux'
+import {
+  Store,
+  applyMiddleware,
+  combineReducers,
+  compose,
+  createStore,
+} from 'redux'
 import {Action, action, createReducer, updateIn} from 'redux-decorated'
 import {autoRehydrate, persistStore} from 'redux-persist'
 import {PluginSupervisor} from './plugin-supervisor'
@@ -100,7 +106,13 @@ export class StorageService extends Service {
         plugins: pluginReducer,
         status: statusReducer,
       }),
-      autoRehydrate<State>(),
+      compose(
+        autoRehydrate<State>(),
+        applyMiddleware(_ => next => action => {
+          this.log.debug(action)
+          return next(action)
+        }),
+      ),
     )
     this.getState = this.store.getState
 

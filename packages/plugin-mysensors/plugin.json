@@ -5,6 +5,7 @@
     "Serial MySensors Gateway": {
       "id": "Serial MySensors Gateway",
       "name": "Serial MySensors Gateway",
+      "types": [],
       "config": {
         "serialPort": {
           "id": "serialPort",
@@ -17,6 +18,7 @@
     "MySensors Sensor": {
       "id": "MySensors Sensor",
       "name": "MySensors Sensor",
+      "types": [],
       "config": {
         "gateway": {
           "id": "gateway",

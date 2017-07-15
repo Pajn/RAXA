@@ -1,4 +1,4 @@
-import {PluginDefinition} from 'raxa-common'
+import {DeviceType, PluginDefinition} from 'raxa-common'
 
 const plugin: PluginDefinition = {
   id: 'RaxaTellstickNet',
@@ -9,6 +9,7 @@ const plugin: PluginDefinition = {
     RaxaTellstickNet: {
       id: 'RaxaTellstickNet',
       name: 'RaxaTellstickNet',
+      types: [DeviceType.Connector],
       pluginId: 'RaxaTellstickNet',
       interfaceIds: ['433MHzPulse'],
     },

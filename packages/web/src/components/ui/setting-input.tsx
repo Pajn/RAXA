@@ -138,6 +138,7 @@ export type SettingSliderProps = SettingValueProps & {
 
   max: number
   min: number
+  step?: number
 }
 export type PrivateSettingSliderProps = SettingSliderProps &
   IsMobileProps & {
@@ -158,6 +159,7 @@ export const SettingSliderView = ({
   unit,
   max,
   min,
+  step,
   isMobile,
   tmpValue,
   setTmpValue,
@@ -171,7 +173,13 @@ export const SettingSliderView = ({
         legend={unit ? `${value} ${unit}` : `${asPercent(min, max, +value)} %`}
         children={(value, setValue) =>
           <div>
-            <Slider value={value} onChange={setValue} max={max} min={min} />
+            <Slider
+              value={value}
+              onChange={setValue}
+              max={max}
+              min={min}
+              step={step}
+            />
             {unit ? `${value} ${unit}` : `${asPercent(min, max, +value)} %`}
           </div>}
       />
@@ -190,6 +198,7 @@ export const SettingSliderView = ({
               }}
               max={max}
               min={min}
+              step={step}
             />
           ) as any
         }

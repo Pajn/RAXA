@@ -22,6 +22,8 @@ import {StatusView} from '../properties/status'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
+import {ContextActions} from '../ui/scaffold/context-actions'
+import {Section} from '../ui/scaffold/section'
 import {SettingForm} from '../ui/setting-form'
 import {SettingDropdown} from '../ui/setting-input'
 
@@ -192,11 +194,13 @@ export const DeviceDetailSettings = enhanceS(
 
 export type DeviceSettingsProps = {}
 export type ListGraphQlData = {devices: Array<GraphQlDevice>}
-export type PrivateDeviceSettingsProps = DeviceSettingsProps & {
-  data: ListGraphQlData & QueryProps
-  newDevice?: GraphQlDevice
-  setNewDevice: (newDevice?: Partial<GraphQlDevice>) => void
-}
+export type PrivateDeviceSettingsProps = DeviceSettingsProps &
+  IsMobileProps & {
+    data: ListGraphQlData & QueryProps
+    newDevice?: GraphQlDevice
+    setNewDevice: (newDevice?: Partial<GraphQlDevice>) => void
+    createNewDevice: () => void
+  }
 
 const enhance = compose(
   graphql(gql`
@@ -214,6 +218,8 @@ const enhance = compose(
     }
   `),
   withState('newDevice', 'setNewDevice', null),
+  withState('createNewDevice', '', props => () => props.setNewDevice({})),
+  withIsMobile,
 )
 
 const DeviceList = ListDetail as React.StatelessComponent<
@@ -223,7 +229,9 @@ const DeviceList = ListDetail as React.StatelessComponent<
 export const DeviceSettingsView = ({
   data,
   newDevice,
+  createNewDevice,
   setNewDevice,
+  isMobile,
 }: PrivateDeviceSettingsProps) =>
   <DeviceList
     path="/settings/devices"
@@ -238,14 +246,30 @@ export const DeviceSettingsView = ({
     activeItem={
       newDevice && {
         item: newDevice,
-        section: {title: 'New Device', path: '/settings/devices'},
+        section: {
+          title: 'New Device',
+          path: '/settings/devices/new',
+          onUnload: () => setNewDevice(undefined),
+        },
       }
     }
     listHeader={
-      <Flexbox alignItems="center">
-        <Title style={{flex: 1}}>Devices</Title>
-        <IconButton icon="add" onClick={() => setNewDevice({})} />
-      </Flexbox>
+      isMobile
+        ? <Section title="Devices" onBack={history => history.goBack()}>
+            <ContextActions
+              contextActions={[
+                {
+                  icon: 'add',
+                  onClick: createNewDevice,
+                  href: '/settings/devices/new',
+                },
+              ]}
+            />
+          </Section>
+        : <Flexbox alignItems="center">
+            <Title style={{flex: 1}}>Devices</Title>
+            <IconButton icon="add" onClick={createNewDevice} />
+          </Flexbox>
     }
   />
 

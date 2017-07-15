@@ -20,7 +20,10 @@ export type ListDetailProps<E, T> = {
     props: {isActive: boolean; activate: () => void},
   ) => JSX.Element
   renderActiveItem: (item: E) => JSX.Element
-  activeItem?: {item: E; section: {title: string; path: string}}
+  activeItem?: {
+    item: E
+    section: {title: string; path: string; onUnload?: () => void}
+  }
   listHeader?: React.ReactElement<any>
 }
 
@@ -131,7 +134,7 @@ export const ListDetailView = ({
                 return child
               })}
         </List>}
-      {(isMobile || !inList) &&
+      {(!isMobile || !inList) &&
         <Flexbox flexDirection="column" flexGrow={1}>
           {activeItem
             ? isMobile

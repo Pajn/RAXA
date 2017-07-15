@@ -1,14 +1,16 @@
+import {History} from 'history'
 import PropTypes from 'prop-types'
 
 export type Section = {
   path?: string
   title: string
-  onBack: () => void
+  onBack?: (history: History) => void
+  onUnload?: () => void
 }
 
 export type ContextAction = {
   disabled?: boolean
-  label: string
+  label?: string
   href?: string
   icon?: string
   onClick?: () => void

@@ -1,15 +1,15 @@
 import {Interface} from '../lib/entities'
 
 export const defaultInterfaces = {
-  Light: {
-    id: 'Light',
+  Power: {
+    id: 'Power',
     status: {
       on: {
         id: 'on',
         type: 'boolean' as 'boolean',
         modifiable: true,
         defaultValue: false,
-        interfaceId: 'Light',
+        interfaceId: 'Power',
       },
     },
   },
@@ -28,8 +28,8 @@ export const defaultInterfaces = {
       },
     },
   },
-  RGB: {
-    id: 'RGB',
+  Color: {
+    id: 'Color',
     status: {
       color: {
         id: 'color',
@@ -38,7 +38,7 @@ export const defaultInterfaces = {
         defaultValue: 0,
         min: 0,
         max: 0xffffff,
-        interfaceId: 'RGB',
+        interfaceId: 'Color',
       },
     },
   },
@@ -50,6 +50,32 @@ export const defaultInterfaces = {
         type: 'number' as 'number',
         unit: '°C',
         interfaceId: 'Temperature',
+      },
+    },
+  },
+  '433MHzPulse': {
+    id: '433MHzPulse',
+    name: '433MHzPulse',
+    methods: {
+      send: {
+        arguments: {
+          pulse: {
+            type: 'array',
+            items: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 255,
+            },
+          },
+          repeats: {
+            type: 'integer',
+            minimum: 1,
+          },
+          pause: {
+            type: 'integer',
+            minimum: 0,
+          },
+        },
       },
     },
   },

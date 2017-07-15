@@ -1,4 +1,4 @@
-import {PluginDefinition} from '../../common/cjs/entities'
+import {DeviceType, PluginDefinition} from 'raxa-common'
 
 const plugin: PluginDefinition = {
   id: 'Nexa',
@@ -49,6 +49,7 @@ const plugin: PluginDefinition = {
     NexaSelfLearning: {
       id: 'NexaSelfLearning',
       name: 'NexaSelfLearning',
+      types: [DeviceType.Light],
       allowManualCreation: true,
       config: {
         sender: {
@@ -58,13 +59,14 @@ const plugin: PluginDefinition = {
           modifiable: true,
         },
       },
-      interfaceIds: ['Light', 'SelfLearning'],
+      interfaceIds: ['Power', 'SelfLearning'],
       // requiresInterfaces: ['433MHzPulse'],
       pluginId: 'Nexa',
     },
     NexaSelfLearningDimable: {
       id: 'NexaSelfLearningDimable',
       name: 'NexaSelfLearningDimable',
+      types: [DeviceType.Light],
       allowManualCreation: true,
       config: {
         sender: {
@@ -79,9 +81,10 @@ const plugin: PluginDefinition = {
           min: 0,
           max: 15,
           description: 'The dim level to set while turning on the lamp',
+          modifiable: true,
         },
       },
-      interfaceIds: ['Light', 'SelfLearning', 'Dimmer'],
+      interfaceIds: ['Power', 'SelfLearning', 'Dimmer'],
       // requiresInterfaces: ['433MHzPulse'],
       pluginId: 'Nexa',
     },

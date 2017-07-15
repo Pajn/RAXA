@@ -1,4 +1,4 @@
-import {PluginDefinition} from 'raxa-common'
+import {DeviceType, PluginDefinition, defaultInterfaces} from 'raxa-common'
 
 const plugin: PluginDefinition = {
   id: 'LedStrip',
@@ -8,6 +8,7 @@ const plugin: PluginDefinition = {
     LedStrip: {
       id: 'LedStrip',
       name: 'LedStrip',
+      types: [DeviceType.Light, DeviceType.Thermometer, DeviceType.Connector],
       allowManualCreation: true,
       config: {
         host: {
@@ -17,7 +18,12 @@ const plugin: PluginDefinition = {
           modifiable: true,
         },
       },
-      interfaceIds: ['RGB', '433MHzPulse', 'Temperature'],
+      interfaceIds: [
+        defaultInterfaces.Power.id,
+        defaultInterfaces.Color.id,
+        defaultInterfaces['433MHzPulse'].id,
+        defaultInterfaces.Temperature.id,
+      ],
       pluginId: 'LedStrip',
     },
   },
@@ -50,32 +56,6 @@ const plugin: PluginDefinition = {
     //       },
     //     },
     //   },
-    '433MHzPulse': {
-      id: '433MHzPulse',
-      name: '433MHzPulse',
-      methods: {
-        send: {
-          arguments: {
-            pulse: {
-              type: 'array',
-              items: {
-                type: 'integer',
-                minimum: 0,
-                maximum: 255,
-              },
-            },
-            repeats: {
-              type: 'integer',
-              minimum: 1,
-            },
-            pause: {
-              type: 'integer',
-              minimum: 0,
-            },
-          },
-        },
-      },
-    },
   },
 }
 

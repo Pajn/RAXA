@@ -44,9 +44,8 @@ export interface NexaDevice extends Device {
   }
 
   status: {
-    Light: {on: boolean}
+    Power: {on: boolean}
     Dimmer: {level: number}
-    [interfaceName: string]: {}
   }
 }
 
@@ -61,7 +60,7 @@ export default class NexaPlugin extends Plugin {
   onDeviceCalled(call: Call, device: NexaDevice) {
     const modification = createModification(
       device,
-      defaultInterfaces.Light.status.on,
+      defaultInterfaces.Power.status.on,
       true,
     )
     if (this.className(device) === 'NexaCodeSwitch') {
@@ -72,6 +71,7 @@ export default class NexaPlugin extends Plugin {
   }
 
   onDeviceStatusModified(modification: Modification, device: NexaDevice) {
+    console.log('onDeviceStatusModified', modification)
     if (this.className(device) === 'NexaCodeSwitch') {
       return this.codeSwitchModified(modification, device)
     } else {
@@ -102,12 +102,18 @@ export default class NexaPlugin extends Plugin {
     modification: Modification,
     device: NexaDevice,
   ) {
-    if (isStatus(modification, defaultInterfaces.Light.status.on)) {
+    if (isStatus(modification, defaultInterfaces.Power.status.on)) {
       let senderId = device.config.sender
       let houseCode = HOUSE_CODES[device.config.houseCode]
       let deviceCode = device.config.deviceCode - 1
 
       let action = modification.value ? ON : OFF
+
+      this.log.debug(
+        `Turning ${action === ON
+          ? 'on'
+          : 'off'} code switch device ${device.name} ${houseCode}-${deviceCode}`,
+      )
 
       await this.sendPulse(
         codeSwitchPulse(houseCode, deviceCode, action),
@@ -115,8 +121,8 @@ export default class NexaPlugin extends Plugin {
       ).then(() => {
         return this.dispatch(actions.statusUpdated, {
           deviceId: device.id,
-          interfaceId: 'Light',
-          statusId: 'on',
+          interfaceId: defaultInterfaces.Power.id,
+          statusId: defaultInterfaces.Power.status.on.id,
           value: modification.value,
         })
       })
@@ -134,7 +140,8 @@ export default class NexaPlugin extends Plugin {
     if (this.className(device) === 'NexaSelfLearningDimable') {
       if (
         !forceOn &&
-        isStatus(modification, defaultInterfaces.Light.status.on)
+        isStatus(modification, defaultInterfaces.Power.status.on) &&
+        modification.value
       ) {
         modification = createModification(
           device,
@@ -144,7 +151,7 @@ export default class NexaPlugin extends Plugin {
       }
 
       if (isStatus(modification, defaultInterfaces.Dimmer.status.level)) {
-        const dimLevel = modification.value
+        const dimLevel = Math.round(+modification.value / 100 * 16)
 
         this.log.debug(`Dimming device ${device.name} to level ${dimLevel}`)
         await this.sendPulse(
@@ -154,17 +161,17 @@ export default class NexaPlugin extends Plugin {
           .then(() => {
             return this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
-              interfaceId: 'Light',
-              statusId: 'on',
+              interfaceId: defaultInterfaces.Power.id,
+              statusId: defaultInterfaces.Power.status.on.id,
               value: true,
             })
           })
           .then(() => {
             return this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
-              interfaceId: 'Dimmer',
-              statusId: 'level',
-              value: dimLevel,
+              interfaceId: defaultInterfaces.Dimmer.id,
+              statusId: defaultInterfaces.Dimmer.status.level.id,
+              value: dimLevel / 16 * 100,
             })
           })
 
@@ -172,7 +179,7 @@ export default class NexaPlugin extends Plugin {
       }
     }
 
-    if (isStatus(modification, defaultInterfaces.Light.status.on)) {
+    if (isStatus(modification, defaultInterfaces.Power.status.on)) {
       let action = modification.value ? ON : OFF
 
       this.log.debug(
@@ -185,8 +192,8 @@ export default class NexaPlugin extends Plugin {
       ).then(() => {
         return this.dispatch(actions.statusUpdated, {
           deviceId: device.id,
-          interfaceId: 'Light',
-          statusId: 'on',
+          interfaceId: defaultInterfaces.Power.id,
+          statusId: defaultInterfaces.Power.status.on.id,
           value: modification.value,
         })
       })

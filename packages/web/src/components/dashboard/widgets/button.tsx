@@ -23,6 +23,7 @@ const Container = glamorous.div({
   display: 'flex',
   alignItems: 'center',
 
+  boxSizing: 'border-box',
   padding: 8,
   height: '100%',
   overflow: 'hidden',

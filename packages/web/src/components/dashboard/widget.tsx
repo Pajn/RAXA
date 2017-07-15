@@ -22,7 +22,9 @@ export type WidgetProps<T = any> = {
   config: T
 }
 
-export type WidgetComponent<T = any> = React.ComponentClass<WidgetProps<T>> & {
+export type WidgetComponent<T = any, P = {}> = React.ComponentClass<
+  WidgetProps<T> & P
+> & {
   type: string
   defaultSize: {width: number; height: number}
   demoConfig: T

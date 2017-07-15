@@ -4,7 +4,7 @@ import {DeviceStatus, GraphQlDevice, Interface} from 'raxa-common/lib/entities'
 import React from 'react'
 import {gql, graphql} from 'react-apollo'
 import {QueryProps} from 'react-apollo/lib/graphql'
-import {ContainerQuery} from 'react-container-query'
+import Ripple from 'react-toolbox/lib/ripple'
 import {Slider} from 'react-toolbox/lib/slider'
 import Switch from 'react-toolbox/lib/switch/Switch'
 import {compose, mapProps, withState} from 'recompose'
@@ -15,13 +15,15 @@ import {
 } from '../../../lib/mutations'
 import {withThrottledMutation} from '../../../with-throttled-mutation'
 import {WidgetComponent, WidgetProps} from '../widget'
-import {DimButton, DimLevelButton} from './ui/light-button'
 
-const Container = glamorous.div({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-})
+const Container = Ripple({})(
+  glamorous.div({
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  }),
+)
 const NameRow = glamorous.div({
   display: 'flex',
   alignItems: 'center',
@@ -38,7 +40,7 @@ const PowerSwitch = glamorous(Switch)({
   ':not(#id)': {marginBottom: 5},
 })
 
-const interfaceIds = ['Light', 'Dimmer']
+const interfaceIds = ['Power', 'Dimmer']
 
 export type LightWidgetConfiguration = {
   deviceId: string
@@ -74,10 +76,10 @@ export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
           device: {
             id: '',
             name: 'Device',
-            interfaceIds: ['Light'],
+            interfaceIds: ['Power'],
             status: [
               {
-                interfaceId: 'Light',
+                interfaceId: 'Power',
                 value: 'true',
               } as DeviceStatus,
             ] as GraphQlDevice['status'],
@@ -144,76 +146,43 @@ export const LightWidgetView = ({
   setDimmer,
 }: PrivateLightWidgetProps) => {
   return (
-    <ContainerQuery
-      query={{
-        thin: {
-          maxHeight: 48,
-        },
-        long: {
-          minWidth: 240,
-        },
-      }}
-    >
-      {({thin, long}) =>
-        <Container>
-          {device &&
-            (showDetail && status
-              ? <NameRow>
-                  {long && <DeviceName>{device.name}</DeviceName>}
-                  <DetailControl>
-                    <Slider
-                      value={+status.Dimmer.value}
-                      onChange={setDimmer}
-                      onDragStop={() => setShowDetail(false)}
-                    />
-                  </DetailControl>
-                </NameRow>
-              : <NameRow>
-                  <DeviceName>{device.name}</DeviceName>
-                  {status
-                    ? <Flexbox alignItems="center">
-                        {long &&
-                          device.interfaceIds!.includes('Dimmer') &&
-                          <Flexbox>
-                            <DimLevelButton
-                              onClick={() => setDimmer('25')}
-                              level={0.25}
-                            />
-                            <DimLevelButton
-                              onClick={() => setDimmer('25')}
-                              level={0.5}
-                            />
-                            <DimLevelButton
-                              onClick={() => setDimmer('25')}
-                              level={1}
-                            />
-                          </Flexbox>}
-                        {thin &&
-                          device.interfaceIds!.includes('Dimmer') &&
-                          <DimButton onClick={() => setShowDetail(true)} />}
-                        <PowerSwitch
-                          checked={Boolean(status.Light.value)}
-                          onChange={value => {
-                            setDeviceStatus(status.Light.id, {
-                              deviceId: device.id,
-                              interfaceId: status.Light.interfaceId,
-                              statusId: status.Light.statusId,
-                              value: value.toString(),
-                            })
-                          }}
-                        />
-                      </Flexbox>
-                    : <div />}
-                </NameRow>)}
-          {device &&
-            status &&
-            !thin &&
-            device.interfaceIds!.includes('Dimmer') &&
-            <Flexbox flexDirection="column">
-              <Slider value={+status.Dimmer.value} onChange={setDimmer} />
-            </Flexbox>}
-        </Container>}
-    </ContainerQuery>
+    <Container onClick={() => setShowDetail(!showDetail)}>
+      {device &&
+        (showDetail && status && device.interfaceIds!.includes('Dimmer')
+          ? <NameRow>
+              <DeviceName>{device.name}</DeviceName>
+              <DetailControl>
+                <Slider
+                  value={+status.Dimmer.value}
+                  onChange={setDimmer}
+                  onDragStop={() => setShowDetail(false)}
+                />
+              </DetailControl>
+            </NameRow>
+          : <NameRow>
+              <DeviceName>{device.name}</DeviceName>
+              {status
+                ? <div
+                    onMouseDown={e => e.stopPropagation()}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <Flexbox alignItems="center">
+                      <PowerSwitch
+                        checked={status.Power.value !== 'false'}
+                        onChange={value => {
+                          setDeviceStatus(status.Power.id, {
+                            deviceId: device.id,
+                            interfaceId: status.Power.interfaceId,
+                            statusId: status.Power.statusId,
+                            value: value.toString(),
+                          })
+                        }}
+                      />
+                    </Flexbox>
+                  </div>
+                : <div />}
+            </NameRow>)}
+    </Container>
   )
 }
 
@@ -221,7 +190,7 @@ export const LightWidget: WidgetComponent<
   LightWidgetConfiguration
 > = Object.assign(enhance(LightWidgetView), {
   type: 'LightWidget',
-  uiName: 'Lamp',
+  uiName: 'Light',
   defaultSize: {width: 4, height: 1},
   demoConfig: {deviceId: ''},
   config: {

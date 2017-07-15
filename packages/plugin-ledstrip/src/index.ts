@@ -36,15 +36,16 @@ export default class LedStripPlugin extends Plugin {
   onDeviceCalled(call: Call, device: LedStrip) {
     if (call.interfaceId === '433MHzPulse' && call.method === 'send') {
       const pulse: Array<number> = [
+        // Pulse the antenna to ensure good transmission
         255,
         255,
-        // 255,
+        //
         255,
         255,
-        // 255,
+        //
         255,
         255,
-        // 255,
+        //
         255,
         ...call.arguments.pulse,
       ]
@@ -111,6 +112,7 @@ export default class LedStripPlugin extends Plugin {
     }
 
     const url = `${device.config.host}/${path}${query}`
+    this.log.debug('Request:', {url})
     fetch(url).then(res => {
       this.log.debug('Response:', {
         url,

@@ -107,21 +107,51 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
     const {contextActions} = this.state
     const activeSection = this.activeSection
 
+    function isSingleIcon(
+      contextActions?: Array<ContextAction>,
+    ): contextActions is [ContextAction] {
+      return !!(
+        contextActions &&
+        contextActions.length === 1 &&
+        !contextActions[0].label
+      )
+    }
+
     return (
       <Flexbox flexDirection="column" flex="1">
         <AppBar
           title={activeSection ? activeSection.title : appName}
           leftIcon={activeSection && 'arrow_back'}
-          onLeftIconClick={activeSection && activeSection.onBack}
+          onLeftIconClick={
+            activeSection && activeSection.onBack
+              ? () => activeSection.onBack!(this.props.history)
+              : undefined
+          }
+          rightIcon={
+            isSingleIcon(contextActions) ? contextActions[0].icon : undefined
+          }
+          onRightIconClick={
+            isSingleIcon(contextActions)
+              ? contextActions[0].href
+                ? () => {
+                    this.props.history.push(contextActions[0].href!)
+                    if (contextActions[0].onClick) {
+                      contextActions[0].onClick!()
+                    }
+                  }
+                : contextActions[0].onClick
+              : undefined
+          }
         >
           {contextActions &&
+            !isSingleIcon(contextActions) &&
             <Navigation
               type="horizontal"
               actions={contextActions.map<ButtonProps>(action => ({
                 ...action,
                 inverse: true,
                 style: {
-                  margin: 0,
+                  marginRight: -12,
                   minWidth: 0,
                   color: action.disabled ? grey[500] : undefined,
                   background: action.disabled ? 'transparent' : undefined,

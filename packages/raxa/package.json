@@ -28,7 +28,8 @@
     "redux": "^3.6.0",
     "redux-decorated": "^0.2.0",
     "redux-persist": "^4.8.0",
-    "source-map-support": "^0.4.15"
+    "source-map-support": "^0.4.15",
+    "typescript": "^2.4.1"
   },
   "devDependencies": {
     "tscomp": "^0.11.2"

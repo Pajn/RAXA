@@ -5,6 +5,7 @@
     "Scenery": {
       "id": "Scenery",
       "name": "Scenery",
+      "types": [],
       "allowManualCreation": true,
       "config": {
         "modifications": {

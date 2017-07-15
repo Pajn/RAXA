@@ -15,6 +15,7 @@ export interface Device {
    * Id of the DeviceClass the Device implements.
    */
   deviceClassId: string
+  types?: Array<DeviceType>
   /**
    * Configuration values for the plugin.
    */
@@ -30,6 +31,14 @@ export interface Device {
   variables?: {[interfaceId: string]: {[variableName: string]: any}}
 }
 
+export enum DeviceType {
+  Group = 'Group',
+  Light = 'Light',
+  Scenery = 'Scenery',
+  Thermometer = 'Thermometer',
+  Connector = 'Connector',
+}
+
 /**
  * Every Device is created from a DeviceClass that describes
  * what the device implements and requires.
@@ -40,6 +49,7 @@ export interface Device {
 export interface DeviceClass {
   id: string
   name?: string
+  types: Array<DeviceType>
   shortDescription?: string
   description?: string
   allowManualCreation?: boolean

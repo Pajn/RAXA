@@ -16,6 +16,6 @@
     "prettier": "^1.4.4",
     "tslint": "^5.4.3",
     "tslint-config-beanloop": "0.1.0",
-    "typescript": "next"
+    "typescript": "^2.4.1"
   }
 }
