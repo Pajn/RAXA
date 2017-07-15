@@ -5,3 +5,4 @@ build/
 node_modules/
 old/
 src/web/
+lerna-debug.log

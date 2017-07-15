@@ -12,9 +12,10 @@
     "@types/react-router": "^4.0.3",
     "@types/react-router-dom": "^4.0.3",
     "@types/recompose": "^0.23.0",
-    "@types/webpack": "^2.2.15",
+    "@types/webpack": "^3.0.4",
     "apollo-client": "^1.0.1",
     "deep-equal": "^1.0.1",
+    "filter-key": "^0.1.0",
     "flexbox-react": "^4.4.0",
     "glamor": "^2.20.25",
     "glamorous": "^3.22.1",
@@ -47,7 +48,7 @@
   "devDependencies": {
     "react-addons-perf": "^15.4.2",
     "react-toolbox-themr": "^1.0.2",
-    "tscomp": "^0.10.0",
+    "tscomp": "^0.13.0",
     "tslint": "^5.0.0"
   },
   "tscomp": {

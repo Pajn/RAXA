@@ -28,7 +28,7 @@ lerna bootstrap
         yarn link
         yarn link raxa-common
         cd ../raxa
-        yarn link "raxa-plugin-${PLUGIN}"
+        yarn link "raxa-${PLUGIN}"
       )
     fi
   done

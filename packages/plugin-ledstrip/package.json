@@ -10,7 +10,7 @@
     "node-fetch": "^1.7.1"
   },
   "devDependencies": {
-    "tscomp": "^0.11.2"
+    "tscomp": "^0.13.0"
   },
   "tscomp": {
     "mode": "lib"
@@ -21,6 +21,6 @@
     "eject": "tscomp eject",
     "watch": "tscomp watch"
   },
-  "main": "./lib/index.js",
+  "main": "./cjs/index.js",
   "typings": "./lib/index.d.ts"
 }

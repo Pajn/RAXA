@@ -9,7 +9,7 @@
     "redux-decorated": "^0.2.0-dev.3"
   },
   "devDependencies": {
-    "tscomp": "^0.10.0"
+    "tscomp": "^0.13.0"
   },
   "tscomp": {
     "mode": "lib"

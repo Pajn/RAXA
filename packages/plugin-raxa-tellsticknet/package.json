@@ -14,7 +14,7 @@
   "license": "AGPL-3.0",
   "devDependencies": {
     "@types/node": "^8.0.7",
-    "tscomp": "^0.12.0",
+    "tscomp": "^0.13.0",
     "typescript": "^2.4.1"
   },
   "dependencies": {

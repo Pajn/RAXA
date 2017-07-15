@@ -11,7 +11,6 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": ".",
     "outDir": "build",
     "sourceMap": true
   },
