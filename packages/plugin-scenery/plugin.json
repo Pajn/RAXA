@@ -28,6 +28,7 @@
       "id": "Scenery",
       "methods": {
         "set": {
+          "id": "set",
           "arguments": {}
         }
       }

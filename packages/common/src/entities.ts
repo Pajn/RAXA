@@ -127,6 +127,10 @@ export interface Modification<TValue = any> {
   value: TValue
 }
 
+export type Action =
+  | ({type: 'call'} & Call)
+  | ({type: 'modification'} & Modification)
+
 export interface Method {
   id: string
   name?: string

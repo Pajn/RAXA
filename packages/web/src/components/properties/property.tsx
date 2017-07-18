@@ -1,4 +1,5 @@
 import {
+  ActionProperty,
   ArrayProperty,
   BooleanProperty,
   DeviceProperty,
@@ -14,6 +15,7 @@ import {
   SettingSlider,
   SettingValue,
 } from '../ui/setting-input'
+import {ActionInput} from './action-property'
 import {ArrayInput} from './array-property'
 import {DeviceDispay, DeviceInput} from './device-property'
 import {ModificationInput} from './modification-property'
@@ -68,6 +70,9 @@ const NumberInput = ({
       />
 
 const types = {
+  action(props: PropertyProps<ActionProperty>) {
+    return <ActionInput {...props as any} />
+  },
   array(props: PropertyProps<ArrayProperty<any>>) {
     return <ArrayInput {...props} />
   },

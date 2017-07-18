@@ -41,7 +41,7 @@ export class PluginSupervisor extends Service {
     const storage = (this.serviceManager.runningServices
       .StorageService as any) as StorageService
     await Promise.all(
-      ['mysensors', 'scenery', 'ledstrip', 'nexa', 'raxa-tellsticknet']
+      ['mysensors', 'scenery', 'ledstrip', 'nexa', 'raxa-tellsticknet', 'timer']
         // .filter(plugin => !storage.getState().plugins[plugin])
         .map(plugin => this.installPlugin(plugin)),
     )
@@ -77,7 +77,7 @@ export class PluginSupervisor extends Service {
       return
     }
 
-    Object.entries(pluginDefinition.interfaces).forEach(([id, iface]) => {
+    Object.entries(pluginDefinition.interfaces || {}).forEach(([id, iface]) => {
       if (id !== iface.id)
         throw new Error(`Invalid interface id ${id} !== ${iface.id}`)
       iface.pluginId = name
@@ -117,6 +117,9 @@ export class PluginSupervisor extends Service {
 
   public onDeviceCreated(device: Device): Awaitable<void | Device> {
     return this.getPlugin(device.pluginId).onDeviceCreated(device)
+  }
+  public onDeviceUpdated(device: Device): Awaitable<void | Device> {
+    return this.getPlugin(device.pluginId).onDeviceUpdated(device)
   }
   public onDeviceCalled(call: Call, device: Device): Awaitable<void | Device> {
     return this.getPlugin(device.pluginId).onDeviceCalled(call, device)

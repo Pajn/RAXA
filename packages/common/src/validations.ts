@@ -155,12 +155,22 @@ function propertyToJoi(property: Property) {
 
   switch (property.type) {
     case 'action':
-      joiRule = joi.object({
-        deviceId: joi.string().required(),
-        interfaceId: joi.string().required(),
-        statusId: joi.string().required(),
-        value: joi.any().required(),
-      })
+      joiRule = joi.alternatives([
+        joi.object({
+          type: joi.string().required().only('call'),
+          deviceId: joi.string().required(),
+          interfaceId: joi.string().required(),
+          method: joi.string().required(),
+          arguments: joi.object().required(),
+        }),
+        joi.object({
+          type: joi.string().required().only('modification'),
+          deviceId: joi.string().required(),
+          interfaceId: joi.string().required(),
+          statusId: joi.string().required(),
+          value: joi.any().required(),
+        }),
+      ])
       break
     case 'array':
       joiRule = joi.array().items(propertyToJoi(property.items))

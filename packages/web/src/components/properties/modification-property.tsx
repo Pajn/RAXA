@@ -41,6 +41,7 @@ const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
     statusId: Object.values(selectedInterface.status).length === 1
       ? Object.values(selectedInterface.status)[0].id
       : undefined,
+    value: undefined,
   }
 }
 
@@ -49,9 +50,9 @@ const setDevice = (deviceId: string, devices: Array<GraphQlDevice>) => {
   const interfaces = selectedDevice.interfaces.filter(validInterface)
   return {
     deviceId,
-    ...interfaces.length > 0
+    ...interfaces.length === 1
       ? setInterface(interfaces[0].id, selectedDevice)
-      : undefined,
+      : {interfaceId: undefined},
   }
 }
 
@@ -156,7 +157,7 @@ export const ModificationInputView = ({
           label: status.name || status.id,
         }))}
         value={value.statusId}
-        onChange={statusId => onChange({...value, statusId})}
+        onChange={statusId => onChange({...value, statusId, value: undefined})}
       />}
     {selectedInterface &&
       selectedStatus &&
