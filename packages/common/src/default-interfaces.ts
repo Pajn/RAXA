@@ -58,24 +58,40 @@ export const defaultInterfaces = {
     name: '433MHzPulse',
     methods: {
       send: {
+        id: 'send',
         arguments: {
           pulse: {
-            type: 'array',
+            id: 'pulse',
+            type: 'array' as 'array',
             items: {
-              type: 'integer',
+              id: 'items',
+              type: 'integer' as 'integer',
               minimum: 0,
               maximum: 255,
             },
           },
           repeats: {
-            type: 'integer',
+            id: 'repeats',
+            type: 'integer' as 'integer',
             minimum: 1,
           },
           pause: {
-            type: 'integer',
+            id: 'pause',
+            type: 'integer' as 'integer',
             minimum: 0,
           },
         },
+      },
+    },
+  },
+  SelfLearning: {
+    id: 'SelfLearning',
+    name: 'Self Learning',
+    methods: {
+      learn: {
+        id: 'learn',
+        showInSettings: true,
+        arguments: {},
       },
     },
   },

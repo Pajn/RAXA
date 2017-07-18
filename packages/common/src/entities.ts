@@ -37,6 +37,7 @@ export enum DeviceType {
   Scenery = 'Scenery',
   Thermometer = 'Thermometer',
   Connector = 'Connector',
+  Automation = 'Automation',
 }
 
 /**
@@ -83,7 +84,7 @@ export interface Interface {
    */
   pluginId?: string
 
-  methods?: {[method: string]: {}}
+  methods?: {[method: string]: Method}
   status?: {[status: string]: Property}
   variables?: {[variable: string]: {}}
 }
@@ -126,6 +127,13 @@ export interface Modification<TValue = any> {
   value: TValue
 }
 
+export interface Method {
+  id: string
+  name?: string
+  arguments: {[name: string]: Property}
+  showInSettings?: boolean
+}
+
 export interface PropertyBase {
   id: string
   name?: string
@@ -134,6 +142,12 @@ export interface PropertyBase {
 
   optional?: boolean
   modifiable?: boolean
+}
+
+export interface ActionProperty extends PropertyBase {
+  type: 'action'
+  interfaceIds?: Array<string>
+  deviceClassIds?: Array<string>
 }
 
 export interface ArrayProperty<T> extends PropertyBase {
@@ -184,6 +198,7 @@ export interface StringProperty extends PropertyBase {
 }
 
 export type Property =
+  | ActionProperty
   | ArrayProperty<any>
   | BooleanProperty
   | DeviceProperty
@@ -193,6 +208,7 @@ export type Property =
   | StringProperty
 export type ValueType = Property['type']
 export const valueTypes: Array<ValueType> = [
+  'action',
   'array',
   'boolean',
   'device',

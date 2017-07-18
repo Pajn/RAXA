@@ -128,8 +128,11 @@ export const DeviceType = buildType<Device>({
     interfaces: {
       type: [InterfaceType],
       validate: joi.object({}),
-      resolve({interfaceIds = []}: Device, {}, {storage}: Context) {
+      resolve(device: Device, {}, {storage}: Context) {
         const state = storage.getState()
+        const interfaceIds =
+          device.interfaceIds ||
+          storage.getState().deviceClasses[device.deviceClassId].interfaceIds
         return interfaceIds.map(iface => state.interfaces[iface])
       },
     },

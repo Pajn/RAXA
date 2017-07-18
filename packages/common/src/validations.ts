@@ -11,11 +11,10 @@ import {
 import {RaxaError, raxaError} from './errors'
 import {State} from './state'
 
-export const propertiesSchema: joi.Schema = joi
-  .object()
-  .pattern(
-    /^/,
-    joi.object({
+export const propertiesSchema: joi.Schema = joi.object().pattern(
+  /^/,
+  joi
+    .object({
       id: joi.string().required(),
       type: joi
         .string()
@@ -24,52 +23,52 @@ export const propertiesSchema: joi.Schema = joi
 
       optional: joi.boolean(),
       modifiable: joi.boolean(),
+    })
+    .when(joi.ref('type'), {
+      is: 'boolean',
+      then: joi.object({
+        defaultValue: joi.boolean(),
+      }),
+    })
+    .when(joi.ref('type'), {
+      is: 'device',
+      then: joi.object({
+        interfaceIds: joi.array().items(joi.string().required()),
+        deviceClassIds: joi.array().items(joi.string().required()),
+      }),
+    })
+    .when(joi.ref('type'), {
+      is: 'number',
+      then: joi.object({
+        min: joi.number(),
+        max: joi.number(),
+        unit: joi.string(),
+        defaultValue: joi.number(),
+      }),
+    })
+    .when(joi.ref('type'), {
+      is: 'integer',
+      then: joi.object({
+        min: joi.number().integer(),
+        max: joi.number().integer(),
+        unit: joi.string(),
+        defaultValue: joi.number().integer(),
+      }),
+    })
+    .when(joi.ref('type'), {
+      is: 'string',
+      then: joi.object({
+        defaultValue: joi.string(),
+      }),
+    })
+    .when(joi.ref('type'), {
+      is: 'object',
+      then: joi.object({
+        properties: joi.lazy(() => propertiesSchema).required(),
+        defaultValue: joi.object(),
+      }),
     }),
-  )
-  .when(joi.ref('type'), {
-    is: 'boolean',
-    then: joi.object({
-      defaultValue: joi.boolean(),
-    }),
-  })
-  .when(joi.ref('type'), {
-    is: 'device',
-    then: joi.object({
-      interfaceIds: joi.array().items(joi.string().required()),
-      deviceClassIds: joi.array().items(joi.string().required()),
-    }),
-  })
-  .when(joi.ref('type'), {
-    is: 'number',
-    then: joi.object({
-      min: joi.number(),
-      max: joi.number(),
-      unit: joi.string(),
-      defaultValue: joi.number(),
-    }),
-  })
-  .when(joi.ref('type'), {
-    is: 'integer',
-    then: joi.object({
-      min: joi.number().integer(),
-      max: joi.number().integer(),
-      unit: joi.string(),
-      defaultValue: joi.number().integer(),
-    }),
-  })
-  .when(joi.ref('type'), {
-    is: 'string',
-    then: joi.object({
-      defaultValue: joi.string(),
-    }),
-  })
-  .when(joi.ref('type'), {
-    is: 'object',
-    then: joi.object({
-      properties: joi.lazy(() => propertiesSchema).required(),
-      defaultValue: joi.object(),
-    }),
-  })
+)
 
 function validateProperties(
   error: RaxaError['type'],
@@ -138,7 +137,7 @@ export function validateDeviceClass(state: State, deviceClass: DeviceClass) {
 
 export function validateInterface(iface: Interface) {
   if (iface.status) {
-    validateProperties('invalidInterface', iface.status)
+    // validateProperties('invalidInterface', iface.status)
   }
 }
 
@@ -155,6 +154,14 @@ function propertyToJoi(property: Property) {
   let joiRule
 
   switch (property.type) {
+    case 'action':
+      joiRule = joi.object({
+        deviceId: joi.string().required(),
+        interfaceId: joi.string().required(),
+        statusId: joi.string().required(),
+        value: joi.any().required(),
+      })
+      break
     case 'array':
       joiRule = joi.array().items(propertyToJoi(property.items))
       break

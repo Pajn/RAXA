@@ -14,5 +14,16 @@
   "prettier.bracketSpacing": false,
   // Whether to add a semicolon at the end of every line
   "prettier.semi": false,
-  "prettier.jsonEnable": []
+  "prettier.jsonEnable": [],
+
+  // Configure glob patterns for excluding files and folders.
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "packages/*/lib/**": true,
+    "packages/*/cjs/**": true
+  }
 }

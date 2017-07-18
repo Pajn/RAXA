@@ -26,6 +26,10 @@
     "object-literal-shorthand": true,
     "quotemark": [
       false
+    ],
+    "no-default-export": false,
+    "no-unused-expression": [
+      true
     ]
   }
 }

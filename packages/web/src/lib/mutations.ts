@@ -1,7 +1,7 @@
 import {Call, Modification} from 'raxa-common'
 import {gql, graphql} from 'react-apollo'
 import {Dispatch, connect} from 'react-redux'
-import compose from 'recompose/compose'
+import {compose} from 'recompose'
 import {action} from 'redux-decorated'
 import {actions} from '../redux-snackbar/actions'
 

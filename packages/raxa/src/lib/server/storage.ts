@@ -58,7 +58,7 @@ const deviceClassReducer = createReducer<DeviceClassState>({})
   }))
   .build()
 
-const interfaceReducer = createReducer<InterfaceState>(defaultInterfaces)
+const interfaceReducer = createReducer<InterfaceState>({})
   .when(actions.interfaceAdded, (state, {iface}) => ({
     ...state,
     [iface.id!]: iface,
@@ -122,6 +122,10 @@ export class StorageService extends Service {
         {storage: nedb({filename: 'db.json'}) as any},
         resolve,
       )
+    })
+
+    Object.values(defaultInterfaces).forEach(iface => {
+      this.installInterface(iface)
     })
   }
 
@@ -187,6 +191,8 @@ export class StorageService extends Service {
     device = validateDevice(state, device)
 
     if (device.id) {
+      device = (await plugins.onDeviceUpdated(device)) || device
+
       this.dispatch(actions.deviceUpdated, {device})
     } else {
       device.id = Date.now().toString()

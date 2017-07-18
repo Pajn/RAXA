@@ -58,15 +58,20 @@ export default class NexaPlugin extends Plugin {
   }
 
   onDeviceCalled(call: Call, device: NexaDevice) {
-    const modification = createModification(
-      device,
-      defaultInterfaces.Power.status.on,
-      true,
-    )
-    if (this.className(device) === 'NexaCodeSwitch') {
-      return this.codeSwitchModified(modification, device)
-    } else {
-      return this.selfLearningModified(modification, device, true)
+    if (
+      call.interfaceId === defaultInterfaces.SelfLearning.id &&
+      call.method === defaultInterfaces.SelfLearning.methods.learn.id
+    ) {
+      const modification = createModification(
+        device,
+        defaultInterfaces.Power.status.on,
+        true,
+      )
+      if (this.className(device) === 'NexaCodeSwitch') {
+        return this.codeSwitchModified(modification, device)
+      } else {
+        return this.selfLearningModified(modification, device, true)
+      }
     }
   }
 

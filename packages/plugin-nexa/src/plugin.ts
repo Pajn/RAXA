@@ -85,13 +85,7 @@ const plugin: PluginDefinition = {
         },
       },
       interfaceIds: ['Power', 'SelfLearning', 'Dimmer'],
-      // requiresInterfaces: ['433MHzPulse'],
       pluginId: 'Nexa',
-    },
-  },
-  interfaces: {
-    SelfLearning: {
-      id: 'SelfLearning',
     },
   },
 }
