@@ -1,4 +1,4 @@
-import {Action, Device, Plugin, defaultInterfaces} from 'raxa-common'
+import {Action, Call, Device, Plugin, defaultInterfaces} from 'raxa-common'
 import plugin from './plugin'
 
 export interface Trigger extends Device {
@@ -9,6 +9,7 @@ export interface Trigger extends Device {
 
 export default class TriggerPlugin extends Plugin {
   activeTriggers = new Set<string>()
+  activeLearners = new Map<Trigger, NodeJS.Timer>()
 
   start() {
     this.listenOn(
@@ -35,8 +36,38 @@ export default class TriggerPlugin extends Plugin {
             this.setDeviceStatus(device.config.action)
           }
         } else {
+          for (const [trigger, timer] of this.activeLearners.entries()) {
+            clearTimeout(timer)
+            this.log.debug(`Learned ${trigger.name} to`, {pluginId, triggerId})
+            this.upsertDevice({
+              ...trigger,
+              config: {...trigger.config, pluginId, triggerId},
+            })
+          }
+          this.activeLearners.clear()
         }
       },
     )
+  }
+
+  onDeviceCalled(call: Call, device: Trigger) {
+    if (
+      call.interfaceId === defaultInterfaces.SelfLearning.id &&
+      call.method === defaultInterfaces.SelfLearning.methods.learn.id
+    ) {
+      let oldTimer = this.activeLearners.get(device)
+      this.log.debug(`Learning ${device.name}`)
+      if (oldTimer !== undefined) {
+        this.log.debug(`Clearing old timer for ${device.name}`)
+        clearTimeout(oldTimer)
+      }
+      this.activeLearners.set(
+        device,
+        setTimeout(() => {
+          this.log.debug(`Timed out learning ${device.name}`)
+          this.activeLearners.delete(device)
+        }, 10000),
+      )
+    }
   }
 }
