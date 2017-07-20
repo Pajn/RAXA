@@ -1,6 +1,6 @@
 import glamorous from 'glamorous'
 import {shadow} from 'material-definitions'
-import {DeviceType, GraphQlDevice} from 'raxa-common'
+import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {gql, graphql} from 'react-apollo'
 import {compose, mapProps} from 'recompose'
@@ -80,22 +80,29 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
   `),
 )
 
-export const ListWidgetView = ({data, row}: ListWidgetPrivateProps) =>
+export const ListWidgetView = ({
+  data,
+  row,
+  interfaceIds,
+}: ListWidgetPrivateProps) =>
   <Container row={row}>
     {data.devices &&
       data.devices
         .map(
           device =>
             device.interfaceIds
-              ? device.types!.includes(DeviceType.Thermometer)
+              ? device.types!.includes(DeviceType.Thermometer) &&
+                  (!interfaceIds ||
+                    interfaceIds.includes(defaultInterfaces.Temperature.id))
                 ? <DisplayWidget
                     config={{
                       deviceId: device.id,
-                      interfaceId: 'Temperature',
-                      statusId: 'temp',
+                      interfaceId: defaultInterfaces.Temperature.id,
+                      statusId: defaultInterfaces.Temperature.status.temp.id,
                     }}
                   />
-                : device.interfaceIds!.includes('Scenery')
+                : device.interfaceIds!.includes('Scenery') &&
+                    (!interfaceIds || interfaceIds.includes('Scenery'))
                   ? <ButtonWidget
                       config={{
                         deviceId: device.id,
@@ -103,7 +110,10 @@ export const ListWidgetView = ({data, row}: ListWidgetPrivateProps) =>
                         method: 'set',
                       }}
                     />
-                  : device.types!.includes(DeviceType.Light)
+                  : device.types!.includes(DeviceType.Light) &&
+                      (!interfaceIds ||
+                        interfaceIds.includes(defaultInterfaces.Power.id) ||
+                        interfaceIds.includes(defaultInterfaces.Dimmer.id))
                     ? <LightWidget config={{deviceId: device.id}} />
                     : null
               : null,
