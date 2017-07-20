@@ -21,5 +21,7 @@ if [ $? != 0 ]; then
   tmux -L raxa send-keys -t raxa "yarn watch" C-m
   tmux -L raxa new-window -t raxa -c packages/plugin-timer -n "plugin-timer "
   tmux -L raxa send-keys -t raxa "yarn watch" C-m
+  tmux -L raxa new-window -t raxa -c packages/plugin-trigger -n "plugin-trigger "
+  tmux -L raxa send-keys -t raxa "yarn watch" C-m
 fi
 tmux $@ -L raxa attach -t raxa

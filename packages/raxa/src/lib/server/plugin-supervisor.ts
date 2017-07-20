@@ -1,3 +1,4 @@
+import {EventEmitter} from 'events'
 import {
   Awaitable,
   Call,
@@ -15,6 +16,7 @@ import {StorageService} from './storage'
 
 class PluginManager extends ServiceManager {
   supervisor: PluginSupervisor
+  eventEmitter = new EventEmitter()
 
   configureService(service: ServiceImplementation, plugin: Plugin) {
     super.configureService(service, plugin)
@@ -26,6 +28,18 @@ class PluginManager extends ServiceManager {
     plugin.setDeviceStatus = (modification: Modification) =>
       this.supervisor.setDeviceStatus(modification)
     plugin.callDevice = (call: Call) => this.supervisor.callDevice(call)
+
+    plugin.fireEvent = async (interfaceId, eventId, data) => {
+      this.eventEmitter.emit('event', {interfaceId, eventId, data})
+    }
+
+    plugin.listenOn = (interfaceId, eventId, callback) => {
+      this.eventEmitter.on('event', event => {
+        if (event.interfaceId === interfaceId && event.eventId === eventId) {
+          callback(event.data)
+        }
+      })
+    }
   }
 }
 
@@ -41,7 +55,7 @@ export class PluginSupervisor extends Service {
     const storage = (this.serviceManager.runningServices
       .StorageService as any) as StorageService
     await Promise.all(
-      ['mysensors', 'scenery', 'ledstrip', 'nexa', 'raxa-tellsticknet', 'timer']
+      ['scenery', 'ledstrip', 'nexa', 'raxa-tellsticknet', 'timer', 'trigger']
         // .filter(plugin => !storage.getState().plugins[plugin])
         .map(plugin => this.installPlugin(plugin)),
     )

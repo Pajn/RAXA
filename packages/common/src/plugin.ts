@@ -11,6 +11,12 @@ import {Service} from './service'
 export abstract class Plugin extends Service {
   definition: PluginDefinition
 
+  fireEvent: (interfaceId: string, eventId: string, data?: any) => Promise<void>
+  listenOn: (
+    interfaceId: string,
+    eventId: string,
+    callback: (data?: any) => any,
+  ) => void
   setDeviceStatus: (modification: Modification) => Promise<void>
   callDevice: (call: Call) => Promise<void>
   upsertDevice: (device: Device) => Promise<Device>
@@ -21,7 +27,7 @@ export abstract class Plugin extends Service {
    * configuration or return undefined to don't do anything at all.
    * If a Promise is returned then RAXA will wait for it to be resolved.
    */
-  onDeviceCreated(device: Device): Awaitable<void | Device> {}
+  onDeviceCreated(_device: Device): Awaitable<void | Device> {}
 
   /**
    * Called when a device is being updated from one of the plugins DeviceClasses
@@ -29,7 +35,7 @@ export abstract class Plugin extends Service {
    * configuration or return undefined to don't do anything at all.
    * If a Promise is returned then RAXA will wait for it to be resolved.
    */
-  onDeviceUpdated(device: Device): Awaitable<void | Device> {}
+  onDeviceUpdated(_device: Device): Awaitable<void | Device> {}
 
   /**
    * Called when a device owned by the plugin is beeing called.
@@ -37,10 +43,10 @@ export abstract class Plugin extends Service {
    * configuration or return undefined to don't do anything at all.
    * If a Promise is returned then RAXA will wait for it to be resolved.
    */
-  onDeviceCalled(call: Call, device: Device): Awaitable<void | Device> {}
+  onDeviceCalled(_call: Call, _device: Device): Awaitable<void | Device> {}
 
   onDeviceStatusModified(
-    modification: Modification,
-    device: Device,
+    _modification: Modification,
+    _device: Device,
   ): Awaitable<void | Device> {}
 }

@@ -1,7 +1,7 @@
 import {DeviceType, PluginDefinition} from 'raxa-common'
 
-const plugin: PluginDefinition = {
-  id: 'Nexa',
+const plugin = {
+  id: 'nexa',
   name: 'Nexa',
   description: 'Plugin for Nexa devices',
   deviceClasses: {
@@ -54,7 +54,7 @@ const plugin: PluginDefinition = {
       config: {
         sender: {
           id: 'sender',
-          type: 'device',
+          type: 'device' as 'device',
           interfaceIds: ['433MHzPulse'],
           modifiable: true,
         },
@@ -71,13 +71,13 @@ const plugin: PluginDefinition = {
       config: {
         sender: {
           id: 'sender',
-          type: 'device',
+          type: 'device' as 'device',
           interfaceIds: ['433MHzPulse'],
           modifiable: true,
         },
         onLevel: {
           id: 'onLevel',
-          type: 'integer',
+          type: 'integer' as 'integer',
           min: 0,
           max: 15,
           description: 'The dim level to set while turning on the lamp',
@@ -88,6 +88,8 @@ const plugin: PluginDefinition = {
       pluginId: 'Nexa',
     },
   },
+  interfaces: {},
 }
+export const _typeCheck: PluginDefinition = plugin
 
 export default plugin

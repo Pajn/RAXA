@@ -9,6 +9,8 @@ import {
   defaultInterfaces,
   isStatus,
 } from 'raxa-common'
+import raxaTellstickNet from 'raxa-plugin-raxa-tellsticknet/cjs/plugin'
+import plugin from './plugin'
 
 const ON = 0
 const OFF = 1
@@ -50,6 +52,25 @@ export interface NexaDevice extends Device {
 }
 
 export default class NexaPlugin extends Plugin {
+  start() {
+    this.listenOn(
+      raxaTellstickNet.interfaces.TellstickReceived.id,
+      raxaTellstickNet.interfaces.TellstickReceived.events.message.id,
+      (message: string) => {
+        if (message.startsWith('arctech;model')) {
+          this.fireEvent(
+            defaultInterfaces.Trigger.id,
+            defaultInterfaces.Trigger.events.triggered.id,
+            {
+              pluginId: plugin.id,
+              triggerId: message,
+            },
+          )
+        }
+      },
+    )
+  }
+
   onDeviceCreated(device: NexaDevice) {
     if (this.className(device).startsWith('NexaSelfLearning')) {
       device.config.deviceCode = Math.floor(Math.random() * DEVICE_CODE_MAX)
@@ -93,8 +114,8 @@ export default class NexaPlugin extends Plugin {
   private sendPulse(pulse: Array<number>, senderId: string) {
     return this.callDevice({
       deviceId: senderId,
-      interfaceId: '433MHzPulse',
-      method: 'send',
+      interfaceId: defaultInterfaces['433MHzPulse'].id,
+      method: defaultInterfaces['433MHzPulse'].methods.send.id,
       arguments: {
         pulse,
         repeats: 8,
@@ -109,7 +130,7 @@ export default class NexaPlugin extends Plugin {
   ) {
     if (isStatus(modification, defaultInterfaces.Power.status.on)) {
       let senderId = device.config.sender
-      let houseCode = HOUSE_CODES[device.config.houseCode]
+      let houseCode = (HOUSE_CODES as any)[device.config.houseCode]
       let deviceCode = device.config.deviceCode - 1
 
       let action = modification.value ? ON : OFF
@@ -142,7 +163,9 @@ export default class NexaPlugin extends Plugin {
     const senderId = device.config.sender
     const deviceCode = device.config.deviceCode
 
-    if (this.className(device) === 'NexaSelfLearningDimable') {
+    if (
+      this.className(device) === plugin.deviceClasses.NexaSelfLearningDimable.id
+    ) {
       if (
         !forceOn &&
         isStatus(modification, defaultInterfaces.Power.status.on) &&
@@ -211,7 +234,7 @@ function codeSwitchPulse(
   deviceCode: number,
   action: number,
 ): Array<number> {
-  let pulse = []
+  let pulse: Array<number> = []
 
   for (let i = 0; i < 4; i++) {
     if ((houseCode & 1) !== 0) {
@@ -322,7 +345,7 @@ function selfLearningPulse(
 
   if (action === DIM) {
     for (let i = 3; i >= 0; --i) {
-      if ((dimLevel & (1 << i)) !== 0) {
+      if ((dimLevel! & (1 << i)) !== 0) {
         pulse = pulse.concat(ZERO, ONE)
       } else {
         pulse = pulse.concat(ONE, ZERO)

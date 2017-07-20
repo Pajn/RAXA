@@ -1,6 +1,19 @@
-import {Interface} from '../lib/entities'
+import {Interface} from './entities'
 
 export const defaultInterfaces = {
+  Trigger: {
+    id: 'Trigger',
+    events: {
+      triggered: {
+        id: 'triggered',
+        type: 'object' as 'object',
+        properties: {
+          pluginId: {type: 'string' as 'string'},
+          triggerId: {type: 'string' as 'string'},
+        },
+      },
+    },
+  },
   Power: {
     id: 'Power',
     status: {

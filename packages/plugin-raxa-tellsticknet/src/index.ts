@@ -1,6 +1,7 @@
 import * as dgram from 'dgram'
 import iconv from 'iconv-lite'
-import {Call, Device, Plugin} from 'raxa-common'
+import {Call, Device, Plugin, defaultInterfaces} from 'raxa-common'
+import plugin from './plugin'
 
 const COMMUNICATION_PORT = 42314
 const BROADCAST_PORT = 30303
@@ -88,6 +89,24 @@ export default class RaxaTellstickNetPlugin extends Plugin {
           this.log.debug(
             `Found tellstick on ${sender.address} with banner ${message}`,
           )
+
+          const device = this.state.scalar('devices', {
+            where: {
+              deviceClassId: 'RaxaTellstickNet',
+              pluginId: 'raxa-tellsticknet',
+              config: {activationCode},
+            } as Partial<Device>,
+          })
+
+          if (!device) {
+            this.upsertDevice({
+              id: '',
+              name: `Tellstick ${activationCode}`,
+              config: {activationCode},
+              deviceClassId: 'RaxaTellstickNet',
+              pluginId: 'raxa-tellsticknet',
+            })
+          }
         }
 
         this.tellsticks[activationCode] = {
@@ -99,6 +118,12 @@ export default class RaxaTellstickNetPlugin extends Plugin {
         !message.endsWith('data:;')
       ) {
         this.log.debug(`${sender.address}: ${message}`)
+        const headerFreeMessage = message.replace(/^TSNETRCprotocol:/, '')
+        this.fireEvent(
+          plugin.interfaces.TellstickReceived.id,
+          plugin.interfaces.TellstickReceived.events.message.id,
+          headerFreeMessage,
+        )
       }
     })
   }

@@ -86,6 +86,7 @@ export interface Interface {
 
   methods?: {[method: string]: Method}
   status?: {[status: string]: Property}
+  events?: {[event: string]: Property}
   variables?: {[variable: string]: {}}
 }
 
@@ -201,6 +202,10 @@ export interface StringProperty extends PropertyBase {
   unit?: string
 }
 
+export interface VoidProperty extends PropertyBase {
+  type: 'void'
+}
+
 export type Property =
   | ActionProperty
   | ArrayProperty<any>
@@ -210,6 +215,7 @@ export type Property =
   | NumberProperty
   | ObjectProperty<any>
   | StringProperty
+  | VoidProperty
 export type ValueType = Property['type']
 export const valueTypes: Array<ValueType> = [
   'action',
@@ -221,6 +227,7 @@ export const valueTypes: Array<ValueType> = [
   'integer',
   'object',
   'string',
+  'void',
 ]
 
 export type Status = Property & {

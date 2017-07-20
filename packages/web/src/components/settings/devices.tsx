@@ -46,7 +46,9 @@ const enhance = compose(
     }
   `),
   withState('newDevice', 'setNewDevice', null),
-  withState('createNewDevice', '', props => () => props.setNewDevice({})),
+  withState('createNewDevice', '', props => () =>
+    props.setNewDevice({interfaces: []}),
+  ),
   withIsMobile,
 )
 

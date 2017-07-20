@@ -1,0 +1,24 @@
+{
+  "name": "raxa-plugin-trigger",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Rasmus Eneman <rasmus@eneman.eu>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@types/node": "^4.0.27-alpha"
+  },
+  "devDependencies": {
+    "tscomp": "^0.13.0"
+  },
+  "tscomp": {
+    "mode": "lib"
+  },
+  "scripts": {
+    "build": "tscomp build",
+    "test": "tscomp test",
+    "eject": "tscomp eject",
+    "watch": "tscomp watch"
+  },
+  "main": "./cjs/index.js",
+  "typings": "./lib/index.d.ts"
+}
