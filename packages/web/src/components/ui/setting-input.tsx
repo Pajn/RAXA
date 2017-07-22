@@ -5,14 +5,12 @@ import {Input} from 'react-toolbox/lib/input'
 import {ListCheckbox, ListItem, ListItemLayout} from 'react-toolbox/lib/list'
 import {Slider} from 'react-toolbox/lib/slider'
 import {withState} from 'recompose'
-import compose from 'recompose/compose'
+import {compose} from 'recompose'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
 const asPercent = (min: number, max: number, value: number) =>
   Math.round(100 * (+value - min) / (max - min))
-
-export const enhance = compose(withIsMobile)
 
 export type SettingInputProps = SettingValueProps & {
   type?: 'number'
@@ -25,6 +23,8 @@ export type PrivateSettingInputProps = SettingInputProps &
   IsMobileProps & {
     children: any
   }
+
+export const enhance = compose(withIsMobile)
 
 export const SettingInputView = ({
   label,
@@ -243,6 +243,6 @@ export const SettingValueView = ({
         }
       />
 
-export const SettingValue = enhance(
-  SettingValueView,
-) as React.StatelessComponent<SettingValueProps>
+export const SettingValue = enhance(SettingValueView) as React.ComponentClass<
+  SettingValueProps
+>

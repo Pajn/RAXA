@@ -2,8 +2,7 @@ import {Device, DeviceProperty} from 'raxa-common'
 import React from 'react'
 import {QueryProps} from 'react-apollo'
 import {gql, graphql} from 'react-apollo'
-import compose from 'recompose/compose'
-import mapProps from 'recompose/mapProps'
+import {compose, mapProps} from 'recompose'
 import {SettingDropdown} from '../ui/setting-input'
 import {GenericDisplay, PropertyProps} from './property'
 
@@ -12,7 +11,10 @@ export type PrivateDeviceDispayProps = DeviceDispayProps & {
   data: {device: Device} & QueryProps
 }
 
-export const enhanceDeviceDisplay = compose(
+export const enhanceDeviceDisplay = compose<
+  PrivateDeviceDispayProps,
+  DeviceDispayProps
+>(
   graphql(
     gql`
     query($value: String!) {
@@ -42,7 +44,7 @@ export type PrivateDeviceInputProps = DeviceInputProps & {
 }
 
 export const enhanceDeviceInput = compose(
-  mapProps(props => ({
+  mapProps((props: DeviceDispayProps) => ({
     ...props,
     interfaceIds: props.property.interfaceIds,
     deviceClassIds: props.property.deviceClassIds,
@@ -74,6 +76,4 @@ export const DeviceInputView = ({
     onChange={onChange}
   />
 
-export const DeviceInput = enhanceDeviceInput(
-  DeviceInputView,
-) as React.ComponentClass<DeviceInputProps>
+export const DeviceInput = enhanceDeviceInput(DeviceInputView)

@@ -1,31 +1,34 @@
-import Flexbox from 'flexbox-react'
+import glamorous from 'glamorous'
 import React from 'react'
-import compose from 'recompose/compose'
+import {compose} from 'recompose'
+import {row} from 'style-definitions'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 import {Section as SectionType} from './scaffold/context'
 import {Section} from './scaffold/section'
 
+const Container = glamorous.div(row({}))
+
 export type TwoPaneProps = {
   open?: SectionType
 }
-export type PrivateTwoPaneProps = TwoPaneProps & IsMobileProps & {
-  children: any
-}
+export type PrivateTwoPaneProps = TwoPaneProps &
+  IsMobileProps & {
+    children: any
+  }
 
-export const enhance = compose(
-  withIsMobile,
-)
+export const enhance = compose(withIsMobile)
 
 export const TwoPaneView = ({open, isMobile, children}: PrivateTwoPaneProps) =>
-  <Flexbox>
+  <Container>
     {isMobile
-      ? (open
-          ? <Section {...open}>
-              {children[1]}
-            </Section>
-          : children[0]
-        )
+      ? open
+        ? <Section {...open}>
+            {children[1]}
+          </Section>
+        : children[0]
       : children}
-  </Flexbox>
+  </Container>
 
-export const TwoPane = enhance(TwoPaneView) as React.ComponentClass<TwoPaneProps>
+export const TwoPane = enhance(TwoPaneView) as React.ComponentClass<
+  TwoPaneProps
+>

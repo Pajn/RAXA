@@ -1,11 +1,11 @@
-import Flexbox from 'flexbox-react'
+import glamorous from 'glamorous'
 import {GraphQlDevice} from 'raxa-common/lib/entities'
 import React from 'react'
-import {gql, graphql} from 'react-apollo'
-import {QueryProps} from 'react-apollo/lib/graphql'
+import {QueryProps, gql, graphql} from 'react-apollo'
 import BadIconButton from 'react-toolbox/lib/button/IconButton'
 import {compose, withState} from 'recompose'
-import {Title} from 'styled-material/dist/src/typography'
+import {row} from 'style-definitions'
+import {Title} from 'styled-material/lib/typography'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
@@ -14,6 +14,8 @@ import {Section} from '../ui/scaffold/section'
 import {DeviceDetailSettings} from './device-detail'
 
 const IconButton: any = BadIconButton
+
+const ListHeader = glamorous.div(row({vertical: 'center'}))
 
 export type DeviceSettingsProps = {}
 export type ListGraphQlData = {devices: Array<GraphQlDevice>}
@@ -96,10 +98,10 @@ export const DeviceSettingsView = ({
               ]}
             />
           </Section>
-        : <Flexbox alignItems="center">
+        : <ListHeader>
             <Title style={{flex: 1}}>Devices</Title>
             <IconButton icon="add" onClick={createNewDevice} />
-          </Flexbox>
+          </ListHeader>
     }
   />
 

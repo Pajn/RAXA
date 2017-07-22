@@ -262,7 +262,7 @@ export const deviceMutations = buildMutations({
     }),
     writeRules: false,
     async resolve(_, call: Call, {storage, plugins}: Context) {
-      plugins.callDevice(call)
+      await plugins.callDevice(call)
       const state = storage.getState()
       return state.devices[call.deviceId]
     },

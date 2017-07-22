@@ -2,7 +2,7 @@ import glamorous from 'glamorous'
 import {blue} from 'material-definitions'
 import React from 'react'
 import {compose, pure, withHandlers} from 'recompose'
-import setDisplayName from 'recompose/setDisplayName'
+import {setDisplayName} from 'recompose'
 import {
   InjectedInputEventsProps,
   withInputEvents,

@@ -1,4 +1,4 @@
-import Flexbox from 'flexbox-react'
+import glamorous from 'glamorous'
 import {History, Location} from 'history'
 import {grey} from 'material-definitions'
 import React from 'react'
@@ -6,13 +6,16 @@ import {withRouter} from 'react-router'
 import AppBar from 'react-toolbox/lib/app_bar/AppBar'
 import {ButtonProps} from 'react-toolbox/lib/button/Button'
 import Navigation from 'react-toolbox/lib/navigation/Navigation'
-import compose from 'recompose/compose'
+import {compose} from 'recompose'
+import {column} from 'style-definitions'
 import {
   ContextAction,
   ScaffoldContext,
   Section,
   scaffoldContextType,
 } from './context'
+
+const Container = glamorous.div(column({flex: 1, reverse: true}))
 
 export type ScaffoldProps = {
   appName: string
@@ -118,7 +121,7 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
     }
 
     return (
-      <Flexbox flexDirection="column" flex="1">
+      <Container>
         <AppBar
           title={activeSection ? activeSection.title : appName}
           leftIcon={activeSection && 'arrow_back'}
@@ -160,7 +163,7 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
             />}
         </AppBar>
         {children}
-      </Flexbox>
+      </Container>
     )
   }
 }

@@ -9,7 +9,10 @@ export interface Trigger extends Device {
 
 export default class TriggerPlugin extends Plugin {
   activeTriggers = new Set<string>()
-  activeLearners = new Map<Trigger, NodeJS.Timer>()
+  activeLearners = new Map<
+    Trigger,
+    {timer: NodeJS.Timer; resolve: () => void; reject: () => void}
+  >()
 
   start() {
     this.listenOn(
@@ -35,17 +38,18 @@ export default class TriggerPlugin extends Plugin {
           } else {
             this.setDeviceStatus(device.config.action)
           }
-        } else {
-          for (const [trigger, timer] of this.activeLearners.entries()) {
-            clearTimeout(timer)
-            this.log.debug(`Learned ${trigger.name} to`, {pluginId, triggerId})
-            this.upsertDevice({
-              ...trigger,
-              config: {...trigger.config, pluginId, triggerId},
-            })
-          }
-          this.activeLearners.clear()
         }
+
+        for (const [trigger, learner] of this.activeLearners.entries()) {
+          clearTimeout(learner.timer)
+          this.log.debug(`Learned ${trigger.name} to`, {pluginId, triggerId})
+          this.upsertDevice({
+            ...trigger,
+            config: {...trigger.config, pluginId, triggerId},
+          })
+          learner.resolve()
+        }
+        this.activeLearners.clear()
       },
     )
   }
@@ -55,19 +59,23 @@ export default class TriggerPlugin extends Plugin {
       call.interfaceId === defaultInterfaces.SelfLearning.id &&
       call.method === defaultInterfaces.SelfLearning.methods.learn.id
     ) {
-      let oldTimer = this.activeLearners.get(device)
+      let oldLearner = this.activeLearners.get(device)
       this.log.debug(`Learning ${device.name}`)
-      if (oldTimer !== undefined) {
+      if (oldLearner !== undefined) {
         this.log.debug(`Clearing old timer for ${device.name}`)
-        clearTimeout(oldTimer)
+        clearTimeout(oldLearner.timer)
+        oldLearner.reject()
       }
-      this.activeLearners.set(
-        device,
-        setTimeout(() => {
-          this.log.debug(`Timed out learning ${device.name}`)
-          this.activeLearners.delete(device)
-        }, 10000),
-      )
+      return new Promise<void>((resolve, reject) => {
+        this.activeLearners.set(device, {
+          timer: setTimeout(() => {
+            this.log.debug(`Timed out learning ${device.name}`)
+            this.activeLearners.delete(device)
+          }, 10000),
+          resolve,
+          reject,
+        })
+      })
     }
   }
 }

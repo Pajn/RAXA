@@ -1,25 +1,26 @@
 import React from 'react'
 import {FormHelper, Properties as FormHelperProperties} from 'react-form-helper'
-import compose from 'recompose/compose'
-import withState from 'recompose/withState'
+import {compose, withState} from 'recompose'
 import {ContextAction} from './scaffold/context'
 import {ContextActions} from './scaffold/context-actions'
 import {SettingInput} from './setting-input'
 
 const ContextSaveButton = ({disabled, onClick, formId}) =>
   <ContextActions
-    contextActions={[{
-      disabled,
-      label: 'Save',
-      onClick,
-      type: 'submit',
-      form: formId,
-    } as ContextAction]}
+    contextActions={[
+      {
+        disabled,
+        label: 'Save',
+        onClick,
+        type: 'submit',
+        form: formId,
+      } as ContextAction,
+    ]}
   />
 
 export type SettingFormProps = FormHelperProperties<any, any> & {}
 export type PrivateSettingFormProps = SettingFormProps & {
-  formId: string,
+  formId: string
 }
 
 export const enhance = compose(
@@ -36,4 +37,6 @@ export const SettingFormView = ({...props}: PrivateSettingFormProps) =>
     {...props}
   />
 
-export const SettingForm = enhance(SettingFormView) as React.ComponentClass<SettingFormProps>
+export const SettingForm = enhance(SettingFormView) as React.ComponentClass<
+  SettingFormProps
+>

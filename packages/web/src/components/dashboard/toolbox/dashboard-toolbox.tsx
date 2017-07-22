@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import React from 'react'
 import {compose} from 'recompose'
-import lifecycle from 'recompose/lifecycle'
+import {lifecycle} from 'recompose'
 import {connectState} from '../../../with-lazy-reducer'
 import {InjectedPushStateProps, withPushState} from '../../ui/with-push-state'
 import {dashboardState} from '../state'

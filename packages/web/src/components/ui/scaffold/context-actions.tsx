@@ -1,20 +1,20 @@
 import deepEqual from 'deep-equal'
 import React from 'react'
-import compose from 'recompose/compose'
-import getContext from 'recompose/getContext'
-import lifecycle from 'recompose/lifecycle'
+import {compose, getContext, lifecycle} from 'recompose'
 import {ContextAction, ScaffoldContext, scaffoldContextType} from './context'
 
 export type ContextActionsProps = {
   contextActions: Array<ContextAction>
 }
-export type PrivateContextActionsProps = ContextActionsProps & ScaffoldContext & {}
+export type PrivateContextActionsProps = ContextActionsProps &
+  ScaffoldContext & {}
 
-export const enhance = compose(
+export const enhance = compose<PrivateContextActionsProps, ContextActionsProps>(
   getContext(scaffoldContextType),
-  lifecycle({
+  lifecycle<PrivateContextActionsProps, PrivateContextActionsProps>({
     componentDidMount() {
-      const {contextActions, setContextActions} = this.props as PrivateContextActionsProps
+      const {contextActions, setContextActions} = this
+        .props as PrivateContextActionsProps
       setContextActions(contextActions)
     },
     componentWillReceiveProps(nextProps: PrivateContextActionsProps) {
@@ -27,9 +27,11 @@ export const enhance = compose(
       const {clearContextActions} = this.props as PrivateContextActionsProps
       clearContextActions()
     },
-  })
+  }),
 )
 
 export const ContextActionsView = ({}: PrivateContextActionsProps) => null
 
-export const ContextActions = enhance(ContextActionsView) as React.ComponentClass<ContextActionsProps>
+export const ContextActions = enhance(
+  ContextActionsView,
+) as React.ComponentClass<ContextActionsProps>

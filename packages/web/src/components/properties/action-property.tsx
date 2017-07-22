@@ -9,8 +9,7 @@ import {
 import React from 'react'
 import {QueryProps} from 'react-apollo'
 import {gql, graphql} from 'react-apollo'
-import compose from 'recompose/compose'
-import mapProps from 'recompose/mapProps'
+import {compose, mapProps} from 'recompose'
 import {SettingDropdown} from '../ui/setting-input'
 import {PropertyProps, PropertyView} from './property'
 import {StatelessStatusView} from './status'
@@ -67,8 +66,11 @@ const setDevice = (deviceId: string, devices: Array<GraphQlDevice>) => {
   }
 }
 
-export const enhanceActionInput = compose(
-  mapProps(props => ({
+export const enhanceActionInput = compose<
+  PrivateActionInputProps,
+  ActionInputProps
+>(
+  mapProps((props: PrivateActionInputProps) => ({
     ...props,
     interfaceIds: props.property.interfaceIds,
     deviceClassIds: props.property.deviceClassIds,
@@ -244,6 +246,4 @@ export const ActionInputView = ({
       />}
   </div>
 
-export const ActionInput = enhanceActionInput(
-  ActionInputView,
-) as React.ComponentClass<ActionInputProps>
+export const ActionInput = enhanceActionInput(ActionInputView)

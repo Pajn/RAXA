@@ -1,9 +1,7 @@
 import React from 'react'
 import Dialog from 'react-toolbox/lib/dialog/Dialog'
 import {ListItem} from 'react-toolbox/lib/list'
-import compose from 'recompose/compose'
-import withHandlers from 'recompose/withHandlers'
-import withState from 'recompose/withState'
+import {compose, withHandlers, withState} from 'recompose'
 
 export type DialogInputProps = {
   label: string
@@ -11,33 +9,48 @@ export type DialogInputProps = {
   value: any
   unit?: string
   onChange: (newValue: any) => void
-  children: (tmpValue: any, setTmpValue: (newValue: any) => void) => React.ReactChild
+  children: (
+    tmpValue: any,
+    setTmpValue: (newValue: any) => void,
+  ) => React.ReactChild
 }
 export type PrivateDialogInputProps = DialogInputProps & {
   dialogActive: boolean
-  showDialog: () =>  void
-  hideDialog: () =>  void
+  showDialog: () => void
+  hideDialog: () => void
 
   tmpValue: any
-  setTmpValue: (value: any) =>  void
+  setTmpValue: (value: any) => void
 }
 
-const enhance = compose(
+const enhance = compose<PrivateDialogInputProps, DialogInputProps>(
   withState('dialogActive', 'setShowDialog', false),
   withState('tmpValue', 'setTmpValue', null),
-  withHandlers({
+  withHandlers<
+    PrivateDialogInputProps,
+    PrivateDialogInputProps & {setShowDialog: (active: boolean) => void}
+  >({
     setTmpValue: props => value => props.setTmpValue(value),
     showDialog: props => () => {
       props.setTmpValue(props.value)
       props.setShowDialog(true)
     },
     hideDialog: props => () => props.setShowDialog(false),
-  })
+  }),
 )
 
 export const DialogInputView = ({
-  label, legend, value, onChange, unit,
-  dialogActive, showDialog, hideDialog, tmpValue, setTmpValue, children
+  label,
+  legend,
+  value,
+  onChange,
+  unit,
+  dialogActive,
+  showDialog,
+  hideDialog,
+  tmpValue,
+  setTmpValue,
+  children,
 }: PrivateDialogInputProps) =>
   <ListItem
     caption={label}
@@ -50,7 +63,6 @@ export const DialogInputView = ({
         active={dialogActive}
         onEscKeyDown={hideDialog}
         onOverlayClick={hideDialog}
-
         type="small"
         title={label}
         actions={[
@@ -69,8 +81,8 @@ export const DialogInputView = ({
         ]}
       >
         {children(tmpValue, setTmpValue)}
-      </Dialog>
+      </Dialog>,
     ]}
   />
 
-export const DialogInput = enhance(DialogInputView) as React.ComponentClass<DialogInputProps>
+export const DialogInput = enhance(DialogInputView)

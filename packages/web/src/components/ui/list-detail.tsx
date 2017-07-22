@@ -1,14 +1,15 @@
-import Flexbox from 'flexbox-react'
+import glamorous from 'glamorous'
 import React from 'react'
-import {QueryProps} from 'react-apollo/lib/graphql'
+import {QueryProps} from 'react-apollo'
 import {Route, RouteComponentProps, matchPath, withRouter} from 'react-router'
-import compose from 'recompose/compose'
-import lifecycle from 'recompose/lifecycle'
-import mapProps from 'recompose/mapProps'
-import withState from 'recompose/withState'
+import {compose, lifecycle, mapProps, withState} from 'recompose'
+import {column, row} from 'style-definitions'
 import {List, ListItem} from './list'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 import {Section} from './scaffold/section'
+
+const Container = glamorous.div(row({}))
+const Detail = glamorous.div(column({flex: {grow: 1}}))
 
 export type ListDetailProps<E, T> = {
   path: string
@@ -36,10 +37,10 @@ export type PrivateListDetailProps = ListDetailProps<any, any> &
     setBeenInList: (value: boolean) => void
   }
 
-const enhance = compose(
+const enhance = compose<PrivateListDetailProps, ListDetailProps<any, any>>(
   withIsMobile,
   withRouter,
-  mapProps(props => {
+  mapProps((props: PrivateListDetailProps) => {
     const inList = !!matchPath(location.pathname, {
       path: props.path,
       exact: true,
@@ -99,7 +100,7 @@ export const ListDetailView = ({
   const onBack = () => history.goBack()
 
   return (
-    <Flexbox>
+    <Container>
       {(!isMobile || inList) &&
         <List selectable>
           {listHeader}
@@ -135,7 +136,7 @@ export const ListDetailView = ({
               })}
         </List>}
       {(!isMobile || !inList) &&
-        <Flexbox flexDirection="column" flexGrow={1}>
+        <Detail>
           {activeItem
             ? isMobile
               ? <Section {...activeItem.section} onBack={onBack}>
@@ -156,11 +157,11 @@ export const ListDetailView = ({
                         : renderActiveItem(item.item)}
                   />,
                 )}
-        </Flexbox>}
-    </Flexbox>
+        </Detail>}
+    </Container>
   )
 }
 
-export const ListDetail = enhance(ListDetailView) as <E, T>(
+export const ListDetail = (enhance(ListDetailView) as any) as <E, T>(
   props: ListDetailProps<E, T>,
 ) => JSX.Element

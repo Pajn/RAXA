@@ -1,4 +1,3 @@
-import Flexbox from 'flexbox-react'
 import glamorous from 'glamorous'
 import {grey, red} from 'material-definitions'
 import {insert, remove} from 'ramda'
@@ -15,6 +14,7 @@ import {Card} from 'react-toolbox/lib/card'
 import {ListDivider} from 'react-toolbox/lib/list'
 import {compose, mapProps, withState} from 'recompose'
 import {updateIn} from 'redux-decorated'
+import {row} from 'style-definitions'
 import {fadeIn} from '../../lib/styles'
 import {InjectedIdProps, withIds} from '../../with-id'
 import {DeviceName} from '../device-name'
@@ -26,6 +26,8 @@ const CardContainer = glamorous.div({
   padding: 16,
   backgroundColor: grey[100],
 })
+
+const ItemHeader = glamorous.div({...row({vertical: 'center'}), padding: 8})
 
 const TitleBar = glamorous.span({
   display: 'flex',
@@ -123,7 +125,7 @@ export const ArrayInputView = ({
               <Card style={{position: 'relative'}}>
                 {property.modifiable &&
                   <div>
-                    <Flexbox style={{padding: 8}} alignItems="center">
+                    <ItemHeader>
                       {property.items.type === 'modification' &&
                         <SubTitle>
                           {(item as Modification).deviceId
@@ -145,7 +147,7 @@ export const ArrayInputView = ({
                           }
                         }}
                       />
-                    </Flexbox>
+                    </ItemHeader>
                     <ListDivider />
                   </div>}
                 <div style={{padding: '8px 16px'}}>

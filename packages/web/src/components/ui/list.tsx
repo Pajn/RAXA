@@ -1,37 +1,36 @@
 import {isClick} from 'filter-key'
-import Flexbox from 'flexbox-react'
+import glamorous, {CSSProperties} from 'glamorous'
 import {grey} from 'material-definitions'
 import React from 'react'
-import {CSSProperties} from 'react'
 import {
   List as ToolboxList,
   ListItem as ToolboxListItem,
 } from 'react-toolbox/lib/list'
-import compose from 'recompose/compose'
-import styled from 'styled-components'
+import {compose} from 'recompose'
+import {column, row} from 'style-definitions'
 import {IsTouchProps, withIsTouch} from './mediaQueries'
 
-const DesktopList: React.ComponentClass<any> = styled<any>(Flexbox)`
-  flex-direction: column;
-  padding: 8px;
-`
+const DesktopList = glamorous.div({
+  ...column({}),
+  padding: 8,
+})
 
-const DesktopListItem: React.ComponentClass<any> = styled<any>(Flexbox)`
-  box-sizing: border-box;
-  padding: 8px 4px;
-  height: ${({isMobile}) => (isMobile ? 48 : 32)}px;
-  outline: none;
+const DesktopListItem = glamorous.div(
+  ({isMobile, selected}: {isMobile?: boolean; selected?: boolean}) => ({
+    ...row({}),
+    boxSizing: 'border-box',
+    padding: '8px 4px',
+    height: isMobile ? 48 : 32,
+    outline: 'none',
 
-  ${({selected}) =>
-    selected
-      ? `background-color: ${grey[200]};`
-      : `
-      &:hover,
-      &:focus {
-        background-color: ${grey[100]};
-      }
-    `}
-`
+    ...selected
+      ? {backgroundColor: grey[200]}
+      : {
+          ':hover': {backgroundColor: grey[100]},
+          ':focus': {backgroundColor: grey[100]},
+        } as CSSProperties,
+  }),
+)
 
 const Container = ({
   isMobile,
@@ -71,8 +70,8 @@ export const ListItem = ({
     ? <ToolboxListItem {...props} caption={caption} legend={legend} />
     : <DesktopListItem
         {...props}
-        role={selectable && 'button'}
-        tabIndex={selectable && 0}
+        role={selectable ? 'button' : undefined}
+        tabIndex={selectable ? 0 : undefined}
         onKeyPress={selectable && props.onClick && isClick(props.onClick)}
       >
         <div>{caption}</div>

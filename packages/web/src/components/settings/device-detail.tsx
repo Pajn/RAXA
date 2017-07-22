@@ -8,7 +8,7 @@ import {
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
 import {RouteComponentProps, withRouter} from 'react-router'
-import Button from 'react-toolbox/lib/button/Button'
+import {LoadingButton} from 'react-toolbox-components'
 import {
   List,
   ListItem as ToolboxListItem,
@@ -221,7 +221,7 @@ export const DeviceDetailSettingsView = ({
     {methods.length > 0 &&
       [<ListSubHeader key={2} caption="Actions" />].concat(
         methods.map(method =>
-          <Button
+          <LoadingButton
             key={`${method.interfaceId}:${method.id}`}
             onClick={() =>
               callDevice({
@@ -232,7 +232,7 @@ export const DeviceDetailSettingsView = ({
               })}
           >
             {method.name || method.id}
-          </Button>,
+          </LoadingButton>,
         ),
       )}
     {data &&

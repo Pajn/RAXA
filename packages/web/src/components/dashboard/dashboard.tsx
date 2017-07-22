@@ -3,7 +3,7 @@ import {grey} from 'material-definitions'
 import React from 'react'
 import {compose} from 'recompose'
 import {withHandlers} from 'recompose'
-import lifecycle from 'recompose/lifecycle'
+import {lifecycle} from 'recompose'
 import {
   InjectedInputEventsContainerProps,
   inputEventsContainer,

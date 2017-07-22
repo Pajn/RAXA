@@ -1,7 +1,4 @@
-import React from 'react'
-import compose from 'recompose/compose'
-import getContext from 'recompose/getContext'
-import lifecycle from 'recompose/lifecycle'
+import {compose, getContext, lifecycle} from 'recompose'
 import {
   ScaffoldContext,
   Section as SectionType,
@@ -14,9 +11,9 @@ export type PrivateSectionProps = SectionProps &
     children: any
   }
 
-export const enhance = compose(
+export const enhance = compose<PrivateSectionProps, SectionProps>(
   getContext(scaffoldContextType),
-  lifecycle({
+  lifecycle<PrivateSectionProps, PrivateSectionProps>({
     componentDidMount() {
       const {title, onBack, path, pushSection} = this
         .props as PrivateSectionProps
@@ -40,6 +37,4 @@ export const enhance = compose(
 
 export const SectionView = ({children = null}: PrivateSectionProps) => children
 
-export const Section = enhance(SectionView) as React.ComponentClass<
-  SectionProps
->
+export const Section = enhance(SectionView)

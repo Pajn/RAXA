@@ -1,9 +1,7 @@
-import Flexbox from 'flexbox-react'
 import glamorous from 'glamorous'
 import {DeviceStatus, GraphQlDevice, Interface} from 'raxa-common/lib/entities'
 import React from 'react'
-import {gql, graphql} from 'react-apollo'
-import {QueryProps} from 'react-apollo/lib/graphql'
+import {QueryProps, gql, graphql} from 'react-apollo'
 import Ripple from 'react-toolbox/lib/ripple'
 import {Slider} from 'react-toolbox/lib/slider'
 import Switch from 'react-toolbox/lib/switch/Switch'
@@ -166,19 +164,17 @@ export const LightWidgetView = ({
                     onMouseDown={e => e.stopPropagation()}
                     onClick={e => e.stopPropagation()}
                   >
-                    <Flexbox alignItems="center">
-                      <PowerSwitch
-                        checked={status.Power.value !== 'false'}
-                        onChange={value => {
-                          setDeviceStatus(status.Power.id, {
-                            deviceId: device.id,
-                            interfaceId: status.Power.interfaceId,
-                            statusId: status.Power.statusId,
-                            value: value.toString(),
-                          })
-                        }}
-                      />
-                    </Flexbox>
+                    <PowerSwitch
+                      checked={status.Power.value !== 'false'}
+                      onChange={value => {
+                        setDeviceStatus(status.Power.id, {
+                          deviceId: device.id,
+                          interfaceId: status.Power.interfaceId,
+                          statusId: status.Power.statusId,
+                          value: value.toString(),
+                        })
+                      }}
+                    />
                   </div>
                 : <div />}
             </NameRow>)}
