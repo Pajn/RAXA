@@ -6,21 +6,17 @@ import {
   Method,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {gql, graphql} from 'react-apollo'
-import {QueryProps} from 'react-apollo/lib/graphql'
+import {QueryProps, gql, graphql} from 'react-apollo'
+import {RouteComponentProps, withRouter} from 'react-router'
 import Button from 'react-toolbox/lib/button/Button'
 import {
   List,
   ListItem as ToolboxListItem,
   ListSubHeader,
 } from 'react-toolbox/lib/list'
-import {compose, mapProps, withState} from 'recompose'
-import {Title} from 'styled-material/dist/src/typography'
-import {
-  CallDeviceInjectedProps,
-  callDevice,
-  updateDeviceStatus,
-} from '../../lib/mutations'
+import {compose, lifecycle, mapProps, withState} from 'recompose'
+import {Title} from 'styled-material/lib/typography'
+import {CallDeviceInjectedProps, callDevice} from '../../lib/mutations'
 import {PropertyView} from '../properties/property'
 import {StatusView} from '../properties/status'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
@@ -30,12 +26,13 @@ import {SettingDropdown} from '../ui/setting-input'
 export type DeviceDetailSettingsProps = {
   device: GraphQlDevice
 }
-export type GraphqlDataS = {
+export type GraphqlData = {
   device: GraphQlDevice
 }
 export type PrivateDeviceDetailSettingsProps = DeviceDetailSettingsProps &
   IsMobileProps &
-  CallDeviceInjectedProps & {
+  CallDeviceInjectedProps &
+  RouteComponentProps<any> & {
     data: {
       device?: GraphQlDevice
       deviceClasses?: Array<GraphQlDeviceClass>
@@ -48,11 +45,13 @@ export type PrivateDeviceDetailSettingsProps = DeviceDetailSettingsProps &
   }
 
 const enhance = compose(
+  withRouter,
   mapProps((props: DeviceDetailSettingsProps) => ({
     ...props,
     deviceId: props.device.id,
   })),
-  graphql(
+  withState('tmpDevice', 'onChange', ({device}) => device),
+  graphql<{device: GraphQlDevice}, PrivateDeviceDetailSettingsProps>(
     gql`
       query($deviceId: String!) {
         device(id: $deviceId) {
@@ -81,8 +80,7 @@ const enhance = compose(
     `,
     {skip: ({deviceId}) => !!deviceId},
   ),
-  withState('tmpDevice', 'onChange', ({device}) => device),
-  graphql(
+  graphql<{upsertDevice: GraphQlDevice}, PrivateDeviceDetailSettingsProps>(
     gql`
       mutation($device: DeviceInput!) {
         upsertDevice(device: $device) {
@@ -93,7 +91,7 @@ const enhance = compose(
       }
     `,
     {
-      props: ({mutate}) => ({
+      props: ({mutate, ownProps: {history}}) => ({
         saveDevice(device: Device) {
           return mutate!({
             variables: {
@@ -105,6 +103,10 @@ const enhance = compose(
                 config: device.config,
               },
             },
+          }).then(data => {
+            if (!device.id) {
+              history.replace(`/settings/devices/${data.data.upsertDevice.id}`)
+            }
           })
         },
       }),
@@ -126,6 +128,36 @@ const enhance = compose(
   })),
   withIsMobile,
   callDevice(),
+  lifecycle<
+    PrivateDeviceDetailSettingsProps,
+    PrivateDeviceDetailSettingsProps
+  >({
+    componentDidMount() {
+      if (this.props.deviceId) {
+        ;(this as any).unsubscribe = this.props.data.subscribeToMore({
+          document: gql`
+            subscription deviceUpdated($deviceId: String!) {
+              deviceUpdated(id: $deviceId) {
+                config
+              }
+            }
+          `,
+          variables: {deviceId: this.props.deviceId},
+          updateQuery: (prev, {subscriptionData}) => {
+            if (subscriptionData.data && subscriptionData.data.deviceUpdated) {
+              const config = subscriptionData.data.deviceUpdated.config
+              this.props.onChange((device => ({...device, config})) as any)
+            }
+            return prev
+          },
+        })
+      }
+    },
+
+    componentWillUnmount(this: any) {
+      this.unsubscribe()
+    },
+  }),
 )
 
 export const DeviceDetailSettingsView = ({

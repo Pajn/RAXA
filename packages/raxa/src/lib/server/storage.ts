@@ -30,6 +30,7 @@ import {
 } from 'redux'
 import {Action, action, createReducer, updateIn} from 'redux-decorated'
 import {autoRehydrate, persistStore} from 'redux-persist'
+import {pubsub} from '../graphql/schema'
 import {PluginSupervisor} from './plugin-supervisor'
 
 const deviceReducer = createReducer<DeviceState>({})
@@ -109,8 +110,12 @@ export class StorageService extends Service {
       compose(
         autoRehydrate<State>(),
         applyMiddleware(_ => next => action => {
+          const result = next(action)
+          if (typeof action.type === 'string') {
+            pubsub.publish(action.type, action)
+          }
           this.log.debug(action)
-          return next(action)
+          return result
         }),
       ),
     )

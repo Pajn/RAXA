@@ -1,7 +1,10 @@
 import {GraphQLObjectType, GraphQLSchema} from 'graphql'
-import {deviceMutations, deviceQueries} from './device'
+import {PubSub} from 'graphql-subscriptions'
+import {deviceMutations, deviceQueries, deviceSubscriptions} from './device'
 import {deviceClassQueries} from './device-class'
 import {interfaceQueries} from './interface'
+
+export const pubsub = new PubSub()
 
 const QueryType = new GraphQLObjectType({
   name: 'Query',
@@ -9,7 +12,7 @@ const QueryType = new GraphQLObjectType({
     ...deviceQueries,
     ...deviceClassQueries,
     ...interfaceQueries,
-  })
+  }),
 })
 
 const MutationType = new GraphQLObjectType({
@@ -19,7 +22,13 @@ const MutationType = new GraphQLObjectType({
   }),
 })
 
+const SubscriptionType = new GraphQLObjectType({
+  name: 'Subscription',
+  fields: {...deviceSubscriptions},
+})
+
 export const schema = new GraphQLSchema({
   query: QueryType,
-  mutation: MutationType
+  mutation: MutationType,
+  subscription: SubscriptionType,
 })

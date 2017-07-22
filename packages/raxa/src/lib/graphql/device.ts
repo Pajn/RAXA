@@ -9,11 +9,14 @@ import {
   DeviceStatus,
   GraphQlDevice,
   Modification,
+  actions,
   raxaError,
 } from 'raxa-common'
+import {compose} from 'redux'
 import {Context} from './context'
 import {DeviceClassType} from './device-class'
 import {InterfaceType} from './interface'
+import {pubsub} from './schema'
 
 export const DeviceStatusType = buildType<DeviceStatus>({
   name: 'DeviceStatus',
@@ -37,6 +40,33 @@ export function flatMap<T, U>(
   )
 }
 
+export function papp<A, B, R>(fn: (a: A, b: B) => R, a: A): (b: B) => R {
+  return (b: B) => fn(a, b)
+}
+
+async function* map<T, U>(fn: (item: T) => U, asyncIterator: AsyncIterator<T>) {
+  for await (const item of {[Symbol.asyncIterator]: () => asyncIterator}) {
+    yield fn(item)
+  }
+}
+export const mapP = <T, U>(fn: (item: T) => U) => (
+  asyncIterator: AsyncIterator<T>,
+) => map(fn, asyncIterator)
+
+async function* filter<T>(
+  fn: (item: T) => boolean,
+  asyncIterator: AsyncIterator<T>,
+) {
+  for await (const item of {[Symbol.asyncIterator]: () => asyncIterator}) {
+    if (fn(item)) {
+      yield item
+    }
+  }
+}
+export const filterP = <T>(fn: (item: T) => boolean) => (
+  asyncIterator: AsyncIterator<T>,
+) => filter(fn, asyncIterator)
+
 export function getValue<
   T,
   A extends keyof T,
@@ -52,7 +82,7 @@ export function getValue(object: any, path: Array<string | number>): any {
   return path.reduce((object, key) => object && object[key], object)
 }
 
-function statusedForDevice(
+export function statusesForDevice(
   device: Device,
   {
     interfaceIds: specifiedInterfaces,
@@ -142,7 +172,7 @@ export const DeviceType = buildType<Device>({
         interfaceIds: joi.array().items(joi.string().required()),
         statusIds: joi.array().items(joi.string().required()),
       }),
-      resolve: statusedForDevice,
+      resolve: statusesForDevice,
     },
     // variables?: {
     //     [interfaceId: string]: {
@@ -258,7 +288,44 @@ export const deviceMutations = buildMutations({
           device.deviceClassId
         ].interfaceIds
       }
-      return statusedForDevice(device, {}, context)
+      return statusesForDevice(device, {}, context)
     },
   },
 })
+
+export const deviceSubscriptions = {
+  deviceStatusUpdated: {
+    type: DeviceStatusType.graphQLType,
+    subscribe: (_, __, {storage}: Context) =>
+      map((action: typeof actions.statusUpdated) => {
+        const status = statusesForDevice(
+          {id: action.payload!.deviceId} as any,
+          {
+            interfaceIds: [action.payload!.interfaceId],
+            statusIds: [action.payload!.statusId],
+          },
+          {storage, plugins: undefined as any},
+        )
+
+        return {
+          deviceStatusUpdated: status === undefined ? undefined : status[0],
+        }
+      }, pubsub.asyncIterator(actions.statusUpdated.type!)),
+  },
+  deviceUpdated: {
+    type: DeviceType.graphQLType,
+    args: {
+      id: {type: GraphQLString},
+    },
+    subscribe: (_, {id}, {storage}: Context) =>
+      compose(
+        mapP((action: typeof actions.deviceUpdated) => ({
+          deviceUpdated: storage.getState().devices[action.payload!.device.id],
+        })),
+        filterP(
+          (action: typeof actions.deviceUpdated) =>
+            id === undefined || action.payload!.device.id === id,
+        ),
+      )(pubsub.asyncIterator(actions.deviceUpdated.type!)),
+  },
+}
