@@ -15,7 +15,7 @@ import {
   scaffoldContextType,
 } from './context'
 
-const Container = glamorous.div(column({flex: 1, reverse: true}))
+const Container = glamorous.div(column({flex: 1}))
 
 export type ScaffoldProps = {
   appName: string

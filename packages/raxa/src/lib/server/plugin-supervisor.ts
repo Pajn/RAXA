@@ -1,4 +1,7 @@
 import {EventEmitter} from 'events'
+import execa from 'execa'
+import {mkdirp} from 'fs-extra'
+import {join} from 'path'
 import {
   Awaitable,
   Call,
@@ -12,6 +15,7 @@ import {
 } from 'raxa-common/cjs'
 import {ServiceImplementation} from 'raxa-common/cjs/service'
 import {validateAction} from 'raxa-common/cjs/validations'
+import {pluginDir, production} from '../config'
 import {StorageService} from './storage'
 
 class PluginManager extends ServiceManager {
@@ -41,6 +45,12 @@ class PluginManager extends ServiceManager {
       })
     }
   }
+}
+
+function pluginPath(pluginId: string) {
+  return production
+    ? join(pluginDir, pluginId, 'node_modules', `raxa-plugin-${pluginId}`)
+    : `raxa-plugin-${pluginId}`
 }
 
 export class PluginSupervisor extends Service {
@@ -73,28 +83,36 @@ export class PluginSupervisor extends Service {
     }
   }
 
-  private async installPlugin(name: string) {
+  private async installPlugin(id: string) {
     const storage = (this.serviceManager.runningServices
       .StorageService as any) as StorageService
 
-    this.log.info(`Installing plugin ${name}`)
-    const pluginDefinitionModule = require(`raxa-plugin-${name}/plugin`)
+    this.log.info(`Installing plugin ${id}`)
+
+    if (production) {
+      const dir = join(pluginDir, id)
+      await mkdirp(dir)
+      await execa('yarn', ['init', '--yes'], {cwd: dir})
+      await execa('yarn', ['add', `raxa-plugin-${id}`], {cwd: dir})
+    }
+
+    const pluginDefinitionModule = require(`${pluginPath(id)}/plugin`)
     const pluginDefinition = (pluginDefinitionModule.default ||
       pluginDefinitionModule) as PluginDefinition
-    let plugin = require(`raxa-plugin-${name}`)
+    let plugin = require(pluginPath(id))
     if (plugin.default) {
       plugin = plugin.default
     }
 
     if (typeof plugin !== 'function') {
-      this.log.warn(`Plugin ${name} has no default exported class`)
+      this.log.warn(`Plugin ${id} has no default exported class`)
       return
     }
 
     Object.entries(pluginDefinition.interfaces || {}).forEach(([id, iface]) => {
       if (id !== iface.id)
         throw new Error(`Invalid interface id ${id} !== ${iface.id}`)
-      iface.pluginId = name
+      iface.pluginId = id
       storage.installInterface(iface)
     })
 
@@ -103,22 +121,22 @@ export class PluginSupervisor extends Service {
     ).forEach(([id, deviceClass]) => {
       if (id !== deviceClass.id)
         throw new Error(`Invalid device class id ${id} !== ${deviceClass.id}`)
-      deviceClass.pluginId = name
+      deviceClass.pluginId = id
       storage.installDeviceClass(deviceClass)
     })
 
-    storage.installPlugin({id: name, enabled: true})
+    storage.installPlugin({...pluginDefinition, id, enabled: true})
   }
 
-  private async startPlugin(name: string) {
-    this.log.info(`Starting plugin ${name}`)
-    let plugin = require(`raxa-plugin-${name}`)
+  private async startPlugin(id: string) {
+    this.log.info(`Starting plugin ${id}`)
+    let plugin = require(pluginPath(id))
     if (plugin.default) {
       plugin = plugin.default
     }
 
     const pluginInstance = await this.pluginServiceManager.startService(plugin)
-    this.runningPlugins[name] = pluginInstance as Plugin
+    this.runningPlugins[id] = pluginInstance as Plugin
   }
 
   private getPlugin(id: string) {

@@ -27,7 +27,7 @@ export type PrivateDeviceSettingsProps = DeviceSettingsProps &
     createNewDevice: () => void
   }
 
-const enhance = compose(
+const enhance = compose<PrivateDeviceSettingsProps, DeviceSettingsProps>(
   graphql(gql`
     query {
       devices {
@@ -105,6 +105,4 @@ export const DeviceSettingsView = ({
     }
   />
 
-export const DeviceSettings = enhance(
-  DeviceSettingsView,
-) as React.ComponentClass<DeviceSettingsProps>
+export const DeviceSettings = enhance(DeviceSettingsView)

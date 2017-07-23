@@ -1,6 +1,8 @@
 import {GraphQLString} from 'graphql'
 import GraphQLJSON from 'graphql-type-json'
 import {buildMutations, buildQueries, buildType} from 'graphql-verified'
+import {filter, map} from 'iterates/cjs/async'
+import {flatMap} from 'iterates/cjs/sync'
 import * as joi from 'joi'
 import {
   Call,
@@ -30,43 +32,6 @@ export const DeviceStatusType = buildType<DeviceStatus>({
   writeRules: false,
 })
 
-export function flatMap<T, U>(
-  array: Array<T>,
-  mapFunc: (x: T) => Array<U>,
-): Array<U> {
-  return array.reduce(
-    (cumulus: Array<U>, next: T) => [...mapFunc(next), ...cumulus],
-    [] as Array<U>,
-  )
-}
-
-export function papp<A, B, R>(fn: (a: A, b: B) => R, a: A): (b: B) => R {
-  return (b: B) => fn(a, b)
-}
-
-async function* map<T, U>(fn: (item: T) => U, asyncIterator: AsyncIterator<T>) {
-  for await (const item of {[Symbol.asyncIterator]: () => asyncIterator}) {
-    yield fn(item)
-  }
-}
-export const mapP = <T, U>(fn: (item: T) => U) => (
-  asyncIterator: AsyncIterator<T>,
-) => map(fn, asyncIterator)
-
-async function* filter<T>(
-  fn: (item: T) => boolean,
-  asyncIterator: AsyncIterator<T>,
-) {
-  for await (const item of {[Symbol.asyncIterator]: () => asyncIterator}) {
-    if (fn(item)) {
-      yield item
-    }
-  }
-}
-export const filterP = <T>(fn: (item: T) => boolean) => (
-  asyncIterator: AsyncIterator<T>,
-) => filter(fn, asyncIterator)
-
 export function getValue<
   T,
   A extends keyof T,
@@ -92,24 +57,25 @@ export function statusesForDevice(
 ) {
   const state = storage.getState()
   const interfaces = specifiedInterfaces || device.interfaceIds
-  console.log('interfaces', interfaces)
+
   return (
-    interfaces &&
-    flatMap(interfaces, interfaceId => {
-      const iface = state.interfaces[interfaceId]
-      if (!iface) {
-        throw raxaError({type: 'missingInterface', interfaceId})
-      }
-      if (!iface.status) return []
-      const statusIds = specifiedStatusIds || Object.keys(iface.status)
-      console.log('statusIds', statusIds)
-      return statusIds.map(statusId => ({
-        id: `${device.id}:${interfaceId}:${statusId}`,
-        interfaceId,
-        statusId,
-        value: getValue(state.status, [device.id, interfaceId, statusId]),
-      }))
-    })
+    interfaces && [
+      ...flatMap(interfaceId => {
+        const iface = state.interfaces[interfaceId]
+        if (!iface) {
+          throw raxaError({type: 'missingInterface', interfaceId})
+        }
+        if (!iface.status) return []
+        const statusIds = specifiedStatusIds || Object.keys(iface.status)
+
+        return statusIds.map(statusId => ({
+          id: `${device.id}:${interfaceId}:${statusId}`,
+          interfaceId,
+          statusId,
+          value: getValue(state.status, [device.id, interfaceId, statusId]),
+        }))
+      }, interfaces),
+    ]
   )
 }
 
@@ -319,10 +285,10 @@ export const deviceSubscriptions = {
     },
     subscribe: (_, {id}, {storage}: Context) =>
       compose(
-        mapP((action: typeof actions.deviceUpdated) => ({
+        map((action: typeof actions.deviceUpdated) => ({
           deviceUpdated: storage.getState().devices[action.payload!.device.id],
         })),
-        filterP(
+        filter(
           (action: typeof actions.deviceUpdated) =>
             id === undefined || action.payload!.device.id === id,
         ),

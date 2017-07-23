@@ -1,6 +1,5 @@
 import glamorous from 'glamorous'
 import React from 'react'
-import {QueryProps} from 'react-apollo'
 import {Route, RouteComponentProps, matchPath, withRouter} from 'react-router'
 import {compose, lifecycle, mapProps, withState} from 'recompose'
 import {column, row} from 'style-definitions'
@@ -13,8 +12,8 @@ const Detail = glamorous.div(column({flex: {grow: 1}}))
 
 export type ListDetailProps<E, T> = {
   path: string
-  data?: T & QueryProps
-  getItems: (data: T & QueryProps) => Array<E>
+  data?: T & {loading: boolean}
+  getItems: (data: T & {loading: boolean}) => Array<E>
   getSection: (item: E) => {title: string; path: string}
   renderItem: (
     item: E,
@@ -28,7 +27,7 @@ export type ListDetailProps<E, T> = {
   listHeader?: React.ReactElement<any>
 }
 
-export type PrivateListDetailProps = ListDetailProps<any, any> &
+export type PrivateListDetailProps = ListDetailProps<{}, {}> &
   IsMobileProps &
   RouteComponentProps<any> & {
     inList: boolean

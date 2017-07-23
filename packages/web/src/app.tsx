@@ -3,7 +3,7 @@ import {ApolloProvider} from 'react-apollo'
 import {Route} from 'react-router'
 import {BrowserRouter} from 'react-router-dom'
 import ThemeProvider from 'react-toolbox/lib/ThemeProvider'
-import {DeviceSettings} from './components/settings/devices'
+import {Settings} from './components/settings/settings'
 import {Scaffold} from './components/ui/scaffold/scaffold'
 import {Ui2} from './components/ui2/main'
 import {client, store} from './lib/store'
@@ -17,7 +17,7 @@ export const App = () =>
       <BrowserRouter>
         <Scaffold appName="RAXA">
           <Route exact path="/" component={Ui2} />
-          <Route path="/settings" component={DeviceSettings} />
+          <Route path="/settings" component={Settings} />
           <ReduxSnackbar />
         </Scaffold>
       </BrowserRouter>

@@ -13,9 +13,9 @@ export type StatusState = {
 }
 
 export type State = {
-  devices: DeviceState,
-  deviceClasses: DeviceClassState,
-  interfaces: InterfaceState,
-  plugins: PluginState,
-  status: StatusState,
+  devices: DeviceState
+  deviceClasses: DeviceClassState
+  interfaces: InterfaceState
+  plugins: PluginState
+  status: StatusState
 }

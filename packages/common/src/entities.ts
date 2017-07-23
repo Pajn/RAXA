@@ -237,13 +237,13 @@ export type Status = Property & {
 export interface PluginDefinition {
   id: string
   name: string
+  shortDescription: string
   description: string
   deviceClasses: {[id: string]: DeviceClass}
   interfaces: {[id: string]: Interface}
 }
 
-export interface PluginConfiguration {
-  id: string
+export interface PluginConfiguration extends PluginDefinition {
   enabled: boolean
 }
 
