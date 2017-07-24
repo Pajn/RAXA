@@ -1451,9 +1451,9 @@ tslib@^1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.7.1.tgz#bc8004164691923a79fe8378bbeb3da2017538ec"
 
-tslint-config-beanloop@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/tslint-config-beanloop/-/tslint-config-beanloop-0.1.0.tgz#218364c3c256d1693a73be4190389c6faf46a304"
+tslint-config-pajn@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/tslint-config-pajn/-/tslint-config-pajn-1.0.0.tgz#bf23e23a9989e64d1677768ae001aac6de422efc"
 
 tslint@^5.4.3:
   version "5.4.3"
