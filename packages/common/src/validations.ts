@@ -181,6 +181,11 @@ function propertyToJoi(property: Property) {
     case 'device':
       joiRule = joi.string()
       break
+    case 'enum':
+      joiRule = joi
+        .alternatives(joi.string(), joi.number())
+        .only(property.values.map(value => value.value))
+      break
     case 'modification':
       joiRule = joi.object({
         deviceId: joi.string().required(),

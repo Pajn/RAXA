@@ -174,6 +174,12 @@ export interface DeviceProperty extends PropertyBase {
   deviceClassIds?: Array<string>
 }
 
+export interface EnumProperty<T = string | number> extends PropertyBase {
+  type: 'enum'
+  values: Array<{name: string; value: T}>
+  defaultValue?: T
+}
+
 export interface ModificationProperty extends PropertyBase {
   type: 'modification'
   interfaceIds?: Array<string>
@@ -211,6 +217,7 @@ export type Property =
   | ArrayProperty<any>
   | BooleanProperty
   | DeviceProperty
+  | EnumProperty
   | ModificationProperty
   | NumberProperty
   | ObjectProperty<any>
@@ -222,6 +229,7 @@ export const valueTypes: Array<ValueType> = [
   'array',
   'boolean',
   'device',
+  'enum',
   'modification',
   'number',
   'integer',

@@ -3,6 +3,7 @@ import {
   ArrayProperty,
   BooleanProperty,
   DeviceProperty,
+  EnumProperty,
   ModificationProperty,
   NumberProperty,
   Property,
@@ -11,6 +12,7 @@ import {
 import React from 'react'
 import {
   SettingCheckbox,
+  SettingDropdown,
   SettingInput,
   SettingSlider,
   SettingValue,
@@ -90,6 +92,19 @@ const types = {
     return props.property.modifiable
       ? <DeviceInput {...props} />
       : <DeviceDispay {...props} />
+  },
+  enum(props: PropertyProps<EnumProperty>) {
+    return props.property.modifiable
+      ? <SettingDropdown
+          label={props.property.name || props.property.id}
+          value={props.value}
+          onChange={props.onChange}
+          source={props.property.values.map(({name, value}) => ({
+            label: name,
+            value,
+          }))}
+        />
+      : <GenericDisplay {...props} />
   },
   integer(props: PropertyProps<NumberProperty>) {
     return props.property.modifiable

@@ -119,7 +119,7 @@ export default class NexaPlugin extends Plugin {
       arguments: {
         pulse,
         repeats: 8,
-        pause: 10,
+        pause: 30,
       },
     })
   }

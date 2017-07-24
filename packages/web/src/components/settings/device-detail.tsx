@@ -155,7 +155,9 @@ const enhance = compose(
     },
 
     componentWillUnmount(this: any) {
-      this.unsubscribe()
+      if (this.unsubscribe !== undefined) {
+        this.unsubscribe()
+      }
     },
   }),
 )
