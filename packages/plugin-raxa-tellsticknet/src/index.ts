@@ -1,5 +1,6 @@
 import * as dgram from 'dgram'
 import iconv from 'iconv-lite'
+import {Queue} from 'promise-land'
 import {Call, Device, Plugin, defaultInterfaces} from 'raxa-common'
 import plugin from './plugin'
 
@@ -18,6 +19,7 @@ export default class RaxaTellstickNetPlugin extends Plugin {
   private cleanupIntervalId: NodeJS.Timer
   private socket: dgram.Socket
   private tellsticks = {}
+  private executionQueue = new Queue()
 
   onDeviceCalled(call: Call, device: Tellstick) {
     if (call.interfaceId === '433MHzPulse' && call.method === 'send') {
@@ -60,13 +62,15 @@ export default class RaxaTellstickNetPlugin extends Plugin {
   }
 
   async send(message: string, activationCode: string) {
-    const buffer = iconv.encode(message, 'latin1')
-    const ip = await this.getIp(activationCode)
-    this.log.debug(
-      `Sending ${message} to tellstick ${activationCode} with ip ${ip}`,
-    )
+    return this.executionQueue.add(async () => {
+      const buffer = iconv.encode(message, 'latin1')
+      const ip = await this.getIp(activationCode)
+      this.log.debug(
+        `Sending ${message} to tellstick ${activationCode} with ip ${ip}`,
+      )
 
-    return this.sendBuffer(buffer, ip, COMMUNICATION_PORT)
+      await this.sendBuffer(buffer, ip, COMMUNICATION_PORT)
+    })
   }
 
   private async listenToSocket() {

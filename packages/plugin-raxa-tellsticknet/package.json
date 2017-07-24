@@ -20,6 +20,7 @@
   "dependencies": {
     "eventemitter2": "^2.0.0",
     "iconv-lite": "^0.4.13",
+    "promise-land": "^0.1.2",
     "redux-decorated": "^0.2.0-dev.3"
   },
   "tscomp": {
