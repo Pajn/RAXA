@@ -37,7 +37,7 @@ export const SettingInputView = ({
   isMobile
     ? <DialogInput
         label={label}
-        value={value}
+        value={value || ''}
         onChange={onChange}
         unit={unit}
         children={(value, setValue) =>
@@ -47,7 +47,12 @@ export const SettingInputView = ({
         leftActions={[]}
         rightActions={[]}
         itemContent={
-          <Input label={label} type={type} value={value} onChange={onChange} />
+          <Input
+            label={label}
+            type={type}
+            value={value || ''}
+            onChange={onChange}
+          />
         }
       />
 
@@ -114,7 +119,7 @@ export const SettingDropdownView = ({
         onChange={onChange}
         legend={(source.find(s => s.value === value) || {label: ''}).label}
         children={(value, setValue) =>
-          <Dropdown source={source} value={value} onChange={setValue} />}
+          <Dropdown source={source} value={value || ''} onChange={setValue} />}
       />
     : <ListItemLayout
         leftActions={[]}
@@ -123,7 +128,7 @@ export const SettingDropdownView = ({
           <Dropdown
             source={source}
             label={label}
-            value={value}
+            value={value || ''}
             onChange={onChange}
           />
         }
@@ -167,7 +172,7 @@ export const SettingSliderView = ({
   isMobile
     ? <DialogInput
         label={label}
-        value={+value}
+        value={+value || 0}
         onChange={onChange}
         unit={unit}
         legend={unit ? `${value} ${unit}` : `${asPercent(min, max, +value)} %`}
@@ -190,7 +195,7 @@ export const SettingSliderView = ({
         legend={
           (
             <Slider
-              value={tmpValue === undefined ? +value : tmpValue}
+              value={(tmpValue === undefined ? +value : tmpValue) || 0}
               onChange={setTmpValue}
               onDragStop={() => {
                 setTmpValue(undefined)
