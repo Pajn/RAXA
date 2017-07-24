@@ -109,6 +109,9 @@ export class PluginSupervisor extends Service {
       return
     }
 
+    if (id !== pluginDefinition.id)
+      throw new Error(`Invalid plugin id ${id} !== ${pluginDefinition.id}`)
+
     Object.entries(pluginDefinition.interfaces || {}).forEach(([id, iface]) => {
       if (id !== iface.id)
         throw new Error(`Invalid interface id ${id} !== ${iface.id}`)
@@ -121,7 +124,7 @@ export class PluginSupervisor extends Service {
     ).forEach(([id, deviceClass]) => {
       if (id !== deviceClass.id)
         throw new Error(`Invalid device class id ${id} !== ${deviceClass.id}`)
-      deviceClass.pluginId = id
+      deviceClass.pluginId = pluginDefinition.id
       storage.installDeviceClass(deviceClass)
     })
 

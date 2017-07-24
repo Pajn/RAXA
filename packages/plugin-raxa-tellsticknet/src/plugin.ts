@@ -3,8 +3,10 @@ import {DeviceType, PluginDefinition} from 'raxa-common'
 const plugin = {
   id: 'raxa-tellsticknet',
   name: 'RaxaTellstickNet',
+  shortDescription:
+    'Support for Tellstick Net with modified firmware for direct communication',
   description:
-    'Plugin for Tellstick Net with modified firmware for direct communication',
+    'Support for Tellstick Net with modified firmware for direct communication',
   deviceClasses: {
     RaxaTellstickNet: {
       id: 'RaxaTellstickNet',

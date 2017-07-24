@@ -1,8 +1,9 @@
 import {DeviceType, PluginDefinition, defaultInterfaces} from 'raxa-common'
 
 const plugin: PluginDefinition = {
-  id: 'LedStrip',
+  id: 'ledstrip',
   name: 'LedStrip',
+  shortDescription: 'Plugin for Digital LedStrip',
   description: 'Plugin for Digital LedStrip',
   deviceClasses: {
     LedStrip: {
@@ -24,7 +25,7 @@ const plugin: PluginDefinition = {
         defaultInterfaces['433MHzPulse'].id,
         defaultInterfaces.Temperature.id,
       ],
-      pluginId: 'LedStrip',
+      pluginId: 'ledstrip',
     },
   },
   interfaces: {

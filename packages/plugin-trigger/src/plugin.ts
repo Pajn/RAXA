@@ -3,7 +3,8 @@ import {DeviceType, PluginDefinition, defaultInterfaces} from 'raxa-common'
 const plugin = {
   id: 'trigger',
   name: 'Trigger',
-  description: 'Plugin for doing actions on simple triggers',
+  shortDescription: 'Do actions on simple triggers like button presses',
+  description: 'Do actions on simple triggers like button presses',
   deviceClasses: {
     Trigger: {
       id: 'Trigger',

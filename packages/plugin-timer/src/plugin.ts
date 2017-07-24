@@ -1,8 +1,9 @@
 import {DeviceType, PluginDefinition} from 'raxa-common'
 
 const plugin = {
-  id: 'Timer',
+  id: 'timer',
   name: 'Timer',
+  shortDescription: 'Set timers using weekdays or cron expressions',
   description: 'Plugin for Digital Timer',
   deviceClasses: {
     Timer: {
@@ -25,7 +26,7 @@ const plugin = {
         },
       },
       interfaceIds: [],
-      pluginId: 'Timer',
+      pluginId: 'timer',
     },
   },
   interfaces: {},
