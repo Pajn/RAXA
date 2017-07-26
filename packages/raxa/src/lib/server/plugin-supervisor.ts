@@ -65,7 +65,15 @@ export class PluginSupervisor extends Service {
     const storage = (this.serviceManager.runningServices
       .StorageService as any) as StorageService
     await Promise.all(
-      ['scenery', 'ledstrip', 'nexa', 'raxa-tellsticknet', 'timer', 'trigger']
+      [
+        'scenery',
+        'ledstrip',
+        'nexa',
+        'raxa-tellsticknet',
+        'timer',
+        'trigger',
+        'sunricher',
+      ]
         // .filter(plugin => !storage.getState().plugins[plugin])
         .map(plugin => this.installPlugin(plugin)),
     )

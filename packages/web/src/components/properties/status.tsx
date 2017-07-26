@@ -1,12 +1,14 @@
-import {Interface} from 'raxa-common'
+import {Interface, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {gql, graphql} from 'react-apollo'
 import {connect} from 'react-redux'
 import {compose} from 'recompose'
+import {row} from 'style-definitions'
 import {
   UpdateDeviceStatusInjectedProps,
   updateDeviceStatus,
 } from '../../lib/mutations'
+import {ColorPicker} from '../ui/color-picker'
 import {PropertyView} from './property'
 
 export type StatusProps = {
@@ -22,7 +24,7 @@ export type PrivateStatusProps = StatusProps &
     data: {interface?: Interface}
   }
 
-export const enhance = compose(
+export const enhance = compose<PrivateStatusProps, StatusProps>(
   connect(),
   graphql(gql`
     query($interfaceId: String!) {
@@ -50,21 +52,34 @@ export const StatelessStatusView = ({
       data.interface &&
       data.interface.status &&
       data.interface.status[statusId] &&
-      <PropertyView
-        property={data.interface.status[statusId]}
-        value={value}
-        label={label}
-        onChange={value => {
-          setDeviceStatus(id, {
-            deviceId,
-            interfaceId,
-            statusId,
-            value,
-          })
-        }}
-      />}
+      (interfaceId === defaultInterfaces.Color.id
+        ? <div style={{...row({vertical: 'center'}), padding: '0 16px'}}>
+            <span style={{paddingRight: 8}}>Color</span>
+            <ColorPicker
+              value={value}
+              onChange={value => {
+                setDeviceStatus(id, {
+                  deviceId,
+                  interfaceId,
+                  statusId,
+                  value,
+                })
+              }}
+            />
+          </div>
+        : <PropertyView
+            property={data.interface.status[statusId]}
+            value={value}
+            label={label}
+            onChange={value => {
+              setDeviceStatus(id, {
+                deviceId,
+                interfaceId,
+                statusId,
+                value,
+              })
+            }}
+          />)}
   </div>
 
-export const StatusView: React.ComponentClass<StatusProps> = enhance(
-  StatelessStatusView,
-)
+export const StatusView = enhance(StatelessStatusView)

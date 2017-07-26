@@ -34,6 +34,7 @@ export interface Device {
 export enum DeviceType {
   Group = 'Group',
   Light = 'Light',
+  Outlet = 'Outlet',
   Scenery = 'Scenery',
   Thermometer = 'Thermometer',
   Connector = 'Connector',

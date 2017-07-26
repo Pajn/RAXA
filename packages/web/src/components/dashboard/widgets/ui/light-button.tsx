@@ -4,7 +4,7 @@ import React from 'react'
 import {RTCard} from '../../../../toolbox/theme.js'
 
 export const CircleButton = glamorous(
-  (props: React.HTMLProps<HTMLButtonElement>) =>
+  ({big: _, ...props}: {big?: boolean} & React.HTMLProps<HTMLButtonElement>) =>
     <button
       {...props}
       className={`${RTCard.card} ${props.className}`}
@@ -23,7 +23,7 @@ export const CircleButton = glamorous(
         }
       }}
     />,
-)({
+)(({big}: {big?: boolean}) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -34,8 +34,8 @@ export const CircleButton = glamorous(
     marginLeft: 4,
     marginRight: 4,
     padding: 0,
-    width: 40,
-    height: 40,
+    width: big ? 64 : 40,
+    height: big ? 64 : 40,
 
     backgroundColor: '#eee',
     borderRadius: '50%',
@@ -45,7 +45,7 @@ export const CircleButton = glamorous(
     borderColor: '#eee',
     outline: 'none',
   },
-})
+}))
 
 export const DimButton = ({
   color = purple[500],
@@ -78,6 +78,24 @@ export const DimLevelButton = ({
         marginTop: (1 - level) * 32,
         width: 32,
         height: 32,
+        backgroundColor: color,
+      }}
+    />
+  </CircleButton>
+
+export const ColorButton = ({
+  color,
+  ...props,
+}: {
+  big?: boolean
+  color: string
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+}) =>
+  <CircleButton {...props}>
+    <div
+      style={{
+        width: 64,
+        height: 64,
         backgroundColor: color,
       }}
     />

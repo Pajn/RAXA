@@ -82,7 +82,9 @@ const types = {
     return (
       <SettingCheckbox
         label={props.property.name || props.property.id}
-        value={props.value}
+        value={
+          typeof props.value === 'string' ? props.value === 'true' : props.value
+        }
         onChange={props.onChange}
         disabled={!props.property.modifiable}
       />
@@ -97,11 +99,11 @@ const types = {
     return props.property.modifiable
       ? <SettingDropdown
           label={props.property.name || props.property.id}
-          value={props.value}
+          value={props.value.toString()}
           onChange={props.onChange}
           source={props.property.values.map(({name, value}) => ({
             label: name,
-            value,
+            value: value.toString(),
           }))}
         />
       : <GenericDisplay {...props} />

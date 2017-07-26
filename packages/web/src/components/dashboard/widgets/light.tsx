@@ -1,5 +1,10 @@
 import glamorous from 'glamorous'
-import {DeviceStatus, GraphQlDevice, Interface} from 'raxa-common/lib/entities'
+import {
+  DeviceStatus,
+  GraphQlDevice,
+  Interface,
+  defaultInterfaces,
+} from 'raxa-common'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
 import Ripple from 'react-toolbox/lib/ripple'
@@ -12,6 +17,7 @@ import {
   updateDeviceStatus,
 } from '../../../lib/mutations'
 import {withThrottledMutation} from '../../../with-throttled-mutation'
+import {ColorPicker} from '../../ui/color-picker'
 import {WidgetComponent, WidgetProps} from '../widget'
 
 const Container = Ripple({})(
@@ -38,7 +44,11 @@ const PowerSwitch = glamorous(Switch)({
   ':not(#id)': {marginBottom: 5},
 })
 
-const interfaceIds = ['Power', 'Dimmer']
+const interfaceIds = [
+  defaultInterfaces.Power.id,
+  defaultInterfaces.Dimmer.id,
+  defaultInterfaces.Color.id,
+]
 
 export type LightWidgetConfiguration = {
   deviceId: string
@@ -51,6 +61,7 @@ export type PrivateLightWidgetProps = LightWidgetProps &
     showDetail: boolean
     setShowDetail: (showDetail: boolean) => void
     setDimmer: (value: string) => void
+    setColor: (value: number) => void
   }
 
 function asObject<T, K extends keyof T>(
@@ -133,6 +144,26 @@ export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
         updateIn(['Dimmer', 'value'], value, status!),
     },
   ),
+  withThrottledMutation<PrivateLightWidgetProps>(
+    100,
+    'status',
+    'setColor',
+    (value, {status, data: {device}, setDeviceStatus}) => {
+      if (!status || !device) {
+        throw Error('Device not loaded')
+      }
+      return setDeviceStatus(status.Color.id, {
+        deviceId: device.id,
+        interfaceId: status.Color.interfaceId,
+        statusId: status.Color.statusId,
+        value: value.toString(),
+      })
+    },
+    {
+      mapValue: (value, {status}) =>
+        updateIn(['Color', 'value'], value, status!),
+    },
+  ),
 )
 
 export const LightWidgetView = ({
@@ -142,11 +173,14 @@ export const LightWidgetView = ({
   showDetail,
   setShowDetail,
   setDimmer,
+  setColor,
 }: PrivateLightWidgetProps) => {
   return (
     <Container onClick={() => setShowDetail(!showDetail)}>
       {device &&
-        (showDetail && status && device.interfaceIds!.includes('Dimmer')
+        (showDetail &&
+          status &&
+          device.interfaceIds!.includes(defaultInterfaces.Dimmer.id)
           ? <NameRow>
               <DeviceName>{device.name}</DeviceName>
               <DetailControl>
@@ -160,10 +194,17 @@ export const LightWidgetView = ({
           : <NameRow>
               <DeviceName>{device.name}</DeviceName>
               {status
-                ? <div
+                ? <NameRow
                     onMouseDown={e => e.stopPropagation()}
                     onClick={e => e.stopPropagation()}
                   >
+                    {device.interfaceIds!.includes(
+                      defaultInterfaces.Color.id,
+                    ) &&
+                      <ColorPicker
+                        value={+(status.Color || {}).value || 0}
+                        onChange={setColor}
+                      />}
                     <PowerSwitch
                       checked={status.Power.value !== 'false'}
                       onChange={value => {
@@ -175,7 +216,7 @@ export const LightWidgetView = ({
                         })
                       }}
                     />
-                  </div>
+                  </NameRow>
                 : <div />}
             </NameRow>)}
     </Container>

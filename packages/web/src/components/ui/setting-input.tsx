@@ -9,6 +9,12 @@ import {compose} from 'recompose'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
+const round = (decimals: number, value: number) =>
+  Math.round(value * 10 ** decimals) / 10 ** decimals
+
+const autoRound = (min: number, max: number, value: number) =>
+  round(Math.max(2 - Math.log10(max - min), 0), value)
+
 const asPercent = (min: number, max: number, value: number) =>
   Math.round(100 * (+value - min) / (max - min))
 
@@ -175,7 +181,11 @@ export const SettingSliderView = ({
         value={+value || 0}
         onChange={onChange}
         unit={unit}
-        legend={unit ? `${value} ${unit}` : `${asPercent(min, max, +value)} %`}
+        legend={
+          unit
+            ? `${autoRound(min, max, value)} ${unit}`
+            : `${asPercent(min, max, +value)} %`
+        }
         children={(value, setValue) =>
           <div>
             <Slider
@@ -185,7 +195,9 @@ export const SettingSliderView = ({
               min={min}
               step={step}
             />
-            {unit ? `${value} ${unit}` : `${asPercent(min, max, +value)} %`}
+            {unit
+              ? `${autoRound(min, max, value)} ${unit}`
+              : `${asPercent(min, max, +value)} %`}
           </div>}
       />
     : <ListItemLayout

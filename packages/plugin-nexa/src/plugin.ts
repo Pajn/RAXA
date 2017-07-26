@@ -74,7 +74,7 @@ const plugin = {
     NexaSelfLearning: {
       id: 'NexaSelfLearning',
       name: 'NexaSelfLearning',
-      types: [DeviceType.Light],
+      types: [DeviceType.Outlet],
       allowManualCreation: true,
       config: {
         sender: {

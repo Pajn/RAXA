@@ -1,0 +1,25 @@
+{
+  "name": "raxa-plugin-sunricher",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Rasmus Eneman <rasmus@eneman.eu>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@types/node": "^8.0.15",
+    "color-js": "^1.0.4"
+  },
+  "devDependencies": {
+    "tscomp": "^0.13.2"
+  },
+  "tscomp": {
+    "mode": "lib"
+  },
+  "scripts": {
+    "build": "tscomp build",
+    "test": "tscomp test",
+    "eject": "tscomp eject",
+    "watch": "tscomp watch"
+  },
+  "main": "./cjs/index.js",
+  "typings": "./lib/index.d.ts"
+}

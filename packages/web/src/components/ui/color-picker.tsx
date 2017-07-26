@@ -1,0 +1,377 @@
+import {colorTemperature2rgb, rgb2colorTemperature} from 'color-temperature'
+import glamorous from 'glamorous'
+import React from 'react'
+import {Color, ColorResult, CustomPicker, RGBColor} from 'react-color'
+import Hue from 'react-color/lib/components/common/Hue'
+import HuePointer from 'react-color/lib/components/hue/HuePointer'
+import Dialog from 'react-toolbox/lib/dialog/Dialog'
+import {Tab, Tabs} from 'react-toolbox/lib/tabs'
+import {compose, withState} from 'recompose'
+import {compose as fnCompose} from 'redux'
+import {row} from 'style-definitions'
+import {ColorButton} from '../dashboard/widgets/ui/light-button'
+import {IsMobileProps, withIsMobile} from './mediaQueries'
+
+const lerp = (a: number, b: number, alpha: number) =>
+  a * (1 - alpha) + b * alpha
+const lerpRGB = (a: RGBColor, b: RGBColor, alpha: number) => ({
+  r: Math.round(lerp(a.r, b.r, alpha)),
+  g: Math.round(lerp(a.g, b.g, alpha)),
+  b: Math.round(lerp(a.b, b.b, alpha)),
+})
+const lerpi = (a: number, b: number, value: number) => (value - a) / (b - a)
+const inRange = (min: number, max: number, value: number) =>
+  value >= min && value <= max
+const toShort = ({red, green, blue}): RGBColor => ({r: red, g: green, b: blue})
+const toLong = ({r, g, b}: RGBColor) => ({red: r, green: g, blue: b})
+const toCSS = (color: RGBColor) => `rgb(${color.r}, ${color.g}, ${color.b})`
+
+const minTemp = 2200
+const maxTemp = 4000
+
+const temperaturePresets = {
+  relax: {
+    color: {r: 235, g: 207, b: 115},
+    temp: 2200,
+  },
+  everyday: {
+    color: {r: 250, g: 237, b: 202},
+    temp: 2700,
+  },
+  focus: {
+    color: {r: 246, g: 252, b: 252},
+    temp: 4000,
+  },
+}
+
+type ColorSliderProps = ColorResult & {
+  radius?: number
+  shadow?: string
+  pointer?: React.ReactType
+  direction?: 'horizontal' | 'vertical'
+  onChange: (color: Color) => void
+}
+
+type ColorSliderOptions = {
+  minValue: number
+  maxValue: number
+  valueToColor: (value: number, props: ColorSliderProps) => Color
+  valueToCSS: (value: number, props: ColorSliderProps) => string
+  colorToValue: (props: ColorSliderProps) => number
+}
+
+const CenteredHuePointer = props =>
+  <div style={{marginTop: 8}}><HuePointer {...props} /></div>
+
+const colorSlider = (options: ColorSliderOptions) =>
+  class TemperatureSlider extends React.PureComponent<ColorSliderProps> {
+    container: HTMLElement | null
+
+    componentWillUnmount() {
+      this.unbindEventListeners()
+    }
+
+    calculateChange(e, props, container) {
+      e.preventDefault()
+      const containerWidth = container.clientWidth
+      const containerHeight = container.clientHeight
+      const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
+      const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
+      const left =
+        x - (container.getBoundingClientRect().left + window.pageXOffset)
+      const top =
+        y - (container.getBoundingClientRect().top + window.pageYOffset)
+
+      let value: number
+      if (props.direction === 'vertical') {
+        if (top < 0) {
+          value = options.minValue
+        } else if (top > containerHeight) {
+          value = options.maxValue
+        } else {
+          const percent = top / containerHeight
+          value = lerp(options.minValue, options.maxValue, percent)
+        }
+      } else {
+        if (left < 0) {
+          value = options.minValue
+        } else if (left > containerWidth) {
+          value = options.maxValue
+        } else {
+          const percent = left / containerWidth
+          value = lerp(options.minValue, options.maxValue, percent)
+        }
+      }
+      return options.valueToColor(value, this.props)
+    }
+
+    handleChange = e => {
+      const change = this.calculateChange(e, this.props, this.container)
+      if (change && this.props.onChange) {
+        this.props.onChange(change)
+      }
+    }
+
+    handleMouseDown = e => {
+      this.handleChange(e)
+      window.addEventListener('mousemove', this.handleChange)
+      window.addEventListener('mouseup', this.handleMouseUp)
+    }
+
+    handleMouseUp = () => {
+      this.unbindEventListeners()
+    }
+
+    unbindEventListeners() {
+      window.removeEventListener('mousemove', this.handleChange)
+      window.removeEventListener('mouseup', this.handleMouseUp)
+    }
+
+    render() {
+      const {direction = 'horizontal'} = this.props
+
+      const styles = {
+        container: {
+          position: 'relative',
+          width: '100%',
+          height: 48,
+          borderRadius: this.props.radius,
+          boxShadow: this.props.shadow,
+        },
+        slider: {
+          position: 'absolute',
+          top: 8,
+          left: 0,
+          right: 0,
+          height: 32,
+          background: `linear-gradient(
+          ${direction === 'vertical' ? 'to bottom' : 'to right'},
+          ${options.valueToCSS(options.minValue, this.props)} 0%,
+          ${options.valueToCSS(
+            (options.maxValue - options.minValue) / 2,
+            this.props,
+          )} 50%,
+          ${options.valueToCSS(options.maxValue, this.props)} 100%
+        )`,
+        },
+        pointerPosition: {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          transform: `translate${direction === 'vertical' ? 'Y' : 'X'}(${lerpi(
+            options.minValue,
+            options.maxValue,
+            options.colorToValue(this.props),
+          ) * 100}%)`,
+        },
+        pointer: {
+          marginTop: '1px',
+          width: '4px',
+          borderRadius: '1px',
+          height: '8px',
+          boxShadow: '0 0 2px rgba(0, 0, 0, .6)',
+          background: '#fff',
+          transform: 'translateX(-2px)',
+        },
+      } as any
+
+      return (
+        <div style={styles.container}>
+          <div
+            style={styles.slider}
+            ref={container => (this.container = container)}
+            onMouseDown={this.handleMouseDown}
+            onTouchMove={this.handleChange}
+            onTouchStart={this.handleChange}
+          >
+            <div style={styles.pointerPosition}>
+              {this.props.pointer
+                ? <this.props.pointer {...this.props} />
+                : <CenteredHuePointer />}
+            </div>
+          </div>
+        </div>
+      )
+    }
+  }
+
+const TemperatureSlider = colorSlider({
+  minValue: minTemp,
+  maxValue: maxTemp,
+  colorToValue: ({rgb}) => rgb2colorTemperature(toLong(rgb)),
+  valueToColor: fnCompose(toShort, colorTemperature2rgb),
+  valueToCSS: value => {
+    const alpha = lerpi(minTemp, maxTemp, value)
+    return toCSS(
+      alpha < 0.3
+        ? lerpRGB(
+            temperaturePresets.relax.color,
+            temperaturePresets.everyday.color,
+            lerp(0, 0.3, alpha),
+          )
+        : lerpRGB(
+            temperaturePresets.everyday.color,
+            temperaturePresets.focus.color,
+            lerp(0.3, 1, alpha),
+          ),
+    )
+  },
+})
+
+const SaturationSlider = colorSlider({
+  minValue: 0,
+  maxValue: 1,
+  colorToValue: ({hsl}) => hsl.s,
+  valueToColor: (s, {hsl}) => ({...hsl, s}),
+  valueToCSS: (s, {hsl}) => `hsl(${hsl.h}, ${s * 100}%, ${hsl.l * 100}%)`,
+})
+
+const LightnessSlider = colorSlider({
+  minValue: 0,
+  maxValue: 1,
+  colorToValue: ({hsl}) => hsl.l,
+  valueToColor: (l, {hsl}) => ({...hsl, l}),
+  valueToCSS: (l, {hsl}) => `hsl(${hsl.h}, ${hsl.s * 100}%, ${l * 100}%)`,
+})
+
+const PresetRow = glamorous.div(row({horizontal: 'center', vertical: 'center'}))
+
+type LightningColorPickerProps = {
+  color: Color
+  onChange: (color: ColorResult) => void
+}
+type PrivateLightningColorPickerProps = LightningColorPickerProps &
+  ColorResult & {
+    index: number
+    setIndex: (index: number) => void
+    onChange: (color: Color) => void
+  }
+
+const LightningColorPicker = compose<
+  PrivateLightningColorPickerProps,
+  LightningColorPickerProps
+>(
+  CustomPicker,
+  withState(
+    'index',
+    'setIndex',
+    (props: ColorResult) =>
+      inRange(minTemp, maxTemp, rgb2colorTemperature(toLong(props.rgb)))
+        ? 0
+        : 1,
+  ),
+)(({onChange, index, setIndex, ...props}) =>
+  <div>
+    <Tabs index={index} onChange={setIndex} fixed>
+      <Tab label="Temperature">
+        <TemperatureSlider onChange={onChange} {...props} />
+        <PresetRow>
+          {Object.values(temperaturePresets).map(({color, temp}) =>
+            <ColorButton
+              key={temp}
+              big
+              color={toCSS(color)}
+              onClick={() => onChange(toShort(colorTemperature2rgb(temp)))}
+            />,
+          )}
+        </PresetRow>
+      </Tab>
+      <Tab label="Color">
+        <div style={{position: 'relative', height: 32, marginBottom: 8}}>
+          <Hue onChange={onChange} {...props} pointer={CenteredHuePointer} />
+        </div>
+        <SaturationSlider onChange={onChange} {...props} />
+        <LightnessSlider onChange={onChange} {...props} />
+      </Tab>
+    </Tabs>
+
+  </div>,
+)
+
+const StyledDialog = glamorous(Dialog)({
+  '& section': {outline: 'none'},
+})
+
+export type ColorPickerProps = {
+  value: number
+  onChange: (color: number) => void
+}
+export type PrivateColorPickerProps = ColorPickerProps & IsMobileProps
+
+export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
+  withIsMobile,
+)(
+  class ColorPicker extends React.Component<PrivateColorPickerProps> {
+    state = {
+      displayColorPicker: false,
+    }
+
+    handleClick = () => {
+      this.setState({displayColorPicker: !this.state.displayColorPicker})
+    }
+
+    handleClose = () => {
+      this.setState({displayColorPicker: false})
+    }
+
+    handleChange = (color: ColorResult) => {
+      this.props.onChange(
+        (color.rgb.r << 16) + (color.rgb.g << 8) + color.rgb.b,
+      )
+    }
+
+    render() {
+      const red = (this.props.value & 0xff0000) >> 16
+      const green = (this.props.value & 0x00ff00) >> 8
+      const blue = this.props.value & 0x0000ff
+      const styles = {
+        popover: {
+          position: 'absolute',
+          zIndex: '2',
+        },
+        cover: {
+          position: 'fixed',
+          top: '0px',
+          right: '0px',
+          bottom: '0px',
+          left: '0px',
+        },
+      } as any
+
+      return (
+        <div>
+          <ColorButton
+            color={`rgb(${red}, ${green}, ${blue})`}
+            onClick={this.handleClick}
+          />
+          <div style={styles.swatch} onClick={this.handleClick}>
+            <div style={styles.color} />
+          </div>
+          {this.props.isMobile &&
+            <StyledDialog
+              active={this.state.displayColorPicker}
+              onEscKeyDown={this.handleClose}
+              onOverlayClick={this.handleClose}
+            >
+              <LightningColorPicker
+                color={{r: red, g: green, b: blue}}
+                onChange={this.handleChange}
+              />
+            </StyledDialog>}
+          {!this.props.isMobile && this.state.displayColorPicker
+            ? <div style={styles.popover}>
+                <div style={styles.cover} onClick={this.handleClose} />
+                <LightningColorPicker
+                  color={{r: red, g: green, b: blue}}
+                  onChange={this.handleChange}
+                />
+              </div>
+            : null}
+
+        </div>
+      )
+    }
+  },
+)
