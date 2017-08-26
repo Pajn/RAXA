@@ -79,7 +79,7 @@ const pluginReducer = createReducer<PluginState>({})
   }))
   .when(actions.pluginUpdated, (state, {plugin}) => ({
     ...state,
-    [plugin.id!]: plugin,
+    [plugin.id!]: {...state[plugin.id!], ...plugin},
   }))
   .build()
 const statusReducer = createReducer<StatusState>({})

@@ -1,4 +1,5 @@
 {
+  "id": "mysensors",
   "name": "MySensors",
   "description": "Plugin for MySensors serial gateway",
   "deviceClasses": {

@@ -3,7 +3,7 @@ import {PubSub} from 'graphql-subscriptions'
 import {deviceMutations, deviceQueries, deviceSubscriptions} from './device'
 import {deviceClassQueries} from './device-class'
 import {interfaceQueries} from './interface'
-import {pluginQueries} from './plugin'
+import {pluginMutations, pluginQueries} from './plugin'
 
 export const pubsub = new PubSub()
 
@@ -21,6 +21,7 @@ const MutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     ...deviceMutations,
+    ...pluginMutations,
   }),
 })
 

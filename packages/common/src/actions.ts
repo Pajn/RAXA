@@ -3,7 +3,7 @@ import {Device, DeviceClass, Interface, PluginConfiguration} from './entities'
 import {InterfaceState} from './state'
 
 export const actions = createActions({
-  deviceAdded: {} as Action<{device: Device, interfaces: InterfaceState}>,
+  deviceAdded: {} as Action<{device: Device; interfaces: InterfaceState}>,
   deviceUpdated: {} as Action<{device: Device}>,
   deviceRemoved: {} as Action<{device: Device}>,
 
@@ -16,13 +16,13 @@ export const actions = createActions({
   interfaceRemoved: {} as Action<{iface: Interface}>,
 
   pluginAdded: {} as Action<{plugin: PluginConfiguration}>,
-  pluginUpdated: {} as Action<{plugin: PluginConfiguration}>,
+  pluginUpdated: {} as Action<{plugin: Partial<PluginConfiguration>}>,
   pluginRemoved: {} as Action<{plugin: PluginConfiguration}>,
 
   statusUpdated: {} as Action<{
-    deviceId: string,
-    interfaceId: string,
-    statusId: string,
-    value: any,
+    deviceId: string
+    interfaceId: string
+    statusId: string
+    value: any
   }>,
 })

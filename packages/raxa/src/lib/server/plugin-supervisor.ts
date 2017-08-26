@@ -1,7 +1,4 @@
 import {EventEmitter} from 'events'
-import execa from 'execa'
-import {mkdirp} from 'fs-extra'
-import {join} from 'path'
 import {
   Awaitable,
   Call,
@@ -11,11 +8,13 @@ import {
   PluginDefinition,
   Service,
   ServiceManager,
+  actions,
   raxaError,
 } from 'raxa-common/cjs'
 import {ServiceImplementation} from 'raxa-common/cjs/service'
 import {validateAction} from 'raxa-common/cjs/validations'
-import {pluginDir, production} from '../config'
+import {production} from '../config'
+import {pubsub} from '../graphql/schema'
 import {StorageService} from './storage'
 
 class PluginManager extends ServiceManager {
@@ -57,6 +56,7 @@ function pluginPath(pluginId: string) {
 export class PluginSupervisor extends Service {
   private runningPlugins: {[name: string]: Plugin} = {}
   private pluginServiceManager: PluginManager
+  private subscriptions: Array<number> = []
 
   async start() {
     this.pluginServiceManager = new PluginManager(this.log)
@@ -74,6 +74,7 @@ export class PluginSupervisor extends Service {
         'timer',
         'trigger',
         'sunricher',
+        'mysensors',
       ]
         // .filter(plugin => !storage.getState().plugins[plugin])
         .map(plugin => this.installPlugin(plugin)),
@@ -84,11 +85,30 @@ export class PluginSupervisor extends Service {
         .filter(plugin => plugin.enabled)
         .map(plugin => this.startPlugin(plugin.id)),
     )
+
+    pubsub
+      .subscribe(
+        actions.pluginUpdated.type!,
+        ({payload}: typeof actions.pluginUpdated) => {
+          const plugin = storage.getState().plugins[payload!.plugin.id!]
+
+          if (plugin.enabled && !this.runningPlugins[plugin.id]) {
+            this.startPlugin(plugin.id)
+          } else if (!plugin.enabled && this.runningPlugins[plugin.id]) {
+            this.stopPlugin(plugin.id)
+          }
+        },
+      )
+      .then(id => this.subscriptions.push(id))
   }
 
   async stop() {
-    for (const plugin of Object.values(this.runningPlugins)) {
-      await plugin.stop()
+    for (const pluginId of Object.keys(this.runningPlugins)) {
+      await this.stopPlugin(pluginId)
+    }
+
+    for (const subId of this.subscriptions) {
+      await pubsub.unsubscribe(subId)
     }
   }
 
@@ -149,6 +169,13 @@ export class PluginSupervisor extends Service {
 
     const pluginInstance = await this.pluginServiceManager.startService(plugin)
     this.runningPlugins[id] = pluginInstance as Plugin
+  }
+
+  private async stopPlugin(id: string) {
+    this.log.info(`Stopping plugin ${id}`)
+    const plugin = this.runningPlugins[id]
+    await plugin.stop()
+    delete this.runningPlugins[id]
   }
 
   private getPlugin(id: string) {
