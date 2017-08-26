@@ -113,9 +113,13 @@ export class ServiceManager {
   /**
    * Starts all passed services
    */
-  async startServices(...services: Array<ServiceImplementation>) {
+  async startServices(
+    ...services: Array<ServiceImplementation | false | undefined | null>
+  ) {
     for (const service of services) {
-      await this.startService(service)
+      if (service) {
+        await this.startService(service)
+      }
     }
   }
 

@@ -8,8 +8,8 @@
     "@types/node": "^4.0.27-alpha",
     "eventemitter2": "^2.0.0",
     "iconv-lite": "^0.4.13",
-    "redux-decorated": "^0.2.0-dev.3",
-    "serialport": "^4.0.1"
+    "raxa-common": "*",
+    "redux-decorated": "^0.2.0-dev.3"
   },
   "devDependencies": {
     "tscomp": "^0.10.0"

@@ -12,7 +12,8 @@
   "license": "AGPL-3.0",
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^2.0.0-rc.5",
+    "globby": "^6.1.0",
+    "lerna": "^2.0.0",
     "prettier": "^1.4.4",
     "tslint": "^5.4.3",
     "tslint-config-pajn": "^1.0.0",

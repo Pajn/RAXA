@@ -48,9 +48,10 @@ class PluginManager extends ServiceManager {
 }
 
 function pluginPath(pluginId: string) {
-  return production
-    ? join(pluginDir, pluginId, 'node_modules', `raxa-plugin-${pluginId}`)
-    : `raxa-plugin-${pluginId}`
+  return `raxa-plugin-${pluginId}`
+  // return production
+  //   ? join(pluginDir, pluginId, 'node_modules', `raxa-plugin-${pluginId}`)
+  //   : `raxa-plugin-${pluginId}`
 }
 
 export class PluginSupervisor extends Service {
@@ -98,10 +99,10 @@ export class PluginSupervisor extends Service {
     this.log.info(`Installing plugin ${id}`)
 
     if (production) {
-      const dir = join(pluginDir, id)
-      await mkdirp(dir)
-      await execa('yarn', ['init', '--yes'], {cwd: dir})
-      await execa('yarn', ['add', `raxa-plugin-${id}`], {cwd: dir})
+      // const dir = join(pluginDir, id)
+      // await mkdirp(dir)
+      // await execa('yarn', ['init', '--yes'], {cwd: dir})
+      // await execa('yarn', ['add', `raxa-plugin-${id}`], {cwd: dir})
     }
 
     const pluginDefinitionModule = require(`${pluginPath(id)}/plugin`)

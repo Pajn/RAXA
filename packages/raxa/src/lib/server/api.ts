@@ -10,7 +10,7 @@ import {schema} from '../graphql/schema'
 import {PluginSupervisor} from './plugin-supervisor'
 import {StorageService} from './storage'
 
-function register(server, options) {
+export function register(server, options) {
   return new Promise((resolve, reject) => {
     server.register(options, err => {
       if (err) return reject(err)

@@ -1,4 +1,5 @@
 import nedb from 'nedb-persist'
+import {join} from 'path'
 import {
   Device,
   DeviceClass,
@@ -30,6 +31,7 @@ import {
 } from 'redux'
 import {Action, action, createReducer, updateIn} from 'redux-decorated'
 import {autoRehydrate, persistStore} from 'redux-persist'
+import {dataDir} from '../config'
 import {pubsub} from '../graphql/schema'
 import {PluginSupervisor} from './plugin-supervisor'
 
@@ -124,7 +126,7 @@ export class StorageService extends Service {
     await new Promise(resolve => {
       persistStore(
         this.store,
-        {storage: nedb({filename: 'db.json'}) as any},
+        {storage: nedb({filename: join(dataDir, 'db.json')}) as any},
         resolve,
       )
     })

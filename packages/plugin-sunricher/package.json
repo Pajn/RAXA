@@ -6,7 +6,8 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@types/node": "^8.0.15",
-    "color-js": "^1.0.4"
+    "color-js": "^1.0.4",
+    "raxa-common": "*"
   },
   "devDependencies": {
     "tscomp": "^0.13.2"

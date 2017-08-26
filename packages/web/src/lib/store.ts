@@ -6,12 +6,15 @@ import {
 } from 'subscriptions-transport-ws'
 import {snackbarReducer} from '../redux-snackbar/reducer'
 
-const wsClient = new SubscriptionClient(`ws://localhost:9000/subscriptions`, {
-  reconnect: true,
-})
+const wsClient = new SubscriptionClient(
+  `ws://${location.hostname}:9000/subscriptions`,
+  {
+    reconnect: true,
+  },
+)
 
 const networkInterface = createNetworkInterface({
-  uri: `http://localhost:9000/graphql`,
+  uri: `http://${location.hostname}:9000/graphql`,
 })
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   networkInterface,

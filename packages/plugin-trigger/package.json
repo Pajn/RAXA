@@ -5,7 +5,8 @@
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@types/node": "^4.0.27-alpha"
+    "@types/node": "^4.0.27-alpha",
+    "raxa-common": "*"
   },
   "devDependencies": {
     "tscomp": "^0.13.0"

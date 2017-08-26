@@ -2,7 +2,7 @@
 
 yarn
 
-lerna bootstrap
+./node_modules/.bin/lerna bootstrap
 
 (
   cd packages/common
@@ -32,4 +32,9 @@ lerna bootstrap
       )
     fi
   done
+)
+
+(
+  cd packages/plugin-nexa
+  yarn link raxa-plugin-raxa-tellsticknet
 )

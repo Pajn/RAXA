@@ -1,7 +1,9 @@
 import {ServiceManager} from 'raxa-common/cjs'
+import {production} from '../config'
 import {ApiService} from './api'
 import {PluginSupervisor} from './plugin-supervisor'
 import {StorageService} from './storage'
+import {WebService} from './web'
 
 export async function main() {
   const serviceManager = new ServiceManager()
@@ -10,6 +12,7 @@ export async function main() {
     StorageService,
     PluginSupervisor,
     ApiService,
+    production && WebService,
   )
 
   let firstInt = true

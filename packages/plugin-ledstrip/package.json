@@ -7,7 +7,8 @@
   "dependencies": {
     "@types/node": "^4.0.27-alpha",
     "@types/node-fetch": "^1.6.7",
-    "node-fetch": "^1.7.1"
+    "node-fetch": "^1.7.1",
+    "raxa-common": "*"
   },
   "devDependencies": {
     "tscomp": "^0.13.0"

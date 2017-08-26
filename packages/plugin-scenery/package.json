@@ -6,7 +6,8 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@types/node": "^4.0.27-alpha",
-    "redux-decorated": "^0.2.0-dev.3"
+    "redux-decorated": "^0.2.0-dev.3",
+    "raxa-common": "*"
   },
   "devDependencies": {
     "tscomp": "^0.13.0"
