@@ -7,3 +7,4 @@ old/
 src/web/
 lerna-debug.log
 Dockerfile.gen
+publish.sh

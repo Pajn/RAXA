@@ -44,7 +44,7 @@ const statuses = {
 
 const names = {}
 
-const serialPorts = {} as {[id: number]: SerialPort}
+const serialPorts = {} as {[id: number]: {port: SerialPort; parser: any}}
 
 export interface SerialGateway extends Device {
   config: {
@@ -89,8 +89,8 @@ function encode(destination, sensor, command, acknowledge, type, payload) {
     ';'
 
   if (command === 4) {
-    for (let i = 0; i < payload.length; i++) {
-      message += toHex(payload[i])
+    for (const part of payload) {
+      message += toHex(part)
     }
   } else {
     message += payload
@@ -137,7 +137,7 @@ export default class MySensorsPlugin extends Plugin {
       const message = encode(node, sensor, type, 0, subType, payload)
 
       this.log.debug('transmitted message', message)
-      serialPorts[device.id].write(message)
+      serialPorts[device.id].parser.write(message)
     }
   }
 
@@ -155,7 +155,7 @@ export default class MySensorsPlugin extends Plugin {
   stop() {
     return Promise.all(
       Object.values(serialPorts).map(
-        port => new Promise(resolve => port.close(resolve)),
+        ({port}) => new Promise(resolve => port.close(resolve)),
       ),
     )
   }
@@ -164,23 +164,24 @@ export default class MySensorsPlugin extends Plugin {
     const serialPort = config.serialPort
     const port = new SerialPort(serialPort, {
       baudrate: gwBaud,
-      parser: SerialPort.parsers.readline('\n'),
     })
+    const parser = new SerialPort.parsers.Readline('\n')
+    port.pipe(parser)
 
     let errors = 0
 
     port.on('open', () => {
       this.log.info(`connected to serial gateway at ${serialPort}`)
-      serialPorts[id] = port
+      serialPorts[id] = {port, parser}
       errors = 0
     })
 
     port.on('end', () => {
       this.log.info(`disconnected from gateway at ${serialPort}`)
-      serialPorts[id]
+      delete serialPorts[id]
     })
 
-    port.on('data', rd => {
+    parser.on('data', rd => {
       this.receivedMessage(id, rd)
     })
 

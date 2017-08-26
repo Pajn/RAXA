@@ -9,7 +9,8 @@
     "eventemitter2": "^2.0.0",
     "iconv-lite": "^0.4.13",
     "raxa-common": "*",
-    "redux-decorated": "^0.2.0-dev.3"
+    "redux-decorated": "^0.2.0-dev.3",
+    "serialport": "^5.0.0"
   },
   "devDependencies": {
     "tscomp": "^0.10.0"
