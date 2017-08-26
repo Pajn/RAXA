@@ -67,7 +67,7 @@ export default class LedStripPlugin extends Plugin {
 
   private getTemp() {
     this.state
-      .list('devices', {where: {deviceClass: 'LedStrip'}})
+      .list('devices', {where: {deviceClassId: 'LedStrip'}})
       .forEach((device: LedStrip) => {
         fetch(`${device.config.host}/temp`)
           .then(res => res.text())
