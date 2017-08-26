@@ -16,6 +16,7 @@ import {
 } from './context'
 
 const Container = glamorous.div(column({flex: 1}))
+const SolidAppBar = glamorous(AppBar)({flexShrink: 0})
 
 export type ScaffoldProps = {
   appName: string
@@ -49,27 +50,21 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
   back = () => this.props.history.goBack()
 
   pushSection = (section: Section) => {
-    // if (section.path) {
-    //   this.props.history.push(section.path)
-    // }
-    this.setState({
-      sections: [section, ...this.state.sections],
-    })
+    // Set state synchronously to not drop multiple changes in the same render
+    this.state.sections = [section, ...this.state.sections]
+    this.setState({})
   }
   popSection = (title?: string) => {
     const index = title
       ? this.state.sections.findIndex(section => section.title === title)
       : 0
-    // if (back && index === 0 && this.state.sections[0].path) {
-    //   this.props.history.goBack()
-    // }
     if (index >= 0) {
-      this.setState({
-        sections: [
-          ...this.state.sections.slice(0, index),
-          ...this.state.sections.slice(index + 1),
-        ],
-      })
+      // Set state synchronously to not drop multiple changes in the same render
+      this.state.sections = [
+        ...(index > 0 ? this.state.sections.slice(0, index) : []),
+        ...this.state.sections.slice(index + 1),
+      ]
+      this.setState({})
     }
   }
   replaceSection = (newSection: Section, oldTitle?: string) => {
@@ -122,7 +117,7 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
 
     return (
       <Container>
-        <AppBar
+        <SolidAppBar
           title={activeSection ? activeSection.title : appName}
           leftIcon={activeSection && 'arrow_back'}
           onLeftIconClick={
@@ -145,6 +140,7 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
                 : contextActions[0].onClick
               : undefined
           }
+          style={{flexShrink: 0}}
         >
           {contextActions &&
             !isSingleIcon(contextActions) &&
@@ -161,7 +157,7 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
                 },
               }))}
             />}
-        </AppBar>
+        </SolidAppBar>
         {children}
       </Container>
     )

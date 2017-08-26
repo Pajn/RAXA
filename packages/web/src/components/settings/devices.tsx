@@ -87,17 +87,15 @@ export const DeviceSettingsView = ({
     }
     listHeader={
       isMobile
-        ? <Section title="Devices" onBack={history => history.goBack()}>
-            <ContextActions
-              contextActions={[
-                {
-                  icon: 'add',
-                  onClick: createNewDevice,
-                  href: '/settings/devices/new',
-                },
-              ]}
-            />
-          </Section>
+        ? <ContextActions
+            contextActions={[
+              {
+                icon: 'add',
+                onClick: createNewDevice,
+                href: '/settings/devices/new',
+              },
+            ]}
+          />
         : <ListHeader>
             <Title style={{flex: 1}}>Devices</Title>
             <IconButton icon="add" onClick={createNewDevice} />
