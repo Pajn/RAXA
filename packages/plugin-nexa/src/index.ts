@@ -111,15 +111,19 @@ export default class NexaPlugin extends Plugin {
     }).name
   }
 
-  private sendPulse(pulse: Array<number>, senderId: string) {
+  private sendPulse(
+    pulse: Array<number>,
+    senderId: string,
+    selfLearning: boolean,
+  ) {
     return this.callDevice({
       deviceId: senderId,
       interfaceId: defaultInterfaces['433MHzPulse'].id,
       method: defaultInterfaces['433MHzPulse'].methods.send.id,
       arguments: {
         pulse,
-        repeats: 8,
-        pause: 30,
+        repeats: selfLearning ? 5 : 8,
+        pause: selfLearning ? 10 : 30,
       },
     })
   }
@@ -144,6 +148,7 @@ export default class NexaPlugin extends Plugin {
       await this.sendPulse(
         codeSwitchPulse(houseCode, deviceCode, action),
         senderId,
+        false,
       ).then(() => {
         return this.dispatch(actions.statusUpdated, {
           deviceId: device.id,
@@ -185,6 +190,7 @@ export default class NexaPlugin extends Plugin {
         await this.sendPulse(
           selfLearningPulse(deviceCode, 7, DIM, dimLevel),
           senderId,
+          true,
         )
           .then(() => {
             return this.dispatch(actions.statusUpdated, {
@@ -217,6 +223,7 @@ export default class NexaPlugin extends Plugin {
       await this.sendPulse(
         selfLearningPulse(deviceCode, 7, action),
         senderId,
+        true,
       ).then(() => {
         return this.dispatch(actions.statusUpdated, {
           deviceId: device.id,
@@ -307,8 +314,8 @@ function selfLearningPulse(
   action: number,
   dimLevel?: number,
 ): Array<number> {
-  const ONE = [29, 17]
-  const ZERO = [29, 92]
+  const ONE = [25, 25]
+  const ZERO = [25, 125]
 
   let pulse = [29, 255]
 
