@@ -27,26 +27,28 @@ export type PrivateDeviceSettingsProps = DeviceSettingsProps &
     createNewDevice: () => void
   }
 
-const enhance = compose<PrivateDeviceSettingsProps, DeviceSettingsProps>(
-  graphql(gql`
-    query {
-      devices {
+export const deviceListQuery = gql`
+  query {
+    devices {
+      id
+      name
+      config
+      deviceClass {
         id
         name
         config
-        deviceClass {
-          id
-          name
-          config
-        }
-        interfaces {
-          id
-          name
-          methods
-        }
+      }
+      interfaces {
+        id
+        name
+        methods
       }
     }
-  `),
+  }
+`
+
+const enhance = compose<PrivateDeviceSettingsProps, DeviceSettingsProps>(
+  graphql(deviceListQuery),
   withState('newDevice', 'setNewDevice', null),
   withState('createNewDevice', '', props => () =>
     props.setNewDevice({interfaces: []}),

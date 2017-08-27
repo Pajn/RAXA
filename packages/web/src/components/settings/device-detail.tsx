@@ -25,6 +25,7 @@ import {StatusView} from '../properties/status'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
 import {SettingForm} from '../ui/setting-form'
 import {SettingDropdown} from '../ui/setting-input'
+import {deviceListQuery} from './devices'
 
 export type DeviceDetailSettingsProps = {
   device: GraphQlDevice
@@ -108,6 +109,7 @@ const enhance = compose(
                 config: device.config,
               },
             },
+            refetchQueries: device.id ? [] : [{query: deviceListQuery}],
           })
             .then(data => {
               if (!device.id) {
@@ -116,13 +118,14 @@ const enhance = compose(
                 )
               }
             })
-            .catch(() => {
+            .catch(e => {
               dispatch(
                 action(actions.showSnackbar, {
                   label: `Failed to save device`,
                   type: 'warning' as 'warning',
                 }),
               )
+              throw e
             })
         },
       }),
@@ -225,7 +228,7 @@ export const DeviceDetailSettingsView = ({
         },
         ...(device.deviceClass
           ? Object.entries(device.deviceClass.config!)
-              .filter(([, config]) => config.showInSettings)
+              .filter(([, config]) => config.showInSettings !== false)
               .map(([id, config]) => ({
                 path: ['config', id],
                 component: PropertyView,
