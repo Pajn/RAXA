@@ -7,6 +7,7 @@ import {
 } from 'raxa-common/lib/entities'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
+import {Dispatch, connect} from 'react-redux'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {LoadingButton} from 'react-toolbox-components'
 import {
@@ -15,8 +16,10 @@ import {
   ListSubHeader,
 } from 'react-toolbox/lib/list'
 import {compose, lifecycle, mapProps, withState} from 'recompose'
+import {action} from 'redux-decorated/dist/src'
 import {Title} from 'styled-material/lib/typography'
 import {CallDeviceInjectedProps, callDevice} from '../../lib/mutations'
+import {actions} from '../../redux-snackbar/actions'
 import {PropertyView} from '../properties/property'
 import {StatusView} from '../properties/status'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
@@ -33,6 +36,7 @@ export type PrivateDeviceDetailSettingsProps = DeviceDetailSettingsProps &
   IsMobileProps &
   CallDeviceInjectedProps &
   RouteComponentProps<any> & {
+    dispatch: Dispatch
     data: {
       device?: GraphQlDevice
       deviceClasses?: Array<GraphQlDeviceClass>
@@ -46,6 +50,7 @@ export type PrivateDeviceDetailSettingsProps = DeviceDetailSettingsProps &
 
 const enhance = compose(
   withRouter,
+  connect(),
   mapProps((props: DeviceDetailSettingsProps) => ({
     ...props,
     deviceId: props.device.id,
@@ -91,7 +96,7 @@ const enhance = compose(
       }
     `,
     {
-      props: ({mutate, ownProps: {history}}) => ({
+      props: ({mutate, ownProps: {history, dispatch}}) => ({
         saveDevice(device: Device) {
           return mutate!({
             variables: {
@@ -103,11 +108,22 @@ const enhance = compose(
                 config: device.config,
               },
             },
-          }).then(data => {
-            if (!device.id) {
-              history.replace(`/settings/devices/${data.data.upsertDevice.id}`)
-            }
           })
+            .then(data => {
+              if (!device.id) {
+                history.replace(
+                  `/settings/devices/${data.data.upsertDevice.id}`,
+                )
+              }
+            })
+            .catch(() => {
+              dispatch(
+                action(actions.showSnackbar, {
+                  label: `Failed to save device`,
+                  type: 'warning' as 'warning',
+                }),
+              )
+            })
         },
       }),
     },
