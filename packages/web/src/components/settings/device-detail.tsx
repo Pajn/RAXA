@@ -122,7 +122,7 @@ const enhance = compose(
                 ...method,
                 interfaceId: iface.id,
               }))
-            : [],
+            : [] as Array<Method>,
       ),
     ).filter(m => m.showInSettings),
   })),
@@ -208,13 +208,15 @@ export const DeviceDetailSettingsView = ({
           required: true,
         },
         ...(device.deviceClass
-          ? Object.entries(device.deviceClass.config!).map(([id, config]) => ({
-              path: ['config', id],
-              component: PropertyView,
-              label: id,
-              property: config,
-              required: !config.optional && config.modifiable,
-            }))
+          ? Object.entries(device.deviceClass.config!)
+              .filter(([, config]) => config.showInSettings)
+              .map(([id, config]) => ({
+                path: ['config', id],
+                component: PropertyView,
+                label: id,
+                property: config,
+                required: !config.optional && config.modifiable,
+              }))
           : []),
       ]}
       onSave={saveDevice}

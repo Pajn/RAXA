@@ -148,6 +148,7 @@ export interface PropertyBase {
 
   optional?: boolean
   modifiable?: boolean
+  showInSettings?: boolean
 }
 
 export interface ActionProperty extends PropertyBase {

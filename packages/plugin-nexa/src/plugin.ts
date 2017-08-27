@@ -83,6 +83,13 @@ const plugin = {
           interfaceIds: [defaultInterfaces['433MHzPulse'].id],
           modifiable: true,
         },
+        deviceCode: {
+          id: 'onLevel',
+          type: 'integer' as 'integer',
+          modifiable: false,
+          optional: false,
+          showInSettings: false,
+        },
       },
       interfaceIds: [
         defaultInterfaces.Power.id,
@@ -109,6 +116,13 @@ const plugin = {
           max: 15,
           description: 'The dim level to set while turning on the lamp',
           modifiable: true,
+        },
+        deviceCode: {
+          id: 'deviceCode',
+          type: 'integer' as 'integer',
+          modifiable: false,
+          optional: false,
+          showInSettings: false,
         },
       },
       interfaceIds: [
