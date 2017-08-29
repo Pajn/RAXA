@@ -25,7 +25,7 @@
     "inert": "^4.2.1",
     "iterates": "^0.1.0",
     "joi": "^10.6.0",
-    "nedb-persist": "^0.1.2",
+    "nedb-persist": "^0.2.1",
     "post-material": "^0.1.0",
     "redux": "^3.7.2",
     "redux-decorated": "^0.2.0",

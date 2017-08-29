@@ -5052,9 +5052,9 @@ ncname@1.0.x:
   dependencies:
     xml-char-classes "^1.0.0"
 
-nedb-persist@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/nedb-persist/-/nedb-persist-0.1.2.tgz#c48df86508a2fc1985a5b9955ca436d5538dabea"
+nedb-persist@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/nedb-persist/-/nedb-persist-0.2.1.tgz#339b870aa0d91cd8de97761e1d173e2148649b5f"
   dependencies:
     nedb "^1.6.0"
 

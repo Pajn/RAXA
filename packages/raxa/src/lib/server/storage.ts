@@ -1,3 +1,4 @@
+import Datastore from 'nedb'
 import nedb from 'nedb-persist'
 import {join} from 'path'
 import {
@@ -124,11 +125,12 @@ export class StorageService extends Service {
     this.getState = this.store.getState
 
     await new Promise(resolve => {
-      persistStore(
-        this.store,
-        {storage: nedb({filename: join(dataDir, 'db.json')}) as any},
-        resolve,
-      )
+      const db = new Datastore({
+        filename: join(dataDir, 'db.json'),
+        autoload: true,
+      })
+      db.persistence.setAutocompactionInterval(1000 * 60 * 10)
+      persistStore(this.store, {storage: nedb(db)}, resolve)
     })
 
     Object.values(defaultInterfaces).forEach(iface => {
