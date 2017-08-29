@@ -1,4 +1,5 @@
 import fetch from 'node-fetch'
+import {Queue} from 'promise-land'
 import {Device, Modification, Plugin} from 'raxa-common'
 import {Call, actions} from 'raxa-common/cjs'
 
@@ -10,6 +11,7 @@ export interface LedStrip extends Device {
 }
 
 export default class LedStripPlugin extends Plugin {
+  private executionQueue = new Queue()
   tempTimer: NodeJS.Timer
 
   start() {
@@ -61,7 +63,9 @@ export default class LedStripPlugin extends Plugin {
         repeats,
         delay,
       })
-      this.call('radio', {pulse: pulseString, repeats, delay}, device)
+      return this.executionQueue.add(async () => {
+        await this.call('radio', {pulse: pulseString, repeats, delay}, device)
+      })
     }
   }
 
@@ -113,7 +117,7 @@ export default class LedStripPlugin extends Plugin {
 
     const url = `${device.config.host}/${path}${query}`
     this.log.debug('Request:', {url})
-    fetch(url).then(res => {
+    return fetch(url).then(res => {
       this.log.debug('Response:', {
         url,
         status: res.status,
