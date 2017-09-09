@@ -52,7 +52,7 @@
   "devDependencies": {
     "react-addons-perf": "^15.4.2",
     "react-toolbox-themr": "^1.0.2",
-    "tscomp": "^0.13.0",
+    "tscomp": "^0.13.2",
     "tslint": "^5.5.0"
   },
   "tscomp": {

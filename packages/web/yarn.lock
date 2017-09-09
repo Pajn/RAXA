@@ -7586,9 +7586,9 @@ ts-loader@^2.2.2:
     loader-utils "^1.0.2"
     semver "^5.0.1"
 
-tscomp@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/tscomp/-/tscomp-0.13.0.tgz#75621c441d8ed263260182db206f00bfb035b0ff"
+tscomp@^0.13.2:
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/tscomp/-/tscomp-0.13.2.tgz#14706e72522179839d7a6b315f8cc4e876cb2c9f"
   dependencies:
     autoprefixer "^7.1.1"
     babel-core "^6.25.0"

@@ -6,11 +6,11 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@types/node": "^4.0.27-alpha",
-    "redux-decorated": "^0.2.0-dev.3",
-    "raxa-common": "*"
+    "raxa-common": "*",
+    "redux-decorated": "^0.2.0-dev.3"
   },
   "devDependencies": {
-    "tscomp": "^0.13.0"
+    "tscomp": "^0.13.2"
   },
   "tscomp": {
     "mode": "lib"

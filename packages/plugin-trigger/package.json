@@ -9,7 +9,7 @@
     "raxa-common": "*"
   },
   "devDependencies": {
-    "tscomp": "^0.13.0"
+    "tscomp": "^0.13.2"
   },
   "tscomp": {
     "mode": "lib"

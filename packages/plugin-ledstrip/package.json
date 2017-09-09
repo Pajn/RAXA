@@ -11,7 +11,7 @@
     "promise-land": "^0.1.2"
   },
   "devDependencies": {
-    "tscomp": "^0.13.0"
+    "tscomp": "^0.13.2"
   },
   "tscomp": {
     "mode": "lib"

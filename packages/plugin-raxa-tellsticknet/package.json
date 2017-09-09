@@ -14,15 +14,15 @@
   "license": "AGPL-3.0",
   "devDependencies": {
     "@types/node": "^8.0.7",
-    "tscomp": "^0.13.0",
+    "tscomp": "^0.13.2",
     "typescript": "^2.4.1"
   },
   "dependencies": {
     "eventemitter2": "^2.0.0",
     "iconv-lite": "^0.4.13",
     "promise-land": "^0.1.2",
-    "redux-decorated": "^0.2.0-dev.3",
-    "raxa-common": "*"
+    "raxa-common": "*",
+    "redux-decorated": "^0.2.0-dev.3"
   },
   "tscomp": {
     "mode": "lib"

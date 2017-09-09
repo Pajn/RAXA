@@ -13,7 +13,7 @@
     "serialport": "^5.0.0"
   },
   "devDependencies": {
-    "tscomp": "^0.10.0"
+    "tscomp": "^0.13.2"
   },
   "tscomp": {
     "mode": "lib"
