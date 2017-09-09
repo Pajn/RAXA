@@ -223,6 +223,11 @@ export class PluginSupervisor extends Service {
     if (modification.value === 'false') {
       modification.value = false
     }
+    this.log.debug('setDeviceStatus', {
+      modification,
+      deviceName: device.name,
+      pluginId: device.pluginId,
+    })
     const updatedDevice = await this.getPlugin(
       device.pluginId,
     ).onDeviceStatusModified(modification, device)
@@ -246,6 +251,11 @@ export class PluginSupervisor extends Service {
       })
     }
     // todo: validate arguments
+    this.log.debug('callDevice', {
+      call,
+      deviceName: device.name,
+      pluginId: device.pluginId,
+    })
     const updatedDevice = await this.getPlugin(device.pluginId).onDeviceCalled(
       call,
       device,
