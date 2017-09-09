@@ -29,9 +29,17 @@ WORKDIR /app
 EXPOSE 8000
 EXPOSE 9000
 
-COPY --from=build /app /app/
+COPY package.json .
+COPY yarn.lock .
+COPY lerna.json .
+COPY install.sh .
+${globby.sync(['packages/*/{package.json,yarn.lock}']).map(path =>
+  `COPY ${path} /app/${path}`
+).join('\n')}
 
 RUN SKIP_WEB=1 ./install.sh --production && yarn cache clean
+
+COPY --from=build /app /app/
 
 ENV NODE_ENV=production
 ENV RAXA_DATA_DIR=/config
