@@ -2,7 +2,7 @@
 
 yarn
 
-./node_modules/.bin/lerna bootstrap
+./node_modules/.bin/lerna bootstrap -- "$@"
 
 (
   cd packages/common
@@ -14,10 +14,13 @@ yarn
   yarn link raxa-common
 )
 
-(
-  cd packages/web
-  yarn link raxa-common
-)
+if [ "$SKIP_WEB" = "" ]
+then
+  (
+    cd packages/web
+    yarn link raxa-common
+  )
+fi
 
 (
   cd packages
