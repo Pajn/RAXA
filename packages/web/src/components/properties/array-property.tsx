@@ -54,7 +54,7 @@ const UndoContainer = glamorous.div({
   position: 'absolute',
   width: '100%',
   height: '100%',
-  zIndex: 1000,
+  zIndex: 1,
 
   backgroundColor: red[500],
 
@@ -144,6 +144,8 @@ export const ArrayInputView = ({
                               value[index].statusId)
                           ) {
                             setUndoItem({index, item: value[index]})
+                          } else {
+                            setUndoItem()
                           }
                         }}
                       />
@@ -156,7 +158,7 @@ export const ArrayInputView = ({
                     value={item}
                     onChange={updated => {
                       const newValue = updateIn(index, updated, value)
-                      replace(ids[index], newValue[index])
+                      replace(ids[i], newValue[index])
                       onChange(newValue)
                     }}
                   />

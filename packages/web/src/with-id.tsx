@@ -9,12 +9,12 @@ export type InjectedIdProps = {
 export function withIds<TOuter>(
   prop: string,
 ): ComponentEnhancer<TOuter & InjectedIdProps, TOuter> {
+  let nextId = 0
   return WrappedComponent =>
     class extends React.Component<TOuter, {}> {
       static displayName = wrapDisplayName(WrappedComponent, 'withIds')
 
       map = new WeakMap()
-      nextId = 0
 
       replace = (id, newValue) => {
         this.map.set(newValue, id)
@@ -26,7 +26,7 @@ export function withIds<TOuter>(
           if (this.map.has(value)) {
             return this.map.get(value)
           } else {
-            const id = ++this.nextId
+            const id = ++nextId
             this.map.set(value, id)
             return id
           }
