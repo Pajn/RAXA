@@ -91,7 +91,7 @@ export const ColorButton = ({
   color: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }) =>
-  <CircleButton {...props}>
+  <CircleButton type="button" {...props}>
     <div
       style={{
         width: 64,

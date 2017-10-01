@@ -9,6 +9,7 @@ import {Tab, Tabs} from 'react-toolbox/lib/tabs'
 import {compose, withState} from 'recompose'
 import {compose as fnCompose} from 'redux'
 import {row} from 'style-definitions'
+import {withThrottledMutation} from '../../with-throttled-mutation'
 import {ColorButton} from '../dashboard/widgets/ui/light-button'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
@@ -66,9 +67,16 @@ const CenteredHuePointer = props =>
 const colorSlider = (options: ColorSliderOptions) =>
   class TemperatureSlider extends React.PureComponent<ColorSliderProps> {
     container: HTMLElement | null
+    didBindStartListeners = false
+
+    componentWillMount() {
+      this.bindStartListeners()
+    }
 
     componentWillUnmount() {
       this.unbindEventListeners()
+      window.removeEventListener('mousedown', this.handleMouseDown)
+      window.removeEventListener('touchstart', this.handleTouchStart)
     }
 
     calculateChange(e, props, container) {
@@ -114,17 +122,67 @@ const colorSlider = (options: ColorSliderOptions) =>
 
     handleMouseDown = e => {
       this.handleChange(e)
-      window.addEventListener('mousemove', this.handleChange)
-      window.addEventListener('mouseup', this.handleMouseUp)
+      window.addEventListener(
+        'mousemove',
+        this.handleChange,
+        {passive: false} as any,
+      )
+      window.addEventListener(
+        'mouseup',
+        this.handleMoveEnd,
+        {passive: false} as any,
+      )
     }
 
-    handleMouseUp = () => {
+    handleTouchStart = e => {
+      this.handleChange(e)
+      window.addEventListener(
+        'touchmove',
+        this.handleChange,
+        {passive: false} as any,
+      )
+      window.addEventListener(
+        'touchend',
+        this.handleMoveEnd,
+        {passive: false} as any,
+      )
+      window.addEventListener(
+        'touchcancel',
+        this.handleMoveEnd,
+        {passive: false} as any,
+      )
+    }
+
+    handleMoveEnd = () => {
       this.unbindEventListeners()
+    }
+
+    bindStartListeners() {
+      if (!this.didBindStartListeners) {
+        if (this.container) {
+          this.didBindStartListeners = true
+          window.addEventListener(
+            'mousedown',
+            this.handleMouseDown,
+            {passive: false} as any,
+          )
+          window.addEventListener(
+            'touchstart',
+            this.handleTouchStart,
+            {passive: false} as any,
+          )
+        }
+      } else if (!this.container) {
+        this.didBindStartListeners = false
+      }
     }
 
     unbindEventListeners() {
       window.removeEventListener('mousemove', this.handleChange)
-      window.removeEventListener('mouseup', this.handleMouseUp)
+      window.removeEventListener('mouseup', this.handleMoveEnd)
+      window.removeEventListener('touchmove', this.handleChange)
+      window.removeEventListener('touchend', this.handleMoveEnd)
+      window.removeEventListener('touchcancel', this.handleMoveEnd)
     }
 
     render() {
@@ -181,10 +239,10 @@ const colorSlider = (options: ColorSliderOptions) =>
         <div style={styles.container}>
           <div
             style={styles.slider}
-            ref={container => (this.container = container)}
-            onMouseDown={this.handleMouseDown}
-            onTouchMove={this.handleChange}
-            onTouchStart={this.handleChange}
+            ref={container => {
+              this.container = container
+              this.bindStartListeners()
+            }}
           >
             <div style={styles.pointerPosition}>
               {this.props.pointer
@@ -302,6 +360,9 @@ export type PrivateColorPickerProps = ColorPickerProps & IsMobileProps
 
 export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
   withIsMobile,
+  withThrottledMutation<
+    PrivateColorPickerProps
+  >(100, 'value', 'onChange', (value, {onChange}) => onChange(value)),
 )(
   class ColorPicker extends React.Component<PrivateColorPickerProps> {
     state = {
