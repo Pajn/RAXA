@@ -14,12 +14,12 @@ export type ListDetailProps<E, T> = {
   path: string
   data?: T & {loading: boolean}
   getItems: (data: T & {loading: boolean}) => Array<E>
-  getSection: (item: E) => {title: string; path: string}
+  getSection: (item: E) => {title: string; path: string} | null
   renderItem: (
     item: E,
-    props: {isActive: boolean; activate: () => void},
+    props: {isActive: boolean; activate?: () => void},
   ) => JSX.Element
-  renderActiveItem: (item: E) => JSX.Element
+  renderActiveItem: (item: E) => JSX.Element | null
   activeItem?: {
     item: E
     section: {title: string; path: string; onUnload?: () => void}
@@ -79,7 +79,7 @@ const enhance = compose<PrivateListDetailProps, ListDetailProps<any, any>>(
         setBeenInList(true)
       }
       if (inList && !isMobile && items && items.length > 0) {
-        history.replace(items[0].section.path)
+        history.replace(items.find(i => !!i.section)!.section.path)
       }
     },
   }),
@@ -106,16 +106,20 @@ export const ListDetailView = ({
           {!items
             ? <span>loading</span>
             : items.map(item => {
-                const activate = () => {
-                  if (inList) {
-                    history.push(item.section.path)
-                  } else {
-                    history.replace(item.section.path)
-                  }
-                }
-                const isActive = !!matchPath(location.pathname, {
-                  path: item.section.path,
-                })
+                const activate = item.section
+                  ? () => {
+                      if (inList) {
+                        history.push(item.section.path)
+                      } else {
+                        history.replace(item.section.path)
+                      }
+                    }
+                  : undefined
+                const isActive = item.section
+                  ? !!matchPath(location.pathname, {
+                      path: item.section.path,
+                    })
+                  : false
                 const child = renderItem(item.item, {
                   activate,
                   isActive,
@@ -143,18 +147,21 @@ export const ListDetailView = ({
                 </Section>
               : renderActiveItem(activeItem.item)
             : items &&
-                items.map(item =>
-                  <Route
-                    location={location}
-                    key={item.section.path}
-                    path={item.section.path}
-                    render={() =>
-                      isMobile
-                        ? <Section {...item.section} onBack={onBack}>
-                            {renderActiveItem(item.item)}
-                          </Section>
-                        : renderActiveItem(item.item)}
-                  />,
+                items.map(
+                  item =>
+                    item.section
+                      ? <Route
+                          location={location}
+                          key={item.section.path}
+                          path={item.section.path}
+                          render={() =>
+                            isMobile
+                              ? <Section {...item.section} onBack={onBack}>
+                                  {renderActiveItem(item.item)}
+                                </Section>
+                              : renderActiveItem(item.item)}
+                        />
+                      : null,
                 )}
         </Detail>}
     </Container>
