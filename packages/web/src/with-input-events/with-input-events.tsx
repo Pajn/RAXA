@@ -61,10 +61,9 @@ export const inputEventsContext: {
   cancelInputListeners: PropTypes.func,
 }
 
-export const withInputEvents = getContext<
-  InjectedInputEventsProps,
-  InjectedInputEventsProps
->(inputEventsContext)
+export const withInputEvents = getContext<InjectedInputEventsProps>(
+  inputEventsContext,
+)
 
 type InputEventContainerEnhancer = <T>(
   component: React.ComponentType<T & InjectedInputEventsContainerProps>,

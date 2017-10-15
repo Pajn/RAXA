@@ -362,27 +362,16 @@ export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
           <div style={styles.swatch} onClick={this.handleClick}>
             <div style={styles.color} />
           </div>
-          {this.props.isMobile && (
-            <StyledDialog
-              active={this.state.displayColorPicker}
-              onEscKeyDown={this.handleClose}
-              onOverlayClick={this.handleClose}
-            >
-              <LightningColorPicker
-                color={{r: red, g: green, b: blue}}
-                onChange={this.handleChange}
-              />
-            </StyledDialog>
-          )}
-          {!this.props.isMobile && this.state.displayColorPicker ? (
-            <div style={styles.popover}>
-              <div style={styles.cover} onClick={this.handleClose} />
-              <LightningColorPicker
-                color={{r: red, g: green, b: blue}}
-                onChange={this.handleChange}
-              />
-            </div>
-          ) : null}
+          <StyledDialog
+            active={this.state.displayColorPicker}
+            onEscKeyDown={this.handleClose}
+            onOverlayClick={this.handleClose}
+          >
+            <LightningColorPicker
+              color={{r: red, g: green, b: blue}}
+              onChange={this.handleChange}
+            />
+          </StyledDialog>
         </div>
       )
     }

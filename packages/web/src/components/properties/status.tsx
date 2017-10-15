@@ -46,31 +46,22 @@ export const StatelessStatusView = ({
   value,
   label,
   setDeviceStatus,
-}: PrivateStatusProps) =>
+}: PrivateStatusProps) => (
   <div>
     {data &&
       data.interface &&
       data.interface.status &&
       data.interface.status[statusId] &&
-      (interfaceId === defaultInterfaces.Color.id
-        ? <div style={{...row({vertical: 'center'}), padding: '0 16px'}}>
-            <span style={{paddingRight: 8}}>Color</span>
-            <ColorPicker
-              value={value}
-              onChange={value => {
-                setDeviceStatus(id, {
-                  deviceId,
-                  interfaceId,
-                  statusId,
-                  value,
-                })
-              }}
-            />
-          </div>
-        : <PropertyView
-            property={data.interface.status[statusId]}
+      (interfaceId === defaultInterfaces.Color.id ? (
+        <div
+          style={{
+            ...(row({vertical: 'center'}) as React.CSSProperties),
+            padding: '0 16px',
+          }}
+        >
+          <span style={{paddingRight: 8}}>Color</span>
+          <ColorPicker
             value={value}
-            label={label}
             onChange={value => {
               setDeviceStatus(id, {
                 deviceId,
@@ -79,7 +70,24 @@ export const StatelessStatusView = ({
                 value,
               })
             }}
-          />)}
+          />
+        </div>
+      ) : (
+        <PropertyView
+          property={data.interface.status[statusId]}
+          value={value}
+          label={label}
+          onChange={value => {
+            setDeviceStatus(id, {
+              deviceId,
+              interfaceId,
+              statusId,
+              value,
+            })
+          }}
+        />
+      ))}
   </div>
+)
 
 export const StatusView = enhance(StatelessStatusView)

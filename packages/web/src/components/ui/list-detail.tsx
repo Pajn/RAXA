@@ -18,6 +18,7 @@ export type ListDetailProps<E, T> = {
   renderItem: (
     item: E,
     props: {isActive: boolean; activate?: () => void},
+    index: number,
   ) => JSX.Element
   renderActiveItem: (item: E) => JSX.Element | null
   activeItem?: {
@@ -105,7 +106,7 @@ export const ListDetailView = ({
           {listHeader}
           {!items
             ? <span>loading</span>
-            : items.map(item => {
+            : items.map((item, index) => {
                 const activate = item.section
                   ? () => {
                       if (inList) {
@@ -120,10 +121,14 @@ export const ListDetailView = ({
                       path: item.section.path,
                     })
                   : false
-                const child = renderItem(item.item, {
-                  activate,
-                  isActive,
-                })
+                const child = renderItem(
+                  item.item,
+                  {
+                    activate,
+                    isActive,
+                  },
+                  index,
+                )
 
                 if (!child) return child
                 const c = child as React.ReactElement<any>
@@ -148,11 +153,11 @@ export const ListDetailView = ({
               : renderActiveItem(activeItem.item)
             : items &&
                 items.map(
-                  item =>
+                  (item, index) =>
                     item.section
                       ? <Route
                           location={location}
-                          key={item.section.path}
+                          key={index}
                           path={item.section.path}
                           render={() =>
                             isMobile

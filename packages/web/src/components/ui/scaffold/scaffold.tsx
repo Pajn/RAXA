@@ -143,20 +143,21 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
           style={{flexShrink: 0}}
         >
           {contextActions &&
-            !isSingleIcon(contextActions) &&
-            <Navigation
-              type="horizontal"
-              actions={contextActions.map<ButtonProps>(action => ({
-                ...action,
-                inverse: true,
-                style: {
-                  marginRight: -12,
-                  minWidth: 0,
-                  color: action.disabled ? grey[500] : undefined,
-                  background: action.disabled ? 'transparent' : undefined,
-                },
-              }))}
-            />}
+            !isSingleIcon(contextActions) && (
+              <Navigation
+                type="horizontal"
+                actions={contextActions.map<ButtonProps>(action => ({
+                  ...action,
+                  inverse: true,
+                  style: {
+                    marginRight: -12,
+                    minWidth: 0,
+                    color: action.disabled ? grey[500] : undefined,
+                    background: action.disabled ? 'transparent' : undefined,
+                  },
+                }))}
+              />
+            )}
         </SolidAppBar>
         {children}
       </Container>

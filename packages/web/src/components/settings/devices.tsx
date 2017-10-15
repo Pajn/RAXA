@@ -20,10 +20,13 @@ const IconButton: any = BadIconButton
 const ListHeader = glamorous.div(row({vertical: 'center'}))
 const ListSubHeader = glamorous(
   (BadListSubHeader as any) as (typeof BadListSubHeader)['ListSubHeader'],
-)({
-  paddingLeft: '0 !important',
-  'div[role="button"] + &': {margin: '0 !important'},
-})
+)(({isMobile}: {isMobile: boolean}) => ({
+  paddingLeft: isMobile ? '' : '0 !important',
+  'div + div>&': {
+    margin: '0 !important',
+    borderTop: isMobile ? `1px solid rgba(0, 0, 0, 0.12)` : '',
+  },
+}))
 
 export type DeviceSettingsProps = {}
 export type ListGraphQlData = {devices: Array<GraphQlDevice>}
@@ -59,8 +62,11 @@ export const deviceListQuery = gql`
 const enhance = compose<PrivateDeviceSettingsProps, DeviceSettingsProps>(
   graphql(deviceListQuery),
   withState('newDevice', 'setNewDevice', null),
-  withState('createNewDevice', '', props => () =>
-    props.setNewDevice({type: 'device', value: {interfaces: []}}),
+  // Using withState instead of mapProps or withProps as we want to create only one
+  // function instance isntead of a new one for every render to avoid infinite recursion
+  // due to always changing context
+  withState('createNewDevice', '', (props: PrivateDeviceSettingsProps) => () =>
+    props.setNewDevice({type: 'device', value: {interfaces: []} as any}),
   ),
   withIsMobile,
 )
@@ -117,7 +123,7 @@ export const DeviceSettingsView = ({
   createNewDevice,
   setNewDevice,
   isMobile,
-}: PrivateDeviceSettingsProps) =>
+}: PrivateDeviceSettingsProps) => (
   <DeviceList
     path="/settings/devices"
     data={data}
@@ -129,14 +135,18 @@ export const DeviceSettingsView = ({
             path: `/settings/devices/${item.value.id}`,
           }
         : null}
-    renderItem={item =>
-      item.type === 'device'
-        ? <ListItem key={item.value.id} caption={item.value.name} />
-        : <ListSubHeader caption={item.value} />}
+    renderItem={(item, _, index) =>
+      item.type === 'device' ? (
+        <ListItem key={index} caption={item.value.name} />
+      ) : (
+        <div key={index}>
+          <ListSubHeader caption={item.value} isMobile={isMobile} />
+        </div>
+      )}
     renderActiveItem={item =>
-      item.type === 'device'
-        ? <DeviceDetailSettings device={item.value} />
-        : null}
+      item.type === 'device' ? (
+        <DeviceDetailSettings device={item.value} />
+      ) : null}
     activeItem={
       newDevice && {
         item: newDevice,
@@ -148,21 +158,24 @@ export const DeviceSettingsView = ({
       }
     }
     listHeader={
-      isMobile
-        ? <ContextActions
-            contextActions={[
-              {
-                icon: 'add',
-                onClick: createNewDevice,
-                href: '/settings/devices/new',
-              },
-            ]}
-          />
-        : <ListHeader>
-            <Title style={{flex: 1}}>Devices</Title>
-            <IconButton icon="add" onClick={createNewDevice} />
-          </ListHeader>
+      isMobile ? (
+        <ContextActions
+          contextActions={[
+            {
+              icon: 'add',
+              onClick: createNewDevice,
+              href: '/settings/devices/new',
+            },
+          ]}
+        />
+      ) : (
+        <ListHeader>
+          <Title style={{flex: 1}}>Devices</Title>
+          <IconButton icon="add" onClick={createNewDevice} />
+        </ListHeader>
+      )
     }
   />
+)
 
 export const DeviceSettings = enhance(DeviceSettingsView)

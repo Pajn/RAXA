@@ -16,7 +16,7 @@ import {
   ListSubHeader,
 } from 'react-toolbox/lib/list'
 import {compose, lifecycle, mapProps, withState} from 'recompose'
-import {action} from 'redux-decorated/dist/src'
+import {action} from 'redux-decorated'
 import {Title} from 'styled-material/lib/typography'
 import {CallDeviceInjectedProps, callDevice} from '../../lib/mutations'
 import {actions} from '../../redux-snackbar/actions'
@@ -133,7 +133,7 @@ const enhance = compose(
   ),
   mapProps((props: PrivateDeviceDetailSettingsProps) => ({
     ...props,
-    methods: flatten(
+    methods: flatten<Method>(
       props.tmpDevice.interfaces.map(
         iface =>
           iface.methods

@@ -4,29 +4,23 @@ import React from 'react'
 import {RTCard} from '../../../../toolbox/theme.js'
 
 export const CircleButton = glamorous(
-  ({big: _, ...props}: {big?: boolean} & React.HTMLProps<HTMLButtonElement>) =>
+  ({
+    big: _,
+    ...props,
+  }: {big?: boolean} & React.HTMLProps<HTMLButtonElement>) => (
     <button
       {...props}
       className={`${RTCard.card} ${props.className}`}
       onMouseUp={e => {
-        const target = e.target as HTMLButtonElement
-        const isMouse = e.screenX || e.screenY
+        const target = e.currentTarget as HTMLButtonElement
         target.blur()
-        setTimeout(() => {
-          if (isMouse) {
-          }
-        }, 10)
-        if (props.onClick) {
-          {
-            /*props.onClick(e)*/
-          }
-        }
       }}
-    />,
+    />
+  ),
 )(({big}: {big?: boolean}) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  display: 'flex' as 'flex',
+  alignItems: 'center' as 'center',
+  justifyContent: 'center' as 'center',
 
   border: '4px solid white',
 
@@ -53,7 +47,7 @@ export const DimButton = ({
 }: {
   color?: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
-}) =>
+}) => (
   <CircleButton {...props}>
     <svg width="100%" height="100%">
       <path
@@ -62,6 +56,7 @@ export const DimButton = ({
       />
     </svg>
   </CircleButton>
+)
 
 export const DimLevelButton = ({
   color = purple[500],
@@ -71,7 +66,7 @@ export const DimLevelButton = ({
   color?: string
   level: number
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
-}) =>
+}) => (
   <CircleButton {...props}>
     <div
       style={{
@@ -82,6 +77,7 @@ export const DimLevelButton = ({
       }}
     />
   </CircleButton>
+)
 
 export const ColorButton = ({
   color,
@@ -90,7 +86,7 @@ export const ColorButton = ({
   big?: boolean
   color: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
-}) =>
+}) => (
   <CircleButton type="button" {...props}>
     <div
       style={{
@@ -100,3 +96,4 @@ export const ColorButton = ({
       }}
     />
   </CircleButton>
+)

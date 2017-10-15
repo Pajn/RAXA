@@ -5,7 +5,7 @@ import {Dispatch, connect} from 'react-redux'
 import {List, ListItem} from 'react-toolbox/lib/list'
 import Switch, {SwitchProps} from 'react-toolbox/lib/switch/Switch'
 import {compose} from 'recompose'
-import {action} from 'redux-decorated/dist/src'
+import {action} from 'redux-decorated'
 import {actions} from '../../redux-snackbar/actions'
 
 export type PluginSettingsProps = {}

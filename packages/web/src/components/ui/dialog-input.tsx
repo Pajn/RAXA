@@ -27,8 +27,8 @@ const enhance = compose<PrivateDialogInputProps, DialogInputProps>(
   withState('dialogActive', 'setShowDialog', false),
   withState('tmpValue', 'setTmpValue', null),
   withHandlers<
-    PrivateDialogInputProps,
-    PrivateDialogInputProps & {setShowDialog: (active: boolean) => void}
+    PrivateDialogInputProps & {setShowDialog: (active: boolean) => void},
+    PrivateDialogInputProps
   >({
     setTmpValue: props => value => props.setTmpValue(value),
     showDialog: props => () => {
@@ -51,7 +51,7 @@ export const DialogInputView = ({
   tmpValue,
   setTmpValue,
   children,
-}: PrivateDialogInputProps) =>
+}: PrivateDialogInputProps) => (
   <ListItem
     caption={label}
     leftActions={[]}
@@ -84,5 +84,6 @@ export const DialogInputView = ({
       </Dialog>,
     ]}
   />
+)
 
 export const DialogInput = enhance(DialogInputView)

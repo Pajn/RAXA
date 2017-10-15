@@ -1,13 +1,36 @@
-import React from 'react'
+import React, {CSSProperties, ReactChild} from 'react'
 import {Checkbox} from 'react-toolbox/lib/checkbox'
 import {Dropdown} from 'react-toolbox/lib/dropdown'
 import {Input} from 'react-toolbox/lib/input'
-import {ListCheckbox, ListItem, ListItemLayout} from 'react-toolbox/lib/list'
+import {ListCheckbox} from 'react-toolbox/lib/list'
 import {Slider} from 'react-toolbox/lib/slider'
 import {withState} from 'recompose'
 import {compose} from 'recompose'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
+
+const ListItem = ({
+  style,
+  children,
+}: {
+  style?: CSSProperties
+  children?: ReactChild | Array<ReactChild>
+}) => (
+  <div style={{display: 'flex', padding: '0 16px', ...style}}>{children}</div>
+)
+
+const ListItemLayout = ({
+  caption,
+  legend,
+}: {
+  caption: ReactChild
+  legend: ReactChild
+}) => (
+  <ListItem style={{flexDirection: 'column'}}>
+    <div style={{fontSize: 16, color: '#212121'}}>{caption}</div>
+    <div style={{paddingTop: 3, fontSize: 14, color: '#757575'}}>{legend}</div>
+  </ListItem>
+)
 
 const round = (decimals: number, value: number) =>
   Math.round(value * 10 ** decimals) / 10 ** decimals
@@ -40,27 +63,26 @@ export const SettingInputView = ({
   unit,
   isMobile,
 }: PrivateSettingInputProps) =>
-  isMobile
-    ? <DialogInput
+  isMobile ? (
+    <DialogInput
+      label={label}
+      value={value || ''}
+      onChange={onChange}
+      unit={unit}
+      children={(value, setValue) => (
+        <Input type={type} value={value} onChange={setValue} />
+      )}
+    />
+  ) : (
+    <ListItem>
+      <Input
         label={label}
+        type={type}
         value={value || ''}
         onChange={onChange}
-        unit={unit}
-        children={(value, setValue) =>
-          <Input type={type} value={value} onChange={setValue} />}
       />
-    : <ListItemLayout
-        leftActions={[]}
-        rightActions={[]}
-        itemContent={
-          <Input
-            label={label}
-            type={type}
-            value={value || ''}
-            onChange={onChange}
-          />
-        }
-      />
+    </ListItem>
+  )
 
 export const SettingInput = enhance(SettingInputView) as React.ComponentClass<
   SettingInputProps
@@ -84,19 +106,19 @@ export const SettingCheckboxView = ({
   disabled,
   isMobile,
 }: PrivateSettingCheckboxProps) =>
-  isMobile
-    ? <ListCheckbox
-        caption={label}
-        checked={value}
-        onChange={onChange}
-        disabled={disabled}
-      />
-    : <Checkbox
-        caption={label}
-        checked={value}
-        onChange={onChange}
-        disabled={disabled}
-      />
+  isMobile ? (
+    <ListCheckbox
+      caption={label}
+      checked={value}
+      onChange={onChange}
+      disabled={disabled}
+    />
+  ) : (
+    <ListItem>
+      <span style={{paddingRight: 4}}>{label}</span>
+      <Checkbox checked={value} onChange={onChange} disabled={disabled} />
+    </ListItem>
+  )
 
 export const SettingCheckbox = enhance(
   SettingCheckboxView,
@@ -118,27 +140,26 @@ export const SettingDropdownView = ({
   onChange,
   isMobile,
 }: PrivateSettingDropdownProps) =>
-  isMobile
-    ? <DialogInput
+  isMobile ? (
+    <DialogInput
+      label={label}
+      value={value}
+      onChange={onChange}
+      legend={(source.find(s => s.value === value) || {label: ''}).label}
+      children={(value, setValue) => (
+        <Dropdown source={source} value={value || ''} onChange={setValue} />
+      )}
+    />
+  ) : (
+    <ListItem>
+      <Dropdown
+        source={source}
         label={label}
-        value={value}
+        value={value || ''}
         onChange={onChange}
-        legend={(source.find(s => s.value === value) || {label: ''}).label}
-        children={(value, setValue) =>
-          <Dropdown source={source} value={value || ''} onChange={setValue} />}
       />
-    : <ListItemLayout
-        leftActions={[]}
-        rightActions={[]}
-        itemContent={
-          <Dropdown
-            source={source}
-            label={label}
-            value={value || ''}
-            onChange={onChange}
-          />
-        }
-      />
+    </ListItem>
+  )
 
 export const SettingDropdown = enhance(
   SettingDropdownView,
@@ -175,51 +196,52 @@ export const SettingSliderView = ({
   tmpValue,
   setTmpValue,
 }: PrivateSettingSliderProps) =>
-  isMobile
-    ? <DialogInput
-        label={label}
-        value={+value || 0}
-        onChange={onChange}
-        unit={unit}
-        legend={
-          unit
+  isMobile ? (
+    <DialogInput
+      label={label}
+      value={+value || 0}
+      onChange={onChange}
+      unit={unit}
+      legend={
+        unit
+          ? `${autoRound(min, max, value)} ${unit}`
+          : `${asPercent(min, max, +value)} %`
+      }
+      children={(value, setValue) => (
+        <div>
+          <Slider
+            value={value}
+            onChange={setValue}
+            max={max}
+            min={min}
+            step={step}
+          />
+          {unit
             ? `${autoRound(min, max, value)} ${unit}`
-            : `${asPercent(min, max, +value)} %`
-        }
-        children={(value, setValue) =>
-          <div>
-            <Slider
-              value={value}
-              onChange={setValue}
-              max={max}
-              min={min}
-              step={step}
-            />
-            {unit
-              ? `${autoRound(min, max, value)} ${unit}`
-              : `${asPercent(min, max, +value)} %`}
-          </div>}
-      />
-    : <ListItemLayout
-        caption={label}
-        leftActions={[]}
-        rightActions={[]}
-        legend={
-          (
-            <Slider
-              value={(tmpValue === undefined ? +value : tmpValue) || 0}
-              onChange={setTmpValue}
-              onDragStop={() => {
-                setTmpValue(undefined)
-                onChange(tmpValue)
-              }}
-              max={max}
-              min={min}
-              step={step}
-            />
-          ) as any
-        }
-      />
+            : `${asPercent(min, max, +value)} %`}
+        </div>
+      )}
+    />
+  ) : (
+    <ListItemLayout
+      caption={label}
+      legend={
+        (
+          <Slider
+            value={(tmpValue === undefined ? +value : tmpValue) || 0}
+            onChange={setTmpValue}
+            onDragStop={() => {
+              setTmpValue(undefined)
+              onChange(tmpValue)
+            }}
+            max={max}
+            min={min}
+            step={step}
+          />
+        ) as any
+      }
+    />
+  )
 
 export const SettingSlider = enhanceSlider(
   SettingSliderView,
@@ -241,24 +263,20 @@ export const SettingValueView = ({
   unit,
   isMobile,
 }: PrivateSettingValueProps) =>
-  isMobile
-    ? <ListItem
-        caption={label}
-        legend={unit ? `${value} ${unit}` : `${value}`}
-        leftActions={[]}
-        rightActions={[]}
+  isMobile ? (
+    <ListItemLayout
+      caption={label}
+      legend={unit ? `${value} ${unit}` : `${value}`}
+    />
+  ) : (
+    <ListItem>
+      <Input
+        label={label}
+        value={unit ? `${value} ${unit}` : `${value}`}
+        disabled
       />
-    : <ListItem
-        leftActions={[]}
-        rightActions={[]}
-        itemContent={
-          <Input
-            label={label}
-            value={unit ? `${value} ${unit}` : `${value}`}
-            disabled
-          />
-        }
-      />
+    </ListItem>
+  )
 
 export const SettingValue = enhance(SettingValueView) as React.ComponentClass<
   SettingValueProps

@@ -53,7 +53,7 @@ const SettingsList = ListDetail as React.StatelessComponent<
   >
 >
 
-export const SettingsView = ({isMobile}: PrivateSettingsProps) =>
+export const SettingsView = ({isMobile}: PrivateSettingsProps) => (
   <SettingsList
     path="/settings"
     data={{loading: false}}
@@ -65,16 +65,22 @@ export const SettingsView = ({isMobile}: PrivateSettingsProps) =>
       title: setting.name,
       path: `/settings/${setting.url}`,
     })}
-    renderItem={setting =>
-      <ListItem key={setting.url} caption={setting.name} />}
+    renderItem={setting => (
+      <ListItem key={setting.url} caption={setting.name} />
+    )}
     renderActiveItem={setting => <setting.component />}
     listHeader={
-      isMobile
-        ? <Section title="Settings" onBack={history => history.goBack()} />
-        : <ListHeader>
+      isMobile ? (
+        <Section title="Settings" onBack={history => history.goBack()} />
+      ) : (
+        <Section title="Settings" onBack={history => history.goBack()}>
+          <ListHeader>
             <Title style={{flex: 1}}>Settings</Title>
           </ListHeader>
+        </Section>
+      )
     }
   />
+)
 
 export const Settings = enhance(SettingsView)
