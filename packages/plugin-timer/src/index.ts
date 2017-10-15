@@ -1,5 +1,6 @@
 import {Job, scheduleJob} from 'node-schedule'
 import {Action, Device, Plugin} from 'raxa-common'
+import plugin from './plugin'
 
 export interface Timer extends Device {
   config: {
@@ -15,15 +16,13 @@ export default class TimerPlugin extends Plugin {
   start() {
     const timers: Array<Timer> = this.state.list('devices', {
       where: {
-        pluginId: 'Timer',
-        deviceClassId: 'Timer',
+        pluginId: plugin.id,
+        deviceClassId: plugin.deviceClasses.Timer.id,
       },
     })
 
     timers.forEach(timer => {
-      this.jobs[timer.id] = scheduleJob(timer.config.cron, () =>
-        this.fireTimer(timer),
-      )
+      this.scheduleTimer(timer)
     })
   }
 
@@ -35,18 +34,26 @@ export default class TimerPlugin extends Plugin {
   }
 
   onDeviceCreated(timer: Timer) {
-    this.jobs[timer.id] = scheduleJob(timer.config.cron, () =>
-      this.fireTimer(timer),
-    )
+    this.scheduleTimer(timer)
   }
 
   onDeviceUpdated(timer: Timer) {
+    this.scheduleTimer(timer)
+  }
+
+  private scheduleTimer(timer: Timer) {
     if (this.jobs[timer.id]) {
       this.jobs[timer.id].cancel()
     }
-    this.jobs[timer.id] = scheduleJob(timer.config.cron, () =>
-      this.fireTimer(timer),
-    )
+    this.jobs[timer.id] = scheduleJob(timer.config.cron, () => {
+      const nextInvocation = this.jobs[timer.id].nextInvocation().toISOString()
+      this.log.debug(
+        `Timer ${timer.name} fired. Next invocation on ${nextInvocation}`,
+      )
+      this.fireTimer(timer)
+    })
+    const nextInvocation = this.jobs[timer.id].nextInvocation().toISOString()
+    this.log.info(`Scheduled timer ${timer.name} to run on ${nextInvocation}`)
   }
 
   private fireTimer(timer: Timer) {
