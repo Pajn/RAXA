@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "eventemitter2": "^2.0.0",
-    "redux-decorated": "^0.2.0-dev.3",
     "raxa-common": "*",
-    "raxa-plugin-raxa-tellsticknet": "*"
+    "raxa-plugin-raxa-tellsticknet": "0.1.0",
+    "redux-decorated": "^0.2.0-dev.3"
   },
   "tscomp": {
     "mode": "lib"

@@ -7,7 +7,7 @@
   "dependencies": {
     "@types/node": "^8.0.15",
     "color-js": "^1.0.4",
-    "raxa-common": "*"
+    "raxa-common": "0.1.0"
   },
   "devDependencies": {
     "tscomp": "^0.13.2"

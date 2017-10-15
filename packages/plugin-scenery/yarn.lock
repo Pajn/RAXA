@@ -5727,9 +5727,8 @@ range-parser@^1.0.3, range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
 
-raxa-common@*:
+raxa-common@../common:
   version "0.1.0"
-  resolved "https://registry.yarnpkg.com/raxa-common/-/raxa-common-0.1.0.tgz#bc0e379c321df879a605858654baeec5746a403b"
   dependencies:
     "@types/jest" "19.2.2"
     "@types/joi" "^10.0.1"

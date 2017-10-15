@@ -10,7 +10,7 @@
     "@types/node-schedule": "^1.2.0",
     "node-fetch": "^1.7.1",
     "node-schedule": "^1.2.3",
-    "raxa-common": "*"
+    "raxa-common": "0.1.0"
   },
   "devDependencies": {
     "tscomp": "^0.13.2"

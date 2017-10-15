@@ -19,6 +19,14 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
+"@types/jest@19.2.2":
+  version "19.2.2"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-19.2.2.tgz#71f428be2fa6eb9f15bb0abc3cade67905f94839"
+
+"@types/joi@^10.0.1":
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/@types/joi/-/joi-10.4.3.tgz#1d82cd9a79194f3dd0685d5d2c220a77a9c0776b"
+
 "@types/node-fetch@^1.6.7":
   version "1.6.7"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-1.6.7.tgz#521078e8f0c69a158e5022005aca92d2620f6d57"
@@ -28,6 +36,10 @@
 "@types/node@*", "@types/node@^4.0.27-alpha":
   version "4.2.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-4.2.11.tgz#869d379530cd2fda2ca7ba3252a5177ac813848f"
+
+"@types/ramda@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.0.5.tgz#8b381e3363de9db3cb89d3b62f23b73cfb56bc0b"
 
 "@types/source-map@*":
   version "0.5.1"
@@ -42,6 +54,14 @@
   resolved "https://registry.yarnpkg.com/@types/uglify-js/-/uglify-js-2.6.29.tgz#521347f69e20201d218f5991ae66e10878afcf1a"
   dependencies:
     "@types/source-map" "*"
+
+"@types/webpack@2.2.13":
+  version "2.2.13"
+  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-2.2.13.tgz#551e6d6cf58927f1cd6052cf192912afee64e11c"
+  dependencies:
+    "@types/node" "*"
+    "@types/tapable" "*"
+    "@types/uglify-js" "*"
 
 "@types/webpack@^3.0.5":
   version "3.0.10"
@@ -2171,6 +2191,10 @@ event-stream@~3.3.0:
     stream-combiner "~0.0.4"
     through "~2.3.1"
 
+eventemitter2@^2.0.0:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-2.2.2.tgz#407ea71c2020cd57538203ab7e7a6bdcfb7692d5"
+
 eventemitter3@1.x.x:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
@@ -3043,6 +3067,10 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
+hoek@4.x.x:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.0.tgz#72d9d0754f7fe25ca2d01ad8f8f9a9449a89526d"
+
 home-or-tmp@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/home-or-tmp/-/home-or-tmp-2.0.0.tgz#e36c3f2d2cae7d746a857e38d18d5f32a7882db8"
@@ -3517,6 +3545,10 @@ isarray@1.0.0, isarray@^1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
 
+isemail@2.x.x:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/isemail/-/isemail-2.2.1.tgz#0353d3d9a62951080c262c2aa0a42b8ea8e9e2a6"
+
 isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
@@ -3597,6 +3629,10 @@ istanbul-reports@^1.1.1:
   resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-1.1.1.tgz#042be5c89e175bc3f86523caab29c014e77fee4e"
   dependencies:
     handlebars "^4.0.3"
+
+items@2.x.x:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/items/-/items-2.1.1.tgz#8bd16d9c83b19529de5aea321acaada78364a198"
 
 jest-changed-files@^20.0.3:
   version "20.0.3"
@@ -3808,6 +3844,15 @@ jest@^20.0.4:
   resolved "https://registry.yarnpkg.com/jest/-/jest-20.0.4.tgz#3dd260c2989d6dad678b1e9cc4d91944f6d602ac"
   dependencies:
     jest-cli "^20.0.4"
+
+joi@^10.4.1:
+  version "10.6.0"
+  resolved "https://registry.yarnpkg.com/joi/-/joi-10.6.0.tgz#52587f02d52b8b75cdb0c74f0b164a191a0e1fc2"
+  dependencies:
+    hoek "4.x.x"
+    isemail "2.x.x"
+    items "2.x.x"
+    topo "2.x.x"
 
 js-base64@^2.1.9:
   version "2.1.9"
@@ -5504,6 +5549,10 @@ querystringify@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-1.0.0.tgz#6286242112c5b712fa654e526652bf6a13ff05cb"
 
+ramda@^0.23.0:
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.23.0.tgz#ccd13fff73497a93974e3e86327bfd87bd6e8e2b"
+
 randomatic@^1.1.3:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/randomatic/-/randomatic-1.1.7.tgz#c7abe9cc8b87c0baa876b19fde83fd464797e38c"
@@ -5520,6 +5569,18 @@ randombytes@^2.0.0, randombytes@^2.0.1:
 range-parser@^1.0.3, range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
+
+raxa-common@../common:
+  version "0.1.0"
+  dependencies:
+    "@types/jest" "19.2.2"
+    "@types/joi" "^10.0.1"
+    "@types/ramda" "^0.0.5"
+    "@types/webpack" "2.2.13"
+    eventemitter2 "^2.0.0"
+    joi "^10.4.1"
+    ramda "^0.23.0"
+    redux-decorated "^0.2.0-dev.3"
 
 rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
   version "1.2.1"
@@ -5657,6 +5718,10 @@ reduce-function-call@^1.0.1:
   resolved "https://registry.yarnpkg.com/reduce-function-call/-/reduce-function-call-1.0.2.tgz#5a200bf92e0e37751752fe45b0ab330fd4b6be99"
   dependencies:
     balanced-match "^0.4.2"
+
+redux-decorated@^0.2.0-dev.3:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/redux-decorated/-/redux-decorated-0.2.0.tgz#544e8aa6cbd53fb1edc8694459bbc3660088af79"
 
 regenerate@^1.2.1:
   version "1.3.2"
@@ -6526,6 +6591,12 @@ to-string-tag-x@^1.1.1, to-string-tag-x@^1.2.0:
   dependencies:
     lodash.isnull "^3.0.0"
     validate.io-undefined "^1.0.3"
+
+topo@2.x.x:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/topo/-/topo-2.0.2.tgz#cd5615752539057c0dc0491a621c3bc6fbe1d182"
+  dependencies:
+    hoek "4.x.x"
 
 toposort@^1.0.0:
   version "1.0.3"

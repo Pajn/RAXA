@@ -5,11 +5,12 @@ FROM node:8-alpine as build
 WORKDIR /app
 
 COPY package.json .
+COPY .yarnrc .
 COPY yarn.lock .
 COPY lerna.json .
 COPY install.sh .
 ${globby.sync(['packages/*/{package.json,yarn.lock}']).map(path =>
-  `COPY ${path} /app/${path}`
+`COPY ${path} /app/${path}`
 ).join('\n')}
 
 RUN ./install.sh && yarn cache clean
@@ -30,11 +31,12 @@ EXPOSE 8000
 EXPOSE 9000
 
 COPY package.json .
+COPY .yarnrc .
 COPY yarn.lock .
 COPY lerna.json .
 COPY install.sh .
 ${globby.sync(['packages/*/{package.json,yarn.lock}']).map(path =>
-  `COPY ${path} /app/${path}`
+`COPY ${path} /app/${path}`
 ).join('\n')}
 
 RUN SKIP_WEB=1 ./install.sh --production && yarn cache clean
