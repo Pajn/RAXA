@@ -10,6 +10,7 @@ import {Service} from './service'
 
 export abstract class Plugin extends Service {
   definition: PluginDefinition
+  config: {sslCert?: string; sslKey?: string}
 
   fireEvent: (interfaceId: string, eventId: string, data?: any) => Promise<void>
   listenOn: (

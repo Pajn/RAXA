@@ -13,7 +13,7 @@ import {
 } from 'raxa-common/cjs'
 import {ServiceImplementation} from 'raxa-common/cjs/service'
 import {validateAction} from 'raxa-common/cjs/validations'
-import {production} from '../config'
+import {production, sslCert, sslKey} from '../config'
 import {pubsub} from '../graphql/schema'
 import {StorageService} from './storage'
 
@@ -23,6 +23,9 @@ class PluginManager extends ServiceManager {
 
   configureService(service: ServiceImplementation, plugin: Plugin) {
     super.configureService(service, plugin)
+
+    plugin.config = {sslCert, sslKey}
+
     plugin.upsertDevice = (device: Device) => {
       const storage = (this.supervisor.serviceManager.runningServices
         .StorageService as any) as StorageService

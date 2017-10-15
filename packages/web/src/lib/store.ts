@@ -6,15 +6,18 @@ import {
 } from 'subscriptions-transport-ws'
 import {snackbarReducer} from '../redux-snackbar/reducer'
 
+const ssl = location.protocol === 'https:'
+const port = ssl ? 9001 : 9000
+
 const wsClient = new SubscriptionClient(
-  `ws://${location.hostname}:9000/subscriptions`,
+  `${ssl ? 'wss' : 'ws'}://${location.hostname}:${port}/subscriptions`,
   {
     reconnect: true,
   },
 )
 
 const networkInterface = createNetworkInterface({
-  uri: `http://${location.hostname}:9000/graphql`,
+  uri: `${ssl ? 'https' : 'http'}://${location.hostname}:${port}/graphql`,
 })
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   networkInterface,
@@ -25,12 +28,10 @@ export const client = new ApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
 })
 
-const reducer = combineReducers(
-  {
-    apollo: client.reducer(),
-    snackbar: snackbarReducer,
-  } as any,
-)
+const reducer = combineReducers({
+  apollo: client.reducer(),
+  snackbar: snackbarReducer,
+} as any)
 
 export const store = createStore(reducer)
 
@@ -38,12 +39,12 @@ export const store = createStore(reducer)
 client
   .subscribe({
     query: gql`
-    subscription deviceStatusUpdated {
-      deviceStatusUpdated {
-        id
-        value
+      subscription deviceStatusUpdated {
+        deviceStatusUpdated {
+          id
+          value
+        }
       }
-    }
-  `,
+    `,
   })
   .subscribe({})

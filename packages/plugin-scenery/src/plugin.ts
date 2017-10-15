@@ -1,4 +1,4 @@
-import {PluginDefinition} from 'raxa-common'
+import {DeviceType, PluginDefinition} from 'raxa-common'
 
 const plugin = {
   id: 'scenery',
@@ -11,7 +11,7 @@ const plugin = {
       id: 'Scenery',
       name: 'Scenery',
       pluginId: 'scenery',
-      types: [],
+      types: [DeviceType.Scenery],
       allowManualCreation: true,
       config: {
         modifications: {

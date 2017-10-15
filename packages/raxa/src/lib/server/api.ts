@@ -1,10 +1,12 @@
+import {pathExists, readFile} from 'fs-extra'
 import {execute} from 'graphql'
 import {graphiqlHapi, graphqlHapi} from 'graphql-server-hapi'
 import {subscribe} from 'graphql/subscription'
 import {Server} from 'hapi'
-import {createServer} from 'http'
+import {Server as HttpServer, createServer} from 'http'
 import {Service} from 'raxa-common/cjs'
 import {SubscriptionServer} from 'subscriptions-transport-ws'
+import {sslCert, sslKey} from '../config'
 import {Context} from '../graphql/context'
 import {schema} from '../graphql/schema'
 import {PluginSupervisor} from './plugin-supervisor'
@@ -20,8 +22,29 @@ export function register(server, options) {
 }
 
 export class ApiService extends Service {
+  server: Server
+  httpServer: HttpServer
+  httpsServer: HttpServer | undefined
+
   async start() {
+    const hasCert =
+      sslCert &&
+      sslKey &&
+      (await pathExists(sslCert!)) &&
+      (await pathExists(sslKey!))
     const httpServer = createServer()
+    this.httpServer = httpServer
+    let httpsServer: HttpServer | undefined
+    if (hasCert) {
+      this.log.info('Starting HTTPS server')
+      httpsServer = require('https').createServer({
+        cert: await readFile(sslCert!, 'utf-8'),
+        key: await readFile(sslKey!, 'utf-8'),
+      })
+      this.httpsServer = httpsServer
+    } else {
+      this.log.info('No cert found, skipping HTTPS server')
+    }
     const server = new Server()
     const storage = this.serviceManager.runningServices
       .StorageService as StorageService
@@ -30,6 +53,13 @@ export class ApiService extends Service {
     const context: Context = {storage, plugins}
 
     server.connection({listener: httpServer, port: 9000, routes: {cors: true}})
+    if (httpsServer) {
+      server.connection({
+        listener: httpsServer,
+        port: 9001,
+        routes: {cors: true},
+      })
+    }
 
     await register(server, {
       register: graphqlHapi,
@@ -54,6 +84,7 @@ export class ApiService extends Service {
     return new Promise((resolve, reject) => {
       server.start(err => {
         if (err) return reject(err)
+        this.server = server
 
         SubscriptionServer.create(
           {
@@ -67,9 +98,35 @@ export class ApiService extends Service {
             path: '/subscriptions',
           },
         )
+        if (httpsServer) {
+          SubscriptionServer.create(
+            {
+              execute,
+              subscribe,
+              schema,
+              onConnect: () => context,
+            },
+            {
+              server: httpsServer,
+              path: '/subscriptions',
+            },
+          )
+        }
 
         resolve(server)
       })
     })
+  }
+
+  async stop() {
+    if (this.server) {
+      this.server.stop()
+    }
+    if (this.httpServer) {
+      this.httpServer.close()
+    }
+    if (this.httpsServer) {
+      this.httpsServer.close()
+    }
   }
 }
