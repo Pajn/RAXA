@@ -9,6 +9,11 @@ import {Tab, Tabs} from 'react-toolbox/lib/tabs'
 import {compose, withState} from 'recompose'
 import {compose as fnCompose} from 'redux'
 import {row} from 'style-definitions'
+import {
+  InjectedInputEventsProps,
+  InputEventsContainer,
+  withInputEvents,
+} from '../../with-input-events/with-input-events'
 import {withThrottledMutation} from '../../with-throttled-mutation'
 import {ColorButton} from '../dashboard/widgets/ui/light-button'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
@@ -53,6 +58,8 @@ type ColorSliderProps = ColorResult & {
   onChange: (color: Color) => void
 }
 
+type PrivateColorSliderProps = ColorSliderProps & InjectedInputEventsProps
+
 type ColorSliderOptions = {
   minValue: number
   maxValue: number
@@ -61,148 +68,85 @@ type ColorSliderOptions = {
   colorToValue: (props: ColorSliderProps) => number
 }
 
-const CenteredHuePointer = props =>
-  <div style={{marginTop: 8}}><HuePointer {...props} /></div>
+const CenteredHuePointer = props => (
+  <div style={{marginTop: 8}}>
+    <HuePointer {...props} />
+  </div>
+)
 
 const colorSlider = (options: ColorSliderOptions) =>
-  class TemperatureSlider extends React.PureComponent<ColorSliderProps> {
-    container: HTMLElement | null
-    didBindStartListeners = false
+  withInputEvents(
+    class TemperatureSlider extends React.PureComponent<
+      PrivateColorSliderProps
+    > {
+      container: HTMLElement | null
+      didBindStartListeners = false
 
-    componentWillMount() {
-      this.bindStartListeners()
-    }
+      calculateChange(e, props, container) {
+        const containerWidth = container.clientWidth
+        const containerHeight = container.clientHeight
+        const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
+        const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
+        const left =
+          x - (container.getBoundingClientRect().left + window.pageXOffset)
+        const top =
+          y - (container.getBoundingClientRect().top + window.pageYOffset)
 
-    componentWillUnmount() {
-      this.unbindEventListeners()
-      window.removeEventListener('mousedown', this.handleMouseDown)
-      window.removeEventListener('touchstart', this.handleTouchStart)
-    }
-
-    calculateChange(e, props, container) {
-      e.preventDefault()
-      const containerWidth = container.clientWidth
-      const containerHeight = container.clientHeight
-      const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
-      const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
-      const left =
-        x - (container.getBoundingClientRect().left + window.pageXOffset)
-      const top =
-        y - (container.getBoundingClientRect().top + window.pageYOffset)
-
-      let value: number
-      if (props.direction === 'vertical') {
-        if (top < 0) {
-          value = options.minValue
-        } else if (top > containerHeight) {
-          value = options.maxValue
+        let value: number
+        if (props.direction === 'vertical') {
+          if (top < 0) {
+            value = options.minValue
+          } else if (top > containerHeight) {
+            value = options.maxValue
+          } else {
+            const percent = top / containerHeight
+            value = lerp(options.minValue, options.maxValue, percent)
+          }
         } else {
-          const percent = top / containerHeight
-          value = lerp(options.minValue, options.maxValue, percent)
+          if (left < 0) {
+            value = options.minValue
+          } else if (left > containerWidth) {
+            value = options.maxValue
+          } else {
+            const percent = left / containerWidth
+            value = lerp(options.minValue, options.maxValue, percent)
+          }
         }
-      } else {
-        if (left < 0) {
-          value = options.minValue
-        } else if (left > containerWidth) {
-          value = options.maxValue
-        } else {
-          const percent = left / containerWidth
-          value = lerp(options.minValue, options.maxValue, percent)
+        return options.valueToColor(value, this.props)
+      }
+
+      handleChange = e => {
+        const change = this.calculateChange(e, this.props, this.container)
+        if (change && this.props.onChange) {
+          this.props.onChange(change)
         }
       }
-      return options.valueToColor(value, this.props)
-    }
 
-    handleChange = e => {
-      const change = this.calculateChange(e, this.props, this.container)
-      if (change && this.props.onChange) {
-        this.props.onChange(change)
+      handleStart = e => {
+        this.handleChange(e)
+        this.props.onMoveEvents({
+          onMove: this.handleChange,
+        })
       }
-    }
 
-    handleMouseDown = e => {
-      this.handleChange(e)
-      window.addEventListener(
-        'mousemove',
-        this.handleChange,
-        {passive: false} as any,
-      )
-      window.addEventListener(
-        'mouseup',
-        this.handleMoveEnd,
-        {passive: false} as any,
-      )
-    }
+      render() {
+        const {direction = 'horizontal'} = this.props
 
-    handleTouchStart = e => {
-      this.handleChange(e)
-      window.addEventListener(
-        'touchmove',
-        this.handleChange,
-        {passive: false} as any,
-      )
-      window.addEventListener(
-        'touchend',
-        this.handleMoveEnd,
-        {passive: false} as any,
-      )
-      window.addEventListener(
-        'touchcancel',
-        this.handleMoveEnd,
-        {passive: false} as any,
-      )
-    }
-
-    handleMoveEnd = () => {
-      this.unbindEventListeners()
-    }
-
-    bindStartListeners() {
-      if (!this.didBindStartListeners) {
-        if (this.container) {
-          this.didBindStartListeners = true
-          window.addEventListener(
-            'mousedown',
-            this.handleMouseDown,
-            {passive: false} as any,
-          )
-          window.addEventListener(
-            'touchstart',
-            this.handleTouchStart,
-            {passive: false} as any,
-          )
-        }
-      } else if (!this.container) {
-        this.didBindStartListeners = false
-      }
-    }
-
-    unbindEventListeners() {
-      window.removeEventListener('mousemove', this.handleChange)
-      window.removeEventListener('mouseup', this.handleMoveEnd)
-      window.removeEventListener('touchmove', this.handleChange)
-      window.removeEventListener('touchend', this.handleMoveEnd)
-      window.removeEventListener('touchcancel', this.handleMoveEnd)
-    }
-
-    render() {
-      const {direction = 'horizontal'} = this.props
-
-      const styles = {
-        container: {
-          position: 'relative',
-          width: '100%',
-          height: 48,
-          borderRadius: this.props.radius,
-          boxShadow: this.props.shadow,
-        },
-        slider: {
-          position: 'absolute',
-          top: 8,
-          left: 0,
-          right: 0,
-          height: 32,
-          background: `linear-gradient(
+        const styles = {
+          container: {
+            position: 'relative',
+            width: '100%',
+            height: 48,
+            borderRadius: this.props.radius,
+            boxShadow: this.props.shadow,
+          },
+          slider: {
+            position: 'absolute',
+            top: 8,
+            left: 0,
+            right: 0,
+            height: 32,
+            background: `linear-gradient(
           ${direction === 'vertical' ? 'to bottom' : 'to right'},
           ${options.valueToCSS(options.minValue, this.props)} 0%,
           ${options.valueToCSS(
@@ -211,49 +155,55 @@ const colorSlider = (options: ColorSliderOptions) =>
           )} 50%,
           ${options.valueToCSS(options.maxValue, this.props)} 100%
         )`,
-        },
-        pointerPosition: {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          transform: `translate${direction === 'vertical' ? 'Y' : 'X'}(${lerpi(
-            options.minValue,
-            options.maxValue,
-            options.colorToValue(this.props),
-          ) * 100}%)`,
-        },
-        pointer: {
-          marginTop: '1px',
-          width: '4px',
-          borderRadius: '1px',
-          height: '8px',
-          boxShadow: '0 0 2px rgba(0, 0, 0, .6)',
-          background: '#fff',
-          transform: 'translateX(-2px)',
-        },
-      } as any
+          },
+          pointerPosition: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            transform: `translate${direction === 'vertical'
+              ? 'Y'
+              : 'X'}(${lerpi(
+              options.minValue,
+              options.maxValue,
+              options.colorToValue(this.props),
+            ) * 100}%)`,
+          },
+          pointer: {
+            marginTop: '1px',
+            width: '4px',
+            borderRadius: '1px',
+            height: '8px',
+            boxShadow: '0 0 2px rgba(0, 0, 0, .6)',
+            background: '#fff',
+            transform: 'translateX(-2px)',
+          },
+        } as any
 
-      return (
-        <div style={styles.container}>
-          <div
-            style={styles.slider}
-            ref={container => {
-              this.container = container
-              this.bindStartListeners()
-            }}
-          >
-            <div style={styles.pointerPosition}>
-              {this.props.pointer
-                ? <this.props.pointer {...this.props} />
-                : <CenteredHuePointer />}
+        return (
+          <div style={styles.container}>
+            <div
+              style={styles.slider}
+              ref={container => {
+                this.container = container
+              }}
+              onMouseDown={this.handleStart}
+              onTouchStart={this.handleStart}
+            >
+              <div style={styles.pointerPosition}>
+                {this.props.pointer ? (
+                  <this.props.pointer {...this.props} />
+                ) : (
+                  <CenteredHuePointer />
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )
-    }
-  }
+        )
+      }
+    },
+  )
 
 const TemperatureSlider = colorSlider({
   minValue: minTemp,
@@ -320,20 +270,20 @@ const LightningColorPicker = compose<
         ? 0
         : 1,
   ),
-)(({onChange, index, setIndex, ...props}) =>
-  <div>
+)(({onChange, index, setIndex, ...props}) => (
+  <InputEventsContainer>
     <Tabs index={index} onChange={setIndex} fixed>
       <Tab label="Temperature">
         <TemperatureSlider onChange={onChange} {...props} />
         <PresetRow>
-          {Object.values(temperaturePresets).map(({color, temp}) =>
+          {Object.values(temperaturePresets).map(({color, temp}) => (
             <ColorButton
               key={temp}
               big
               color={toCSS(color)}
               onClick={() => onChange(toShort(colorTemperature2rgb(temp)))}
-            />,
-          )}
+            />
+          ))}
         </PresetRow>
       </Tab>
       <Tab label="Color">
@@ -344,9 +294,8 @@ const LightningColorPicker = compose<
         <LightnessSlider onChange={onChange} {...props} />
       </Tab>
     </Tabs>
-
-  </div>,
-)
+  </InputEventsContainer>
+))
 
 const StyledDialog = glamorous(Dialog)({
   '& section': {outline: 'none'},
@@ -360,9 +309,12 @@ export type PrivateColorPickerProps = ColorPickerProps & IsMobileProps
 
 export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
   withIsMobile,
-  withThrottledMutation<
-    PrivateColorPickerProps
-  >(100, 'value', 'onChange', (value, {onChange}) => onChange(value)),
+  withThrottledMutation<PrivateColorPickerProps>(
+    100,
+    'value',
+    'onChange',
+    (value, {onChange}) => onChange(value),
+  ),
 )(
   class ColorPicker extends React.Component<PrivateColorPickerProps> {
     state = {
@@ -410,7 +362,7 @@ export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
           <div style={styles.swatch} onClick={this.handleClick}>
             <div style={styles.color} />
           </div>
-          {this.props.isMobile &&
+          {this.props.isMobile && (
             <StyledDialog
               active={this.state.displayColorPicker}
               onEscKeyDown={this.handleClose}
@@ -420,17 +372,17 @@ export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
                 color={{r: red, g: green, b: blue}}
                 onChange={this.handleChange}
               />
-            </StyledDialog>}
-          {!this.props.isMobile && this.state.displayColorPicker
-            ? <div style={styles.popover}>
-                <div style={styles.cover} onClick={this.handleClose} />
-                <LightningColorPicker
-                  color={{r: red, g: green, b: blue}}
-                  onChange={this.handleChange}
-                />
-              </div>
-            : null}
-
+            </StyledDialog>
+          )}
+          {!this.props.isMobile && this.state.displayColorPicker ? (
+            <div style={styles.popover}>
+              <div style={styles.cover} onClick={this.handleClose} />
+              <LightningColorPicker
+                color={{r: red, g: green, b: blue}}
+                onChange={this.handleChange}
+              />
+            </div>
+          ) : null}
         </div>
       )
     }

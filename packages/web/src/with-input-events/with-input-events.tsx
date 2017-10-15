@@ -66,11 +66,15 @@ export const withInputEvents = getContext<
   InjectedInputEventsProps
 >(inputEventsContext)
 
-export const inputEventsContainer = () => (
+type InputEventContainerEnhancer = <T>(
+  component: React.ComponentType<T & InjectedInputEventsContainerProps>,
+) => React.ComponentClass<T>
+
+export const inputEventsContainer = (): InputEventContainerEnhancer => (
   WrappedComponent: React.ComponentType<InjectedInputEventsContainerProps>,
 ) =>
   class extends React.Component<
-    {},
+    any,
     {
       moveListener?: InputMoveEventsListener
       clickListeners: Set<InputClickEventsListener>
@@ -223,6 +227,7 @@ export const inputEventsContainer = () => (
     render() {
       return (
         <WrappedComponent
+          {...this.props}
           {...this.getChildContext()}
           {...this.state.clickListeners.size > 0 && {
             onClick: this.onClick,
@@ -242,3 +247,17 @@ export const inputEventsContainer = () => (
       )
     }
   }
+
+export const InputEventsContainer = inputEventsContainer()(
+  ({
+    onMoveEvents: _,
+    onClickEvents: __,
+    haveClickListeners: ___,
+    haveMoveListeners: ____,
+    haveInputListeners: _____,
+    cancelClickListeners: ______,
+    cancelMoveListeners: _______,
+    cancelInputListeners: ________,
+    ...props,
+  }) => <div {...props} />,
+)
