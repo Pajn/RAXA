@@ -1,3 +1,4 @@
+import {execFileSync} from 'child_process'
 import {
   Call,
   Device,
@@ -7,7 +8,7 @@ import {
   defaultInterfaces as raxaInterfaces,
   isStatus,
 } from 'raxa-common'
-import SerialPort from 'serialport'
+import serialjs, {SerialPort} from 'serialport-js'
 import {
   C_INTERNAL,
   C_PRESENTATION,
@@ -44,7 +45,7 @@ const statuses = {
 
 const names = {}
 
-const serialPorts = {} as {[id: number]: {port: SerialPort; parser: any}}
+const serialPorts = {} as {[id: number]: any}
 
 export interface SerialGateway extends Device {
   config: {
@@ -111,14 +112,17 @@ export default class MySensorsPlugin extends Plugin {
       this,
       device.config.gateway,
       device.config.node,
-      0,
+      device.config.sensor,
       C_SET,
     )
 
     if (isStatus(modification, raxaInterfaces.Power.status.on)) {
       return send(V_STATUS, modification.value ? 1 : 0)
     } else if (isStatus(modification, raxaInterfaces.Dimmer.status.level)) {
-      return send(V_PERCENTAGE, ('00' + modification.value).slice(-3))
+      return send(
+        V_PERCENTAGE,
+        ('00' + Math.round(+modification.value)).slice(-3),
+      )
     } else if (isStatus(modification, raxaInterfaces.Color.status.color)) {
       return send(
         V_RGB,
@@ -137,7 +141,7 @@ export default class MySensorsPlugin extends Plugin {
       const message = encode(node, sensor, type, 0, subType, payload)
 
       this.log.debug('transmitted message', message)
-      serialPorts[device.id].parser.write(message)
+      serialPorts[device.id].send(message)
     }
   }
 
@@ -155,33 +159,32 @@ export default class MySensorsPlugin extends Plugin {
   stop() {
     return Promise.all(
       Object.values(serialPorts).map(
-        ({port}) => new Promise(resolve => port.close(resolve)),
+        port => new Promise(resolve => port.close(resolve)),
       ),
     )
   }
 
-  private openGateway({id, config}: SerialGateway) {
+  private async openGateway({id, config}: SerialGateway) {
     const serialPort = config.serialPort
-    const port = new SerialPort(serialPort, {
-      baudrate: gwBaud,
-    })
-    const parser = new SerialPort.parsers.Readline('\n')
-    port.pipe(parser)
-
+    execFileSync('stty', ['-F', serialPort, gwBaud.toString()])
+    let port: SerialPort
     let errors = 0
 
-    port.on('open', () => {
+    const open = async () => {
+      port = await serialjs.open(serialPort, '\n')
       this.log.info(`connected to serial gateway at ${serialPort}`)
-      serialPorts[id] = {port, parser}
-      errors = 0
-    })
+      serialPorts[id] = port
+      return port
+    }
+
+    port = await open()
 
     port.on('end', () => {
       this.log.info(`disconnected from gateway at ${serialPort}`)
       delete serialPorts[id]
     })
 
-    parser.on('data', rd => {
+    port.on('data', rd => {
       this.receivedMessage(id, rd)
     })
 
@@ -189,7 +192,7 @@ export default class MySensorsPlugin extends Plugin {
       this.log.error(`connection error - trying to reconnect to ${serialPort}`)
 
       setTimeout(() => {
-        port.open()
+        open()
       }, errors ** 2 * 1000)
       errors++
     })
