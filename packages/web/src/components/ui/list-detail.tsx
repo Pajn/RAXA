@@ -1,6 +1,12 @@
 import glamorous from 'glamorous'
 import React from 'react'
-import {Route, RouteComponentProps, matchPath, withRouter} from 'react-router'
+import {
+  Route,
+  RouteComponentProps,
+  Switch,
+  matchPath,
+  withRouter,
+} from 'react-router'
 import {compose, lifecycle, mapProps, withState} from 'recompose'
 import {column, row} from 'style-definitions'
 import {List, ListItem} from './list'
@@ -52,10 +58,10 @@ const enhance = compose<PrivateListDetailProps, ListDetailProps<any, any>>(
       inList: !(inItem && !inList),
       items:
         props.data &&
-          !props.data.loading &&
-          props
-            .getItems(props.data)
-            .map(item => ({item, section: props.getSection(item)})),
+        !props.data.loading &&
+        props
+          .getItems(props.data)
+          .map(item => ({item, section: props.getSection(item)})),
     }
   }),
   withState('beenInList', 'setBeenInList', false),
@@ -101,74 +107,87 @@ export const ListDetailView = ({
 
   return (
     <Container>
-      {(!isMobile || inList) &&
+      {(!isMobile || inList) && (
         <List selectable>
           {listHeader}
-          {!items
-            ? <span>loading</span>
-            : items.map((item, index) => {
-                const activate = item.section
-                  ? () => {
-                      if (inList) {
-                        history.push(item.section.path)
-                      } else {
-                        history.replace(item.section.path)
-                      }
+          {!items ? (
+            <span>loading</span>
+          ) : (
+            items.map((item, index) => {
+              const activate = item.section
+                ? () => {
+                    if (inList) {
+                      history.push(item.section.path)
+                    } else {
+                      history.replace(item.section.path)
                     }
-                  : undefined
-                const isActive = item.section
-                  ? !!matchPath(location.pathname, {
-                      path: item.section.path,
-                    })
-                  : false
-                const child = renderItem(
-                  item.item,
-                  {
-                    activate,
-                    isActive,
-                  },
-                  index,
-                )
+                  }
+                : undefined
+              const isActive = item.section
+                ? !!matchPath(location.pathname, {
+                    path: item.section.path,
+                  })
+                : false
+              const child = renderItem(
+                item.item,
+                {
+                  activate,
+                  isActive,
+                },
+                index,
+              )
 
-                if (!child) return child
-                const c = child as React.ReactElement<any>
-                if (c.type === ListItem) {
-                  return React.cloneElement(c, {
-                    selected: c.props.selected === undefined
+              if (!child) return child
+              const c = child as React.ReactElement<any>
+              if (c.type === ListItem) {
+                return React.cloneElement(c, {
+                  selected:
+                    c.props.selected === undefined
                       ? isActive
                       : c.props.selected,
-                    onClick: c.props.onClick || activate,
-                  })
-                }
-                return child
-              })}
-        </List>}
-      {(!isMobile || !inList) &&
+                  onClick: c.props.onClick || activate,
+                })
+              }
+              return child
+            })
+          )}
+        </List>
+      )}
+      {(!isMobile || !inList) && (
         <Detail>
-          {activeItem
-            ? isMobile
-              ? <Section {...activeItem.section} onBack={onBack}>
+          <Switch>
+            {activeItem ? (
+              isMobile ? (
+                <Section {...activeItem.section} onBack={onBack}>
                   {renderActiveItem(activeItem.item)}
                 </Section>
-              : renderActiveItem(activeItem.item)
-            : items &&
-                items.map(
-                  (item, index) =>
-                    item.section
-                      ? <Route
-                          location={location}
-                          key={index}
-                          path={item.section.path}
-                          render={() =>
-                            isMobile
-                              ? <Section {...item.section} onBack={onBack}>
-                                  {renderActiveItem(item.item)}
-                                </Section>
-                              : renderActiveItem(item.item)}
-                        />
-                      : null,
-                )}
-        </Detail>}
+              ) : (
+                renderActiveItem(activeItem.item)
+              )
+            ) : (
+              items &&
+              items.map(
+                (item, index) =>
+                  item.section ? (
+                    <Route
+                      location={location}
+                      key={index}
+                      path={item.section.path}
+                      render={() =>
+                        isMobile ? (
+                          <Section {...item.section} onBack={onBack}>
+                            {renderActiveItem(item.item)}
+                          </Section>
+                        ) : (
+                          renderActiveItem(item.item)
+                        )}
+                    />
+                  ) : null,
+              )
+            )}
+          </Switch>
+        </Detail>
+      )}
     </Container>
   )
 }
