@@ -17,7 +17,7 @@ import {DeviceDetailSettings} from './device-detail'
 
 const IconButton: any = BadIconButton
 
-const ListHeader = glamorous.div(row({vertical: 'center'}))
+const ListHeader = glamorous.div({...row({vertical: 'center'}), flexShrink: 0})
 const ListSubHeader = glamorous(
   (BadListSubHeader as any) as (typeof BadListSubHeader)['ListSubHeader'],
 )(({isMobile}: {isMobile: boolean}) => ({
@@ -123,7 +123,7 @@ export const DeviceSettingsView = ({
   createNewDevice,
   setNewDevice,
   isMobile,
-}: PrivateDeviceSettingsProps) => (
+}: PrivateDeviceSettingsProps) =>
   <DeviceList
     path="/settings/devices"
     data={data}
@@ -136,17 +136,15 @@ export const DeviceSettingsView = ({
           }
         : null}
     renderItem={(item, _, index) =>
-      item.type === 'device' ? (
-        <ListItem key={index} caption={item.value.name} />
-      ) : (
-        <div key={index}>
-          <ListSubHeader caption={item.value} isMobile={isMobile} />
-        </div>
-      )}
+      item.type === 'device'
+        ? <ListItem key={index} caption={item.value.name} />
+        : <div key={index}>
+            <ListSubHeader caption={item.value} isMobile={isMobile} />
+          </div>}
     renderActiveItem={item =>
-      item.type === 'device' ? (
-        <DeviceDetailSettings device={item.value} />
-      ) : null}
+      item.type === 'device'
+        ? <DeviceDetailSettings device={item.value} />
+        : null}
     activeItem={
       newDevice && {
         item: newDevice,
@@ -158,24 +156,21 @@ export const DeviceSettingsView = ({
       }
     }
     listHeader={
-      isMobile ? (
-        <ContextActions
-          contextActions={[
-            {
-              icon: 'add',
-              onClick: createNewDevice,
-              href: '/settings/devices/new',
-            },
-          ]}
-        />
-      ) : (
-        <ListHeader>
-          <Title style={{flex: 1}}>Devices</Title>
-          <IconButton icon="add" onClick={createNewDevice} />
-        </ListHeader>
-      )
+      isMobile
+        ? <ContextActions
+            contextActions={[
+              {
+                icon: 'add',
+                onClick: createNewDevice,
+                href: '/settings/devices/new',
+              },
+            ]}
+          />
+        : <ListHeader>
+            <Title style={{flex: 1}}>Devices</Title>
+            <IconButton icon="add" onClick={createNewDevice} />
+          </ListHeader>
     }
   />
-)
 
 export const DeviceSettings = enhance(DeviceSettingsView)
