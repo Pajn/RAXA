@@ -1,11 +1,12 @@
+import glamorous from 'glamorous'
 import React, {CSSProperties, ReactChild} from 'react'
 import {Checkbox} from 'react-toolbox/lib/checkbox'
 import {Dropdown} from 'react-toolbox/lib/dropdown'
 import {Input} from 'react-toolbox/lib/input'
 import {ListCheckbox} from 'react-toolbox/lib/list'
 import {Slider} from 'react-toolbox/lib/slider'
-import {withState} from 'recompose'
-import {compose} from 'recompose'
+import {compose, withState} from 'recompose'
+import theme from '../../toolbox/theme'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
@@ -40,6 +41,12 @@ const autoRound = (min: number, max: number, value: number) =>
 
 const asPercent = (min: number, max: number, value: number) =>
   Math.round(100 * (+value - min) / (max - min))
+
+const FixedSlider = glamorous(Slider)({
+  [`& .${theme.RTSlider.knob}`]: {
+    zIndex: 1,
+  },
+})
 
 export type SettingInputProps = SettingValueProps & {
   type?: 'number'
@@ -209,7 +216,7 @@ export const SettingSliderView = ({
       }
       children={(value, setValue) => (
         <div>
-          <Slider
+          <FixedSlider
             value={value}
             onChange={setValue}
             max={max}
@@ -226,19 +233,17 @@ export const SettingSliderView = ({
     <ListItemLayout
       caption={label}
       legend={
-        (
-          <Slider
-            value={(tmpValue === undefined ? +value : tmpValue) || 0}
-            onChange={setTmpValue}
-            onDragStop={() => {
-              setTmpValue(undefined)
-              onChange(tmpValue)
-            }}
-            max={max}
-            min={min}
-            step={step}
-          />
-        ) as any
+        <FixedSlider
+          value={(tmpValue === undefined ? +value : tmpValue) || 0}
+          onChange={setTmpValue}
+          onDragStop={() => {
+            setTmpValue(undefined)
+            onChange(tmpValue)
+          }}
+          max={max}
+          min={min}
+          step={step}
+        />
       }
     />
   )

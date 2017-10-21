@@ -61,8 +61,13 @@ const UndoContainer = glamorous.div({
   ...fadeIn(),
 })
 
-const UndoDelete = ({item: _, onUndo}) =>
-  <UndoContainer><Button inverse onClick={onUndo}>Undo</Button></UndoContainer>
+const UndoDelete = ({item: _, onUndo}) => (
+  <UndoContainer>
+    <Button inverse onClick={onUndo}>
+      Undo
+    </Button>
+  </UndoContainer>
+)
 
 export type ArrayInputProps<T = any> = PropertyProps<ArrayProperty<T>, Array<T>>
 export type ArrayInputPrivateProps<T = any> = ArrayInputProps<T> &
@@ -99,11 +104,11 @@ export const ArrayInputView = ({
   setUndoItem,
   ids,
   replace,
-}: ArrayInputPrivateProps) =>
+}: ArrayInputPrivateProps) => (
   <div>
     <TitleBar>
       {property.name && <Title>{property.name}</Title>}
-      {property.modifiable &&
+      {property.modifiable && (
         <IconButton
           icon="add"
           onClick={() =>
@@ -113,7 +118,8 @@ export const ArrayInputView = ({
                 ? (property.items as NumberProperty).defaultValue
                 : property.items.type === 'modification' ? {} : undefined,
             ])}
-        />}
+        />
+      )}
     </TitleBar>
     <CardContainer>
       <FlipMove>
@@ -122,18 +128,19 @@ export const ArrayInputView = ({
 
           return (
             <div key={ids[i]} style={{marginTop: i > 0 ? 24 : 0}}>
-              <Card style={{position: 'relative'}}>
-                {property.modifiable &&
+              <Card style={{position: 'relative', overflow: 'visible'}}>
+                {property.modifiable && (
                   <div>
                     <ItemHeader>
-                      {property.items.type === 'modification' &&
+                      {property.items.type === 'modification' && (
                         <SubTitle>
-                          {(item as Modification).deviceId
-                            ? <DeviceName
-                                id={(item as Modification).deviceId}
-                              />
-                            : 'Add Device'}
-                        </SubTitle>}
+                          {(item as Modification).deviceId ? (
+                            <DeviceName id={(item as Modification).deviceId} />
+                          ) : (
+                            'Add Device'
+                          )}
+                        </SubTitle>
+                      )}
                       <IconButton
                         icon="delete"
                         onClick={() => {
@@ -151,7 +158,8 @@ export const ArrayInputView = ({
                       />
                     </ItemHeader>
                     <ListDivider />
-                  </div>}
+                  </div>
+                )}
                 <div style={{padding: '8px 16px'}}>
                   <PropertyView
                     property={property.items}
@@ -164,14 +172,15 @@ export const ArrayInputView = ({
                   />
                 </div>
                 {undoItem &&
-                  undoItem.index === i &&
-                  <UndoDelete
-                    item={undoItem}
-                    onUndo={() => {
-                      onChange(insert(undoItem.index, undoItem.item, value))
-                      setUndoItem()
-                    }}
-                  />}
+                  undoItem.index === i && (
+                    <UndoDelete
+                      item={undoItem}
+                      onUndo={() => {
+                        onChange(insert(undoItem.index, undoItem.item, value))
+                        setUndoItem()
+                      }}
+                    />
+                  )}
               </Card>
             </div>
           )
@@ -179,5 +188,6 @@ export const ArrayInputView = ({
       </FlipMove>
     </CardContainer>
   </div>
+)
 
 export const ArrayInput = enhance(ArrayInputView)
