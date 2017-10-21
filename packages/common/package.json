@@ -14,7 +14,7 @@
     "redux-decorated": "^1.0.2"
   },
   "devDependencies": {
-    "tscomp": "^0.13.2"
+    "tscomp": "^0.13.6"
   },
   "tscomp": {
     "mode": "lib"
