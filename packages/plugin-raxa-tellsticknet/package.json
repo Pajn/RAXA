@@ -13,16 +13,14 @@
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@types/node": "^8.0.7",
+    "@types/node": "^8.0.46",
     "tscomp": "^0.13.2",
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "eventemitter2": "^2.0.0",
     "iconv-lite": "^0.4.13",
     "promise-land": "^0.1.2",
-    "raxa-common": "0.1.0",
-    "redux-decorated": "^0.2.0-dev.3"
+    "raxa-common": "0.1.0"
   },
   "tscomp": {
     "mode": "lib"

@@ -145,6 +145,7 @@ export interface PropertyBase {
   name?: string
   shortDescription?: string
   description?: string
+  defaultValue?: any
 
   optional?: boolean
   modifiable?: boolean

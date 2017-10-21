@@ -17,10 +17,8 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "eventemitter2": "^2.0.0",
     "raxa-common": "*",
-    "raxa-plugin-raxa-tellsticknet": "0.1.0",
-    "redux-decorated": "^0.2.0-dev.3"
+    "raxa-plugin-raxa-tellsticknet": "0.1.0"
   },
   "tscomp": {
     "mode": "lib"
