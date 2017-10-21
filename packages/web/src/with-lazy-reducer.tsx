@@ -2,6 +2,38 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {ComponentEnhancer, wrapDisplayName} from 'recompose'
 
+export function withInnerState<P, S = any>(
+  stateName: string,
+  setStateName: string,
+) {
+  return (WrappedComponent: React.ComponentType<P>) =>
+    class extends React.Component<P, S> {
+      constructor(props: P) {
+        super(props)
+        this.state = props[stateName]
+        this.setState = this.setState.bind(this)
+      }
+
+      componentWillUpdate(nextProps) {
+        if (this.props[stateName] !== nextProps[stateName]) {
+          this.setState(nextProps[stateName])
+        }
+      }
+
+      render() {
+        return (
+          <WrappedComponent
+            {...{
+              ...(this.props as any),
+              [stateName]: this.state,
+              [setStateName]: this.setState,
+            }}
+          />
+        )
+      }
+    }
+}
+
 type Reducer<TState, TAction> = (s: TState, a: TAction) => TState
 
 export function withLazyReducer<TState, TAction>(
@@ -27,9 +59,10 @@ export function withLazyReducer(
       static displayName = wrapDisplayName(WrappedComponent, 'withLazyReducer')
 
       state = {
-        state: typeof initialState === 'function'
-          ? initialState(this.props)
-          : initialState,
+        state:
+          typeof initialState === 'function'
+            ? initialState(this.props)
+            : initialState,
       }
       dispatch = action => {
         const state = reducer(this.state.state, action)
@@ -138,7 +171,7 @@ abstract class StateComponent<P, S> extends React.Component<P, S> {
       this.componentShouldUpdate = true
     }
     this.mergedProps = {
-      ...nextProps as any,
+      ...(nextProps as any),
       ...this.stateProps,
       ...this.dispatchProps,
     }
@@ -160,7 +193,7 @@ abstract class StateComponent<P, S> extends React.Component<P, S> {
     this.stateProps = this.mapStateToProps(this.getState(), this.props)
     this.dispatchProps = this.mapDispatchToProps(this.dispatch, this.props)
     this.mergedProps = {
-      ...this.props as any,
+      ...(this.props as any),
       ...this.stateProps,
       ...this.dispatchProps,
     }
@@ -209,9 +242,10 @@ export function provideState<TState, TAction, TOuterProps = Readonly<{}>>(
       getState = () => this.state.state
 
       state = {
-        state: typeof configuration.initialState === 'function'
-          ? configuration.initialState(this.props)
-          : configuration.initialState,
+        state:
+          typeof configuration.initialState === 'function'
+            ? configuration.initialState(this.props)
+            : configuration.initialState,
       }
       dispatch = action => {
         const state = configuration.reducer(this.state.state, action)

@@ -1,9 +1,11 @@
 import {ApolloClient, createNetworkInterface, gql} from 'react-apollo'
 import {combineReducers, createStore} from 'redux'
+import {autoRehydrate, persistStore} from 'redux-persist'
 import {
   SubscriptionClient,
   addGraphQLSubscriptions,
 } from 'subscriptions-transport-ws'
+import {reducer as mainScreenReducer} from '../components/ui2/main'
 import {snackbarReducer} from '../redux-snackbar/reducer'
 
 const ssl = location.protocol === 'https:'
@@ -30,10 +32,13 @@ export const client = new ApolloClient({
 
 const reducer = combineReducers({
   apollo: client.reducer(),
+  mainScreen: mainScreenReducer,
   snackbar: snackbarReducer,
 } as any)
 
-export const store = createStore(reducer)
+export const store = createStore(reducer, undefined, autoRehydrate())
+
+persistStore(store)
 
 // Subscribe to all status updates, Apollo will automatically update the store using the id.
 client
