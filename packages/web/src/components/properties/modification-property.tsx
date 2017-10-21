@@ -35,12 +35,14 @@ const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
   const selectedInterface = selectedDevice.interfaces.find(
     iface => iface.id === interfaceId,
   )!
+  const selectedStatus =
+    Object.values(selectedInterface.status).length === 1
+      ? Object.values(selectedInterface.status)[0]
+      : undefined
   return {
     interfaceId,
-    statusId: Object.values(selectedInterface.status).length === 1
-      ? Object.values(selectedInterface.status)[0].id
-      : undefined,
-    value: undefined,
+    statusId: selectedStatus && selectedStatus.id,
+    value: selectedStatus && selectedStatus.defaultValue,
   }
 }
 
@@ -66,18 +68,18 @@ export const enhanceModificationInput = compose<
   })),
   graphql<GraphQlResult, PrivateModificationInputProps>(
     gql`
-    query($interfaceIds: [String!], $deviceClassIds: [String!]) {
-      devices(interfaceIds: $interfaceIds, deviceClassIds: $deviceClassIds) {
-        id
-        name
-        interfaces {
+      query($interfaceIds: [String!], $deviceClassIds: [String!]) {
+        devices(interfaceIds: $interfaceIds, deviceClassIds: $deviceClassIds) {
           id
           name
-          status
+          interfaces {
+            id
+            name
+            status
+          }
         }
       }
-    }
-  `,
+    `,
   ),
   mapProps(
     (props: PrivateModificationInputProps): PrivateModificationInputProps => {
@@ -118,7 +120,7 @@ export const ModificationInputView = ({
   selectedStatus,
   interfaces,
   statuses,
-}: PrivateModificationInputProps) =>
+}: PrivateModificationInputProps) => (
   <div>
     <SettingDropdown
       label="Device"
@@ -135,41 +137,50 @@ export const ModificationInputView = ({
     />
     {selectedDevice &&
       interfaces &&
-      interfaces.length > 1 &&
-      <SettingDropdown
-        label="Interface"
-        source={interfaces.map(iface => ({
-          value: iface.id,
-          label: iface.name || iface.id,
-        }))}
-        value={value.interfaceId}
-        onChange={interfaceId => {
-          onChange({
-            ...value,
-            ...setInterface(interfaceId, selectedDevice),
-          })
-        }}
-      />}
+      interfaces.length > 1 && (
+        <SettingDropdown
+          label="Interface"
+          source={interfaces.map(iface => ({
+            value: iface.id,
+            label: iface.name || iface.id,
+          }))}
+          value={value.interfaceId}
+          onChange={interfaceId => {
+            onChange({
+              ...value,
+              ...setInterface(interfaceId, selectedDevice),
+            })
+          }}
+        />
+      )}
     {statuses &&
-      statuses.length > 1 &&
-      <SettingDropdown
-        label="Status"
-        source={statuses.map(status => ({
-          value: status.id,
-          label: status.name || status.id,
-        }))}
-        value={value.statusId}
-        onChange={statusId => onChange({...value, statusId, value: undefined})}
-      />}
+      statuses.length > 1 && (
+        <SettingDropdown
+          label="Status"
+          source={statuses.map(status => ({
+            value: status.id,
+            label: status.name || status.id,
+          }))}
+          value={value.statusId}
+          onChange={statusId =>
+            onChange({
+              ...value,
+              statusId,
+              value: statuses.find(s => s.id === statusId)!.defaultValue,
+            })}
+        />
+      )}
     {selectedInterface &&
-      selectedStatus &&
-      <StatelessStatusView
-        {...value}
-        id=""
-        data={{interface: selectedInterface}}
-        setDeviceStatus={(_, modification) =>
-          Promise.resolve(onChange(modification))}
-      />}
+      selectedStatus && (
+        <StatelessStatusView
+          {...value}
+          id=""
+          data={{interface: selectedInterface}}
+          setDeviceStatus={(_, modification) =>
+            Promise.resolve(onChange(modification))}
+        />
+      )}
   </div>
+)
 
 export const ModificationInput = enhanceModificationInput(ModificationInputView)
