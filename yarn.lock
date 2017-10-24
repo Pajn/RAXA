@@ -19,6 +19,10 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
+"@types/async@2.0.31":
+  version "2.0.31"
+  resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.31.tgz#26842998c4425c19aea32f774fc67e8d28ecd206"
+
 "@types/body-parser@^1.16.4":
   version "1.16.5"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.16.5.tgz#d2b7daefab84e0afa9d3fae0935bc7355b6320af"
@@ -224,21 +228,11 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@16.0.16":
+"@types/react@*", "@types/react@16.0.16", "@types/react@^15.0.35", "@types/react@^15.0.36":
   version "16.0.16"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.16.tgz#f0652a5a3acc1706ec729c8fba3976acbf45b827"
 
-"@types/react@^15.0.35", "@types/react@^15.0.36":
-  version "15.6.4"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.6.4.tgz#3bb57bd43183a05919ceb025a264287348f47e9d"
-
-"@types/recompose@^0.23.2":
-  version "0.23.3"
-  resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.23.3.tgz#63134a58cc51526b850fe995debdf28cc5166808"
-  dependencies:
-    "@types/react" "*"
-
-"@types/recompose@^0.24.2":
+"@types/recompose@0.24.2", "@types/recompose@^0.23.2", "@types/recompose@^0.24.2":
   version "0.24.2"
   resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.24.2.tgz#642c136c3d421b315d48b5c39d66e4e93174c600"
   dependencies:

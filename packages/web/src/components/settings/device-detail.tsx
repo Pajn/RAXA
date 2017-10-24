@@ -1,3 +1,5 @@
+import glamorous from 'glamorous'
+import {title} from 'material-definitions'
 import {flatten} from 'ramda'
 import {
   Device,
@@ -5,6 +7,7 @@ import {
   GraphQlDeviceClass,
   Method,
 } from 'raxa-common/lib/entities'
+import {DeviceIsInUseError, isRaxaError} from 'raxa-common/lib/errors'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
 import {Dispatch, connect} from 'react-redux'
@@ -17,7 +20,6 @@ import {
 } from 'react-toolbox/lib/list'
 import {compose, lifecycle, mapProps, withState} from 'recompose'
 import {action} from 'redux-decorated'
-import {Title} from 'styled-material/lib/typography'
 import {CallDeviceInjectedProps, callDevice} from '../../lib/mutations'
 import {actions} from '../../redux-snackbar/actions'
 import {PropertyView} from '../properties/property'
@@ -26,6 +28,8 @@ import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
 import {SettingForm} from '../ui/setting-form'
 import {SettingDropdown} from '../ui/setting-input'
 import {deviceListQuery} from './devices'
+
+const Title = glamorous.h3(title)
 
 export type DeviceDetailSettingsProps = {
   device: GraphQlDevice
@@ -43,6 +47,8 @@ export type PrivateDeviceDetailSettingsProps = DeviceDetailSettingsProps &
       deviceClasses?: Array<GraphQlDeviceClass>
     } & QueryProps
     saveDevice: (device: Device) => Promise<any>
+    removeDevice: (device: Device) => Promise<any>
+    deleteDevice: () => Promise<any>
     deviceId: string
     tmpDevice: GraphQlDevice
     onChange: (device: GraphQlDevice) => void
@@ -131,6 +137,64 @@ const enhance = compose(
       }),
     },
   ),
+  graphql<{removeDevice: GraphQlDevice}, PrivateDeviceDetailSettingsProps>(
+    gql`
+      mutation($deviceId: String!) {
+        removeDevice(id: $deviceId) {
+          id
+        }
+      }
+    `,
+    {
+      props: ({mutate, ownProps: {history, dispatch}}) => ({
+        removeDevice(device: Device) {
+          return mutate!({
+            variables: {
+              deviceId: device.id,
+            },
+            refetchQueries: [{query: deviceListQuery}],
+          })
+            .then(() => {
+              history.replace(`/settings/devices`)
+              dispatch(
+                action(actions.showSnackbar, {
+                  label: `Sucessfully deleted device ${device.name}`,
+                  type: 'accept' as 'accept',
+                }),
+              )
+            })
+            .catch(e => {
+              if (isRaxaError(e)) {
+                if (e.type === 'deviceIsInUse') {
+                  dispatch(
+                    action(actions.showSnackbar, {
+                      label: `Failed to delete device. Device is in use by ${(e as DeviceIsInUseError).devices
+                        .map(d => d.name)
+                        .join(', ')}`,
+                      type: 'warning' as 'warning',
+                    }),
+                  )
+                }
+              } else {
+                dispatch(
+                  action(actions.showSnackbar, {
+                    label: `Failed to delete device`,
+                    type: 'warning' as 'warning',
+                  }),
+                )
+              }
+              throw e
+            })
+        },
+      }),
+    },
+  ),
+  withState(
+    'deleteDevice',
+    '',
+    (props: PrivateDeviceDetailSettingsProps) => () =>
+      props.removeDevice(props.device),
+  ),
   mapProps((props: PrivateDeviceDetailSettingsProps) => ({
     ...props,
     methods: flatten<Method>(
@@ -186,17 +250,31 @@ export const DeviceDetailSettingsView = ({
   tmpDevice: device,
   onChange,
   saveDevice,
+  deleteDevice,
   isMobile,
   methods,
   callDevice,
-}: PrivateDeviceDetailSettingsProps) =>
+}: PrivateDeviceDetailSettingsProps) => (
   <List>
     {!isMobile && <Title>{device.id ? device.name : 'New Device'}</Title>}
-    {device.id &&
-      <ToolboxListItem caption="Type" legend={device.deviceClass.name} />}
+    {device.id && (
+      <ToolboxListItem caption="Type" legend={device.deviceClass.name} />
+    )}
     <ListSubHeader caption="Properties" />
     <SettingForm
       value={device}
+      contextActions={
+        device.id
+          ? [
+              {
+                label: 'Delete',
+                icon: 'delete_forever',
+                onClick: deleteDevice,
+                placement: 'menu',
+              },
+            ]
+          : undefined
+      }
       fields={[
         !device.id && {
           component: SettingDropdown,
@@ -243,7 +321,7 @@ export const DeviceDetailSettingsView = ({
     />
     {methods.length > 0 &&
       [<ListSubHeader key={2} caption="Actions" />].concat(
-        methods.map(method =>
+        methods.map(method => (
           <LoadingButton
             key={`${method.interfaceId}:${method.id}`}
             onClick={() =>
@@ -255,27 +333,28 @@ export const DeviceDetailSettingsView = ({
               })}
           >
             {method.name || method.id}
-          </LoadingButton>,
-        ),
+          </LoadingButton>
+        )),
       )}
     {data &&
-    data.device &&
-    data.device.status &&
-    data.device.status.length > 0 && [
-      <ListSubHeader key={2} caption="Status" />,
-      data.device.status.map(status =>
-        <StatusView
-          key={status.id}
-          id={status.id}
-          label={status.statusId}
-          deviceId={device.id}
-          interfaceId={status.interfaceId}
-          statusId={status.statusId}
-          value={status.value}
-        />,
-      ),
-    ]}
+      data.device &&
+      data.device.status &&
+      data.device.status.length > 0 && [
+        <ListSubHeader key={2} caption="Status" />,
+        data.device.status.map(status => (
+          <StatusView
+            key={status.id}
+            id={status.id}
+            label={status.statusId}
+            deviceId={device.id}
+            interfaceId={status.interfaceId}
+            statusId={status.statusId}
+            value={status.value}
+          />
+        )),
+      ]}
   </List>
+)
 
 export const DeviceDetailSettings = enhance(
   DeviceDetailSettingsView,

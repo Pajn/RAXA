@@ -1,14 +1,16 @@
 import glamorous from 'glamorous'
+import {title} from 'material-definitions'
 import React from 'react'
 import {Card} from 'react-toolbox/lib/card'
 import {compose} from 'recompose'
-import {Title} from 'styled-material/lib/typography'
 import {connectState} from '../../../with-lazy-reducer'
 import {PropertyView} from '../../properties/property'
 import {SettingForm} from '../../ui/setting-form'
 import {WidgetConfig, dashboardState} from '../state'
 import {WidgetComponent} from '../widget'
 import {ToolboxContainer} from './ui'
+
+const Title = glamorous.h3(title)
 
 const Container = glamorous(Card)({
   display: 'flex',
@@ -63,12 +65,12 @@ export const WidgetConfigurationView = ({
   widget,
   widgetType,
   updateWidget,
-}: WidgetConfigurationPrivateProps) =>
+}: WidgetConfigurationPrivateProps) => (
   <ToolboxContainer>
     <Container>
       <Title>{widgetType.uiName}</Title>
       <div>
-        {widgetType.config &&
+        {widgetType.config && (
           <SettingForm
             value={widget}
             fields={Object.entries(widgetType.config).map(([id, config]) => ({
@@ -80,9 +82,11 @@ export const WidgetConfigurationView = ({
             }))}
             onSave={updateWidget}
             onChange={(widget, valid) => valid && updateWidget(widget)}
-          />}
+          />
+        )}
       </div>
     </Container>
   </ToolboxContainer>
+)
 
 export const WidgetConfiguration = enhance(WidgetConfigurationView)

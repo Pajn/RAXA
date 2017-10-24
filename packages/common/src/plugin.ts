@@ -31,12 +31,17 @@ export abstract class Plugin extends Service {
   onDeviceCreated(_device: Device): Awaitable<void | Device> {}
 
   /**
-   * Called when a device is being updated from one of the plugins DeviceClasses
+   * Called when a device owned by the plugin is being updated
    * Throw to abort the update, return an updated device to alter its
    * configuration or return undefined to don't do anything at all.
    * If a Promise is returned then RAXA will wait for it to be resolved.
    */
   onDeviceUpdated(_device: Device): Awaitable<void | Device> {}
+
+  /**
+   * Called when a device owned by the plugin is being removed.
+   */
+  onDeviceRemoved(_device: Device): Awaitable<void> {}
 
   /**
    * Called when a device owned by the plugin is beeing called.

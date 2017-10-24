@@ -1,5 +1,6 @@
 import {History} from 'history'
 import PropTypes from 'prop-types'
+import {Placement} from '../actions'
 
 export type Section = {
   path?: string
@@ -14,6 +15,7 @@ export type ContextAction = {
   href?: string
   icon?: string
   onClick?: () => void
+  placement?: Placement
 }
 
 export type ContextMenu = ContextAction & {

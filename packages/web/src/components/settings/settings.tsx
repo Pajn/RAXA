@@ -1,8 +1,8 @@
 import glamorous from 'glamorous'
+import {title} from 'material-definitions'
 import React from 'react'
 import {compose} from 'recompose'
 import {row} from 'style-definitions'
-import {Title} from 'styled-material/lib/typography'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
@@ -10,6 +10,7 @@ import {Section} from '../ui/scaffold/section'
 import {DeviceSettings} from './devices'
 import {PluginSettings} from './plugins'
 
+const Title = glamorous.h3(title)
 const ListHeader = glamorous.div(row({vertical: 'center'}))
 
 export type SettingsProps = {}

@@ -1,15 +1,18 @@
 import Datastore from 'nedb'
 import nedb from 'nedb-persist'
 import {join} from 'path'
+import {Modification, Property, Result} from 'raxa-common'
 import {
   Device,
   DeviceClass,
   Interface,
+  ObjectProperty,
   PluginConfiguration,
   Service,
   actions,
   defaultInterfaces,
 } from 'raxa-common/cjs'
+import {DeviceIsInUseError} from 'raxa-common/cjs/errors'
 import {
   DeviceClassState,
   DeviceState,
@@ -30,7 +33,13 @@ import {
   compose,
   createStore,
 } from 'redux'
-import {Action, action, createReducer, updateIn} from 'redux-decorated'
+import {
+  Action,
+  action,
+  createReducer,
+  removeIn,
+  updateIn,
+} from 'redux-decorated'
 import {autoRehydrate, persistStore} from 'redux-persist'
 import {dataDir} from '../config'
 import {pubsub} from '../graphql/schema'
@@ -49,6 +58,7 @@ const deviceReducer = createReducer<DeviceState>({})
       config: Object.assign({}, state[device.id!].config, device.config),
     },
   }))
+  .when(actions.deviceRemoved, (state, {device}) => removeIn(device.id, state))
   .build()
 
 const deviceClassReducer = createReducer<DeviceClassState>({})
@@ -89,6 +99,7 @@ const statusReducer = createReducer<StatusState>({})
     (state, {deviceId, interfaceId, statusId, value}) =>
       updateIn([deviceId, interfaceId, statusId] as any, value, state),
   )
+  .when(actions.deviceRemoved, (state, {device}) => removeIn(device.id, state))
   .build()
 
 export class StorageService extends Service {
@@ -130,6 +141,7 @@ export class StorageService extends Service {
         autoload: true,
       })
       db.persistence.setAutocompactionInterval(1000 * 60 * 10)
+      console.log('db', db)
       persistStore(this.store, {storage: nedb(db)}, resolve)
     })
 
@@ -219,5 +231,52 @@ export class StorageService extends Service {
     if (state.plugins[device.id]) {
       this.dispatch(actions.deviceUpdated, {device})
     }
+  }
+
+  public removeDevice(deviceId: string): Result<void, DeviceIsInUseError> {
+    const {devices, deviceClasses} = this.getState()
+    const deviceToRemove = devices[deviceId]
+    const usedInDevices = Object.values(devices).filter(device => {
+      if (device.id === deviceToRemove.id) return false
+
+      if (!device.config) return false
+      const deviceClass = deviceClasses[device.deviceClassId]
+      if (!deviceClass.config) return false
+
+      return configHasDevice(
+        deviceToRemove.id,
+        device.config,
+        {type: 'object', properties: deviceClass.config} as ObjectProperty<any>,
+      )
+    })
+
+    if (usedInDevices.length > 0) {
+      return Result.err({
+        type: 'deviceIsInUse' as 'deviceIsInUse',
+        devices: usedInDevices,
+      })
+    }
+
+    this.dispatch(actions.deviceRemoved, {device: deviceToRemove})
+    return Result.ok(undefined)
+  }
+}
+
+function configHasDevice(deviceId: string, value: any, config: Property) {
+  switch (config.type) {
+    case 'device':
+      return value === deviceId
+    case 'modification':
+      return (value as Modification).deviceId === deviceId
+    case 'array':
+      return (value as Array<any>).some(value =>
+        configHasDevice(deviceId, value, config.items),
+      )
+    case 'object':
+      return Object.entries(config.properties).some(([key, config]) =>
+        configHasDevice(deviceId, value[key], config),
+      )
+    default:
+      return false
   }
 }

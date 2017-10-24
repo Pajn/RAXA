@@ -5,7 +5,7 @@ import {ContextAction} from './scaffold/context'
 import {ContextActions} from './scaffold/context-actions'
 import {SettingInput} from './setting-input'
 
-const ContextSaveButton = ({disabled, onClick, formId}) =>
+const ContextSaveButton = ({disabled, onClick, formId, contextActions = []}) =>
   <ContextActions
     contextActions={[
       {
@@ -15,10 +15,13 @@ const ContextSaveButton = ({disabled, onClick, formId}) =>
         type: 'submit',
         form: formId,
       } as ContextAction,
+      ...contextActions,
     ]}
   />
 
-export type SettingFormProps = FormHelperProperties<any, any> & {}
+export type SettingFormProps = FormHelperProperties<any, any> & {
+  contextActions?: Array<ContextAction>
+}
 export type PrivateSettingFormProps = SettingFormProps & {
   formId: string
 }
@@ -27,11 +30,14 @@ export const enhance = compose(
   withState('formId', 'setFormId', () => Math.random()),
 )
 
-export const SettingFormView = ({...props}: PrivateSettingFormProps) =>
+export const SettingFormView = ({
+  contextActions,
+  ...props,
+}: PrivateSettingFormProps) =>
   <FormHelper
     inputComponent={SettingInput}
     buttonComponent={ContextSaveButton}
-    buttonProps={{formId: props.formId}}
+    buttonProps={{formId: props.formId, contextActions}}
     saveButton="Save"
     dirtyCheck
     {...props}

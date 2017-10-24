@@ -218,6 +218,18 @@ export const deviceMutations = buildMutations({
       return storage.upsertDevice(device)
     },
   },
+  removeDevice: {
+    type: DeviceType,
+    validate: joi.object({
+      id: joi.string().required(),
+    }),
+    writeRules: false,
+    async resolve(_, {id}: {id: string}, {storage}: Context) {
+      const result = storage.removeDevice(id)
+      if (result.type === 'ok') return null
+      else throw raxaError(result.value)
+    },
+  },
   callDevice: {
     type: DeviceType,
     validate: joi.object({

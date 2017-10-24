@@ -1,13 +1,11 @@
 import glamorous from 'glamorous'
 import {History, Location} from 'history'
-import {grey} from 'material-definitions'
 import React from 'react'
 import {withRouter} from 'react-router'
 import AppBar from 'react-toolbox/lib/app_bar/AppBar'
-import {ButtonProps} from 'react-toolbox/lib/button/Button'
-import Navigation from 'react-toolbox/lib/navigation/Navigation'
 import {compose} from 'recompose'
 import {column} from 'style-definitions'
+import {Actions} from '../actions'
 import {
   ContextAction,
   ScaffoldContext,
@@ -95,7 +93,8 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
         this.setState({contextActions})
       },
       clearContextActions: () => {
-        this.setState({contextActions: undefined})
+        if (this.state.contextActions)
+          this.setState({contextActions: undefined})
       },
     }
   }
@@ -104,16 +103,6 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
     const {appName, children} = this.props
     const {contextActions} = this.state
     const activeSection = this.activeSection
-
-    function isSingleIcon(
-      contextActions?: Array<ContextAction>,
-    ): contextActions is [ContextAction] {
-      return !!(
-        contextActions &&
-        contextActions.length === 1 &&
-        !contextActions[0].label
-      )
-    }
 
     return (
       <Container>
@@ -125,39 +114,14 @@ export class ScaffoldView extends React.Component<PrivateScaffoldProps, State> {
               ? () => activeSection.onBack!(this.props.history)
               : undefined
           }
-          rightIcon={
-            isSingleIcon(contextActions) ? contextActions[0].icon : undefined
-          }
-          onRightIconClick={
-            isSingleIcon(contextActions)
-              ? contextActions[0].href
-                ? () => {
-                    this.props.history.push(contextActions[0].href!)
-                    if (contextActions[0].onClick) {
-                      contextActions[0].onClick!()
-                    }
-                  }
-                : contextActions[0].onClick
-              : undefined
-          }
-          style={{flexShrink: 0}}
         >
-          {contextActions &&
-            !isSingleIcon(contextActions) && (
-              <Navigation
-                type="horizontal"
-                actions={contextActions.map<ButtonProps>(action => ({
-                  ...action,
-                  inverse: true,
-                  style: {
-                    marginRight: -12,
-                    minWidth: 0,
-                    color: action.disabled ? grey[500] : undefined,
-                    background: action.disabled ? 'transparent' : undefined,
-                  },
-                }))}
-              />
-            )}
+          {contextActions && (
+            <Actions
+              actions={contextActions}
+              inverse
+              style={{marginRight: -8}}
+            />
+          )}
         </SolidAppBar>
         {children}
       </Container>

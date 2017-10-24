@@ -18,7 +18,10 @@ export const enhance = compose<PrivateContextActionsProps, ContextActionsProps>(
       setContextActions(contextActions)
     },
     componentWillReceiveProps(nextProps: PrivateContextActionsProps) {
-      if (!deepEqual(nextProps.contextActions, this.props.contextActions)) {
+      if (
+        nextProps.contextActions !== this.props.contextActions &&
+        !deepEqual(nextProps.contextActions, this.props.contextActions)
+      ) {
         const {contextActions, setContextActions} = nextProps
         setContextActions(contextActions)
       }
