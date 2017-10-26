@@ -1,3 +1,4 @@
+import MuiThemeProvider from 'material-ui-old/styles/MuiThemeProvider'
 import React from 'react'
 import {ApolloProvider} from 'react-apollo'
 import {Route} from 'react-router'
@@ -11,15 +12,18 @@ import {ReduxSnackbar} from './redux-snackbar/redux-snackbar'
 import theme from './toolbox/theme'
 import './toolbox/theme.css'
 
-export const App = () =>
+export const App = () => (
   <ApolloProvider client={client} store={store}>
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Scaffold appName="RAXA">
-          <Route exact path="/" component={Ui2} />
-          <Route path="/settings" component={Settings} />
-          <ReduxSnackbar />
-        </Scaffold>
-      </BrowserRouter>
+      <MuiThemeProvider>
+        <BrowserRouter>
+          <Scaffold appName="RAXA">
+            <Route exact path="/" component={Ui2} />
+            <Route path="/settings" component={Settings} />
+            <ReduxSnackbar />
+          </Scaffold>
+        </BrowserRouter>
+      </MuiThemeProvider>
     </ThemeProvider>
   </ApolloProvider>
+)

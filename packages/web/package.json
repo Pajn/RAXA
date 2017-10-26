@@ -26,6 +26,7 @@
     "iterates": "^0.1.0",
     "lodash.throttle": "^4.1.1",
     "material-definitions": "^0.3.0",
+    "material-ui-old": "npm:material-ui@latest",
     "prop-types": "^15.5.10",
     "raxa-common": "0.1.0",
     "react": "16.0.0",

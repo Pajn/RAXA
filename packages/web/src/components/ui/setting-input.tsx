@@ -13,21 +13,27 @@ import {IsMobileProps, withIsMobile} from './mediaQueries'
 const ListItem = ({
   style,
   children,
+  onClick,
 }: {
   style?: CSSProperties
   children?: ReactChild | Array<ReactChild>
+  onClick?: () => void
 }) => (
-  <div style={{display: 'flex', padding: '0 16px', ...style}}>{children}</div>
+  <div style={{display: 'flex', padding: '0 16px', ...style}} onClick={onClick}>
+    {children}
+  </div>
 )
 
-const ListItemLayout = ({
+export const ListItemLayout = ({
   caption,
   legend,
+  onClick,
 }: {
   caption: ReactChild
   legend: ReactChild
+  onClick?: () => void
 }) => (
-  <ListItem style={{flexDirection: 'column'}}>
+  <ListItem style={{flexDirection: 'column'}} onClick={onClick}>
     <div style={{fontSize: 16, color: '#212121'}}>{caption}</div>
     <div style={{paddingTop: 3, fontSize: 14, color: '#757575'}}>{legend}</div>
   </ListItem>
@@ -54,6 +60,7 @@ export type SettingInputProps = SettingValueProps & {
 
   max?: number
   min?: number
+  propertyId?: string
 }
 export type PrivateSettingInputProps = SettingInputProps &
   IsMobileProps & {

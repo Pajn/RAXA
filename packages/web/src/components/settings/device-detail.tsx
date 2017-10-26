@@ -312,6 +312,7 @@ export const DeviceDetailSettingsView = ({
                 component: PropertyView,
                 label: id,
                 property: config,
+                propertyId: id,
                 required: !config.optional && config.modifiable,
               }))
           : []),

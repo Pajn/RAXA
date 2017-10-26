@@ -7,9 +7,11 @@ import {
   ModificationProperty,
   NumberProperty,
   Property,
+  PropertyBase,
   StringProperty,
 } from 'raxa-common'
 import React from 'react'
+import {ScheduleInput} from '../ui/schedule-picker'
 import {
   SettingCheckbox,
   SettingDropdown,
@@ -22,54 +24,61 @@ import {ArrayInput} from './array-property'
 import {DeviceDispay, DeviceInput} from './device-property'
 import {ModificationInput} from './modification-property'
 
-export type PropertyProps<T, V = any> = ModifyablePropertyProps<T, V>
-export type ReadonlyPropertyProps<T, V = any> = {
+export type PropertyProps<
+  T extends PropertyBase,
+  V = any
+> = ModifyablePropertyProps<T, V>
+export type ReadonlyPropertyProps<T extends PropertyBase, V = any> = {
   property: T
+  propertyId: string
   value: V
   label?: string
 }
 
-export type ModifyablePropertyProps<T, V = any> = ReadonlyPropertyProps<
-  T,
-  V
-> & {
+export type ModifyablePropertyProps<
+  T extends PropertyBase,
+  V = any
+> = ReadonlyPropertyProps<T, V> & {
   onChange: (newValue: any) => void
 }
 
 export const GenericDisplay = ({
   property,
   value,
-}: ReadonlyPropertyProps<Property>) =>
+}: ReadonlyPropertyProps<Property>) => (
   <SettingValue
     label={property.name || property.id}
     value={value}
     unit={(property as {unit?: string}).unit}
   />
+)
 
 const NumberInput = ({
   property,
   value,
   onChange,
 }: PropertyProps<NumberProperty>) =>
-  property.min! + property.max!
-    ? <SettingSlider
-        label={property.name || property.id}
-        value={value}
-        onChange={onChange}
-        unit={property.unit}
-        min={property.min!}
-        max={property.max!}
-        step={property.type === 'integer' ? 1 : undefined}
-      />
-    : <SettingInput
-        label={property.name || property.id}
-        type="number"
-        value={value}
-        onChange={onChange}
-        unit={property.unit}
-        min={property.min}
-        max={property.max}
-      />
+  property.min! + property.max! ? (
+    <SettingSlider
+      label={property.name || property.id}
+      value={value}
+      onChange={onChange}
+      unit={property.unit}
+      min={property.min!}
+      max={property.max!}
+      step={property.type === 'integer' ? 1 : undefined}
+    />
+  ) : (
+    <SettingInput
+      label={property.name || property.id}
+      type="number"
+      value={value}
+      onChange={onChange}
+      unit={property.unit}
+      min={property.min}
+      max={property.max}
+    />
+  )
 
 const types = {
   action(props: PropertyProps<ActionProperty>) {
@@ -91,49 +100,74 @@ const types = {
     )
   },
   device(props: PropertyProps<DeviceProperty>) {
-    return props.property.modifiable
-      ? <DeviceInput {...props} />
-      : <DeviceDispay {...props} />
+    return props.property.modifiable ? (
+      <DeviceInput {...props} />
+    ) : (
+      <DeviceDispay {...props} />
+    )
   },
   enum(props: PropertyProps<EnumProperty>) {
-    return props.property.modifiable
-      ? <SettingDropdown
-          label={props.property.name || props.property.id}
-          value={props.value.toString()}
-          onChange={props.onChange}
-          source={props.property.values.map(({name, value}) => ({
-            label: name,
-            value: value.toString(),
-          }))}
-        />
-      : <GenericDisplay {...props} />
+    return props.property.modifiable ? (
+      <SettingDropdown
+        label={props.property.name || props.property.id}
+        value={props.value.toString()}
+        onChange={props.onChange}
+        source={props.property.values.map(({name, value}) => ({
+          label: name,
+          value: value.toString(),
+        }))}
+      />
+    ) : (
+      <GenericDisplay {...props} />
+    )
   },
   integer(props: PropertyProps<NumberProperty>) {
-    return props.property.modifiable
-      ? <NumberInput {...props} />
-      : <GenericDisplay {...props} />
+    return props.property.modifiable ? (
+      <NumberInput {...props} />
+    ) : (
+      <GenericDisplay {...props} />
+    )
   },
   modification(props: PropertyProps<ModificationProperty>) {
     return <ModificationInput {...props} />
   },
   number(props: PropertyProps<NumberProperty>) {
-    return props.property.modifiable
-      ? <NumberInput {...props} />
-      : <GenericDisplay {...props} />
+    return props.property.modifiable ? (
+      <NumberInput {...props} />
+    ) : (
+      <GenericDisplay {...props} />
+    )
   },
   string(props: PropertyProps<StringProperty>) {
-    return props.property.modifiable
-      ? <SettingInput
-          label={props.property.name || props.property.id}
-          value={props.value}
-          onChange={props.onChange}
-          unit={props.property.unit}
-        />
-      : <GenericDisplay {...props} />
+    return props.property.modifiable ? (
+      <SettingInput
+        label={props.property.name || props.property.id}
+        value={props.value}
+        onChange={props.onChange}
+        unit={props.property.unit}
+      />
+    ) : (
+      <GenericDisplay {...props} />
+    )
+  },
+  cron(props: PropertyProps<StringProperty>) {
+    return props.property.modifiable ? (
+      <ScheduleInput
+        label={props.property.name || props.property.id}
+        value={props.value}
+        onChange={props.onChange}
+      />
+    ) : (
+      <GenericDisplay {...props} />
+    )
   },
 }
 
 export const PropertyView = (props: PropertyProps<Property>) => {
+  if (props.propertyId === 'cron' && props.property.type === 'string') {
+    const Component = types.cron
+    return <Component {...props as any} />
+  }
   const Component = types[props.property.type]
 
   return <Component {...props} />
