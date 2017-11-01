@@ -11,7 +11,7 @@ type InjectedDispatch = {
 
 export type UpdateDeviceStatusInjectedProps = {
   setDeviceStatus(
-    deviceStatusId: string,
+    deviceStatusId: string | undefined,
     modification: Modification,
   ): Promise<any>
 }
@@ -23,29 +23,46 @@ export const updateDeviceStatus = () =>
     })),
     graphql<{}, UpdateDeviceStatusInjectedProps & InjectedDispatch>(
       gql`
-      mutation($deviceId: String!, $interfaceId: String!, $statusId: String!, $value: String!) {
-        setDeviceStatus(deviceId: $deviceId, interfaceId: $interfaceId, statusId: $statusId, value: $value) {
-          id
-          value
+        mutation(
+          $deviceId: String!
+          $interfaceId: String!
+          $statusId: String!
+          $value: String!
+        ) {
+          setDeviceStatus(
+            deviceId: $deviceId
+            interfaceId: $interfaceId
+            statusId: $statusId
+            value: $value
+          ) {
+            id
+            value
+          }
         }
-      }
-    `,
+      `,
       {
         props: ({
           mutate,
           ownProps: {__injectedDispatch: dispatch},
         }): UpdateDeviceStatusInjectedProps => ({
-          setDeviceStatus(deviceStatusId: string, modification: Modification) {
+          setDeviceStatus(
+            deviceStatusId: string | undefined,
+            modification: Modification,
+          ) {
             return mutate!({
               variables: modification,
-              optimisticResponse: {
-                __typename: 'Mutation',
-                setDeviceStatus: {
-                  __typename: 'DeviceStatus',
-                  id: deviceStatusId,
-                  value: modification.value,
-                },
-              },
+              ...deviceStatusId
+                ? {
+                    optimisticResponse: {
+                      __typename: 'Mutation',
+                      setDeviceStatus: {
+                        __typename: 'DeviceStatus',
+                        id: deviceStatusId,
+                        value: modification.value,
+                      },
+                    },
+                  }
+                : undefined,
             }).catch(() => {
               dispatch(
                 action(actions.showSnackbar, {
@@ -71,12 +88,16 @@ export const callDevice = () =>
     })),
     graphql<{}, CallDeviceInjectedProps & InjectedDispatch>(
       gql`
-      mutation($deviceId: String!, $interfaceId: String!, $method: String!) {
-        callDevice(deviceId: $deviceId, interfaceId: $interfaceId, method: $method) {
-          id
+        mutation($deviceId: String!, $interfaceId: String!, $method: String!) {
+          callDevice(
+            deviceId: $deviceId
+            interfaceId: $interfaceId
+            method: $method
+          ) {
+            id
+          }
         }
-      }
-    `,
+      `,
       {
         props: ({
           mutate,

@@ -10,6 +10,7 @@ import {WidgetComponent, WidgetProps} from '../widget'
 import {ButtonWidget} from './button'
 import {DisplayWidget} from './display'
 import {LightWidget} from './light'
+import {ReceiverWidget} from './receiver'
 
 function sortByOrder<K, T extends {id: K}>(
   sortOrder: Array<K>,
@@ -170,6 +171,14 @@ export const ListWidgetView = ({
                     deviceId: device.id,
                     interfaceId: 'Scenery',
                     method: 'set',
+                  }}
+                />
+              ) : device.interfaceIds!.includes('SonyReceiver') &&
+              (!interfaceIds || interfaceIds.includes('SonyReceiver')) ? (
+                <ReceiverWidget
+                  key={device.id}
+                  config={{
+                    deviceId: device.id,
                   }}
                 />
               ) : device.types!.includes(DeviceType.Light) &&

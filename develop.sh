@@ -23,5 +23,7 @@ if [ $? != 0 ]; then
   byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
   byobu-tmux -L raxa new-window -t raxa -c packages/plugin-trigger -n "plugin-trigger "
   byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
+  byobu-tmux -L raxa new-window -t raxa -c packages/plugin-sony-receiver -n "plugin-sony-receiver "
+  byobu-tmux -L raxa send-keys -t raxa "yarn watch" C-m
 fi
 byobu-tmux $@ -L raxa attach -t raxa

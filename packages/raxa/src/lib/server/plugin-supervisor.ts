@@ -78,6 +78,7 @@ export class PluginSupervisor extends Service {
         'trigger',
         'sunricher',
         'mysensors',
+        'sony-receiver',
       ]
         // .filter(plugin => !storage.getState().plugins[plugin])
         .map(plugin => this.installPlugin(plugin)),
