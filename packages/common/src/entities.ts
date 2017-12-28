@@ -177,10 +177,10 @@ export interface DeviceProperty extends PropertyBase {
   deviceClassIds?: Array<string>
 }
 
-export interface EnumProperty<T = string | number> extends PropertyBase {
+export interface EnumProperty extends PropertyBase {
   type: 'enum'
-  values: Array<{name: string; value: T}>
-  defaultValue?: T
+  values: Array<{name: string; value: string}>
+  defaultValue?: string
 }
 
 export interface ModificationProperty extends PropertyBase {
