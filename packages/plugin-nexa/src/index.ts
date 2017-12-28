@@ -89,17 +89,30 @@ export default class NexaPlugin extends Plugin {
         true,
       )
       if (this.className(device) === 'NexaCodeSwitch') {
-        return this.codeSwitchModified(modification, device)
+        return this.codeSwitchModified(modification, device, true)
       } else {
-        return this.selfLearningModified(modification, device, true)
+        return this.selfLearningModified(modification, device, {
+          forceOn: true,
+          learn: true,
+        })
       }
+    } else if (
+      call.interfaceId === 'NexaUnlearnAll' &&
+      call.method === 'unlearnAll'
+    ) {
+      const modification = createModification(
+        device,
+        defaultInterfaces.Power.status.on,
+        false,
+      )
+      return this.selfLearningModified(modification, device, {groupMode: true})
     }
   }
 
   onDeviceStatusModified(modification: Modification, device: NexaDevice) {
     console.log('onDeviceStatusModified', modification)
     if (this.className(device) === 'NexaCodeSwitch') {
-      return this.codeSwitchModified(modification, device)
+      return this.codeSwitchModified(modification, device, false)
     } else {
       return this.selfLearningModified(modification, device)
     }
@@ -114,7 +127,7 @@ export default class NexaPlugin extends Plugin {
   private sendPulse(
     pulse: Array<number>,
     senderId: string,
-    selfLearning: boolean,
+    {selfLearning = true, learning = false},
   ) {
     return this.callDevice({
       deviceId: senderId,
@@ -122,7 +135,7 @@ export default class NexaPlugin extends Plugin {
       method: defaultInterfaces['433MHzPulse'].methods.send.id,
       arguments: {
         pulse,
-        repeats: selfLearning ? 5 : 8,
+        repeats: learning ? 8 : selfLearning ? 5 : 8,
         pause: selfLearning ? 10 : 30,
       },
     })
@@ -131,6 +144,7 @@ export default class NexaPlugin extends Plugin {
   private async codeSwitchModified(
     modification: Modification,
     device: NexaDevice,
+    learning: boolean,
   ) {
     if (isStatus(modification, defaultInterfaces.Power.status.on)) {
       let senderId = device.config.sender
@@ -148,7 +162,7 @@ export default class NexaPlugin extends Plugin {
       await this.sendPulse(
         codeSwitchPulse(houseCode, deviceCode, action),
         senderId,
-        false,
+        {selfLearning: false, learning},
       ).then(() => {
         return this.dispatch(actions.statusUpdated, {
           deviceId: device.id,
@@ -163,7 +177,7 @@ export default class NexaPlugin extends Plugin {
   private async selfLearningModified(
     modification: Modification,
     device: NexaDevice,
-    forceOn = false,
+    {forceOn = false, groupMode = false, learn = false} = {},
   ) {
     const senderId = device.config.sender
     const deviceCode = device.config.deviceCode
@@ -188,9 +202,9 @@ export default class NexaPlugin extends Plugin {
 
         this.log.debug(`Dimming device ${device.name} to level ${dimLevel}`)
         await this.sendPulse(
-          selfLearningPulse(deviceCode, 7, DIM, dimLevel),
+          selfLearningPulse(deviceCode, groupMode, 7, DIM, dimLevel),
           senderId,
-          true,
+          {selfLearning: true, learning: learn},
         )
           .then(() => {
             return this.dispatch(actions.statusUpdated, {
@@ -221,9 +235,9 @@ export default class NexaPlugin extends Plugin {
       )
 
       await this.sendPulse(
-        selfLearningPulse(deviceCode, 7, action),
+        selfLearningPulse(deviceCode, groupMode, 7, action),
         senderId,
-        true,
+        {selfLearning: true, learning: learn},
       ).then(() => {
         return this.dispatch(actions.statusUpdated, {
           deviceId: device.id,
@@ -310,57 +324,62 @@ function codeSwitchPulse(
 
 function selfLearningPulse(
   deviceCode: number,
+  groupMode: boolean,
   groupCode: number,
   action: number,
   dimLevel?: number,
 ): Array<number> {
-  const ONE = [25, 25]
-  const ZERO = [25, 125]
+  const T = 26
+  const T5 = T * 5
+  const ZERO = [T, T, T, T5]
+  const ONE = [T, T5, T, T]
+  const DIM_BIT = [T, T, T, T]
 
-  let pulse = [29, 255]
+  let pulse = [1, 26, 255]
 
   for (let i = 25; i >= 0; i--) {
-    if ((deviceCode & (1 << i)) !== 0) {
-      pulse = pulse.concat(ONE, ZERO)
+    if ((deviceCode & (1 << i)) === 0) {
+      pulse = pulse.concat(ZERO)
     } else {
-      pulse = pulse.concat(ZERO, ONE)
+      pulse = pulse.concat(ONE)
     }
   }
 
-  // Group is disabled
-  pulse = pulse.concat(ZERO, ONE)
+  if (groupMode) {
+    pulse = pulse.concat(ONE)
+  } else {
+    pulse = pulse.concat(ZERO)
+  }
 
   switch (action) {
     case ON:
-      pulse = pulse.concat(ZERO, ONE)
+      pulse = pulse.concat(ONE)
       break
     case OFF:
-      pulse = pulse.concat(ONE, ZERO)
+      pulse = pulse.concat(ZERO)
       break
     case DIM:
-      pulse = pulse.concat(ONE, ONE)
+      pulse = pulse.concat(DIM_BIT)
       break
   }
 
   for (let i = 3; i >= 0; --i) {
-    if ((groupCode & (1 << i)) !== 0) {
-      pulse = pulse.concat(ONE, ZERO)
+    if ((groupCode & (1 << i)) === 0) {
+      pulse = pulse.concat(ZERO)
     } else {
-      pulse = pulse.concat(ZERO, ONE)
+      pulse = pulse.concat(ONE)
     }
   }
 
   if (action === DIM) {
     for (let i = 3; i >= 0; --i) {
-      if ((dimLevel! & (1 << i)) !== 0) {
-        pulse = pulse.concat(ZERO, ONE)
+      if ((dimLevel! & (1 << i)) === 0) {
+        pulse = pulse.concat(ZERO)
       } else {
-        pulse = pulse.concat(ONE, ZERO)
+        pulse = pulse.concat(ONE)
       }
     }
   }
-
-  pulse = pulse.concat(ZERO)
 
   return pulse
 }

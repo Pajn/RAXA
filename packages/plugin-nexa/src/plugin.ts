@@ -94,6 +94,7 @@ const plugin = {
       interfaceIds: [
         defaultInterfaces.Power.id,
         defaultInterfaces.SelfLearning.id,
+        'NexaUnlearnAll',
       ],
       pluginId: 'Nexa',
     },
@@ -129,11 +130,25 @@ const plugin = {
         defaultInterfaces.Power.id,
         defaultInterfaces.SelfLearning.id,
         defaultInterfaces.Dimmer.id,
+        'NexaUnlearnAll',
       ],
       pluginId: 'Nexa',
     },
   },
-  interfaces: {},
+  interfaces: {
+    NexaUnlearnAll: {
+      id: 'NexaUnlearnAll',
+      name: 'Unlearn all',
+      methods: {
+        unlearnAll: {
+          id: 'unlearnAll',
+          name: 'Unlearn All',
+          showInSettings: true,
+          arguments: {},
+        },
+      },
+    },
+  },
 }
 export const _typeCheck: PluginDefinition = plugin
 
