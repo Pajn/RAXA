@@ -55,8 +55,8 @@ export const Ui2View = ({sortOrders, dispatch}) => (
           action(actions.sortedWidgets, {section: 'Lighting', sortOrder}),
         )}
     />
-    <ListSubHeader caption="Receiver" />
-    <ListWidget column config={{interfaceIds: ['SonyReceiver']}} />
+    {/* <ListSubHeader caption="Receiver" />
+    <ListWidget column config={{interfaceIds: ['SonyReceiver']}} /> */}
     <ListSubHeader caption="Temperature" />
     <ListWidget column config={{interfaceIds: ['Temperature']}} />
   </Ui2Container>

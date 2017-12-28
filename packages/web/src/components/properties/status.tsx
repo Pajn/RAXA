@@ -74,6 +74,7 @@ export const StatelessStatusView = ({
         </div>
       ) : (
         <PropertyView
+          propertyId={data.interface.status[statusId].id}
           property={data.interface.status[statusId]}
           value={value}
           label={label}

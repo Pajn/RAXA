@@ -162,6 +162,7 @@ export const ArrayInputView = ({
                 )}
                 <div style={{padding: '8px 16px'}}>
                   <PropertyView
+                    propertyId={property.items.id}
                     property={property.items}
                     value={item}
                     onChange={updated => {

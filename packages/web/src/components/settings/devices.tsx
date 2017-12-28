@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import {filter, flatMap, map} from 'iterates/lib/sync'
 import {title} from 'material-definitions'
-import {DeviceType, GraphQlDevice} from 'raxa-common'
+import {GraphQlDevice} from 'raxa-common'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
 import BadIconButton from 'react-toolbox/lib/button/IconButton'
@@ -16,6 +16,8 @@ import {ContextActions} from '../ui/scaffold/context-actions'
 import {DeviceDetailSettings} from './device-detail'
 
 const IconButton: any = BadIconButton
+
+const deviceTypeOther = 'Other'
 
 const Title = glamorous.h3(title)
 const ListHeader = glamorous.div({...row({vertical: 'center'}), flexShrink: 0})
@@ -82,14 +84,7 @@ const groupDevices = (devices: Array<GraphQlDevice>): Array<DeviceOrHeader> => {
   for (const device of devices) {
     for (let type of device.types && device.types.length
       ? device.types
-      : ['Other']) {
-      if (
-        !([DeviceType.Light, DeviceType.Scenery] as Array<string>).includes(
-          type,
-        )
-      ) {
-        type = 'Other'
-      }
+      : [deviceTypeOther]) {
       let devices = groups.get(type)
       if (!devices) {
         devices = []
@@ -98,6 +93,18 @@ const groupDevices = (devices: Array<GraphQlDevice>): Array<DeviceOrHeader> => {
       devices.push(device)
     }
   }
+
+  groups.forEach((devices, type) => {
+    if (devices.length < 2) {
+      let others = groups.get(deviceTypeOther)
+      if (!others) {
+        others = []
+        groups.set(deviceTypeOther, others)
+      }
+      others.concat(devices)
+      groups.delete(type)
+    }
+  })
 
   return [
     ...fnCompose(
@@ -110,7 +117,7 @@ const groupDevices = (devices: Array<GraphQlDevice>): Array<DeviceOrHeader> => {
           [type, groups.get(type)!] as [string, Array<GraphQlDevice>],
       ),
       filter((type: string) => groups.has(type)),
-    )([DeviceType.Scenery, DeviceType.Light, 'Other']),
+    )(groups.keys()),
   ]
 }
 

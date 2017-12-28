@@ -3,17 +3,31 @@ import {History, Location} from 'history'
 import {grey} from 'material-definitions'
 import React from 'react'
 import {withRouter} from 'react-router'
+import {ButtonProps, IconButtonProps} from 'react-toolbox/lib/button'
 import Button from 'react-toolbox/lib/button/Button'
-import BadIconButton, {
-  IconButton as UnstyledIconButton,
-} from 'react-toolbox/lib/button/IconButton'
+import BadIconButton from 'react-toolbox/lib/button/IconButton'
 import IconMenu from 'react-toolbox/lib/menu/IconMenu'
 import MenuItem from 'react-toolbox/lib/menu/MenuItem'
 import {withMedia} from 'react-with-media'
 import {compose} from 'recompose'
 import {row} from 'style-definitions'
 
-const IconButton = (BadIconButton as any) as typeof UnstyledIconButton
+declare module 'react-toolbox/lib/menu/MenuItem' {
+  interface MenuItemProps {
+    type?: string
+    form?: string
+  }
+}
+
+declare module 'react-toolbox/lib/menu/IconMenu' {
+  interface IconMenuProps {
+    inverse?: boolean
+  }
+}
+
+const IconButton = (BadIconButton as any) as React.ComponentType<
+  IconButtonProps & {form?: string}
+>
 
 export type Placement = 'menu' | 'toolbar' | 'auto'
 
@@ -62,7 +76,9 @@ export type ActionsPrivateProps = ActionsProps & {
 const ActionRow = glamorous.div(
   row({horizontal: 'flex-end', vertical: 'center'}),
 )
-const ActionButton = glamorous(Button)({
+const ActionButton = glamorous<ButtonProps & {type?: string; form?: string}>(
+  Button,
+)({
   '&[data-react-toolbox="button"]': {
     minWidth: 0,
   },

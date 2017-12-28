@@ -181,7 +181,8 @@ export const ListWidgetView = ({
                     deviceId: device.id,
                   }}
                 />
-              ) : device.types!.includes(DeviceType.Light) &&
+              ) : (device.types!.includes(DeviceType.Light) ||
+                device.types!.includes(DeviceType.Outlet)) &&
               (!interfaceIds ||
                 interfaceIds.includes(defaultInterfaces.Power.id) ||
                 interfaceIds.includes(defaultInterfaces.Dimmer.id)) ? (

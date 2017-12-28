@@ -17,22 +17,27 @@ export const enhanceDeviceDisplay = compose<
 >(
   graphql(
     gql`
-    query($value: String!) {
-      device(id: $value) {
-        id
-        name
+      query($value: String!) {
+        device(id: $value) {
+          id
+          name
+        }
       }
-    }
-  `,
+    `,
     {skip: ({value}) => !value},
   ),
 )
 
-export const DeviceDispayView = ({data, property}: PrivateDeviceDispayProps) =>
+export const DeviceDispayView = ({
+  data,
+  property,
+}: PrivateDeviceDispayProps) => (
   <GenericDisplay
+    propertyId={property.id}
     property={property}
     value={data && data.device && data.device.name}
   />
+)
 
 export const DeviceDispay = enhanceDeviceDisplay(
   DeviceDispayView,
@@ -64,7 +69,7 @@ export const DeviceInputView = ({
   property,
   value,
   onChange,
-}: PrivateDeviceInputProps) =>
+}: PrivateDeviceInputProps) => (
   <SettingDropdown
     label={property.name || property.id}
     source={
@@ -75,5 +80,6 @@ export const DeviceInputView = ({
     value={value}
     onChange={onChange}
   />
+)
 
 export const DeviceInput = enhanceDeviceInput(DeviceInputView)

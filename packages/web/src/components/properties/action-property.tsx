@@ -35,21 +35,24 @@ const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
   const selectedInterface = selectedDevice.interfaces.find(
     iface => iface.id === interfaceId,
   )!
-  const method = selectedInterface.methods &&
+  const method =
+    selectedInterface.methods &&
     Object.values(selectedInterface.methods).length === 1
-    ? Object.values(selectedInterface.methods)[0].id
-    : undefined
-  const statusId = selectedInterface.status &&
+      ? Object.values(selectedInterface.methods)[0].id
+      : undefined
+  const statusId =
+    selectedInterface.status &&
     Object.values(selectedInterface.status).length === 1
-    ? Object.values(selectedInterface.status)[0].id
-    : undefined
+      ? Object.values(selectedInterface.status)[0].id
+      : undefined
   return {
     interfaceId,
     method: method && statusId ? undefined : method,
     statusId: method && statusId ? undefined : statusId,
-    type: !method && statusId
-      ? 'modification'
-      : method && !statusId ? 'call' : undefined,
+    type:
+      !method && statusId
+        ? 'modification'
+        : method && !statusId ? 'call' : undefined,
     arguments: {},
     value: undefined,
   }
@@ -77,19 +80,19 @@ export const enhanceActionInput = compose<
   })),
   graphql<GraphQlResult, PrivateActionInputProps>(
     gql`
-    query($interfaceIds: [String!], $deviceClassIds: [String!]) {
-      devices(interfaceIds: $interfaceIds, deviceClassIds: $deviceClassIds) {
-        id
-        name
-        interfaces {
+      query($interfaceIds: [String!], $deviceClassIds: [String!]) {
+        devices(interfaceIds: $interfaceIds, deviceClassIds: $deviceClassIds) {
           id
           name
-          methods
-          status
+          interfaces {
+            id
+            name
+            methods
+            status
+          }
         }
       }
-    }
-  `,
+    `,
   ),
   mapProps((props: PrivateActionInputProps): PrivateActionInputProps => {
     const {data, value} = props
@@ -102,20 +105,20 @@ export const enhanceActionInput = compose<
       selectedDevice && selectedDevice.interfaces.filter(validInterface)
     const selectedInterface =
       interfaces && interfaces.find(iface => iface.id === value.interfaceId)
-    const selectedMethod = selectedInterface &&
-      selectedInterface.methods &&
-      value.type === 'call'
-      ? Object.values(selectedInterface.methods).find(
-          method => method.id === value.method,
-        )
-      : undefined
-    const selectedStatus = selectedInterface &&
+    const selectedMethod =
+      selectedInterface && selectedInterface.methods && value.type === 'call'
+        ? Object.values(selectedInterface.methods).find(
+            method => method.id === value.method,
+          )
+        : undefined
+    const selectedStatus =
+      selectedInterface &&
       selectedInterface.status &&
       value.type === 'modification'
-      ? Object.values(selectedInterface.status).find(
-          status => status.id === value.statusId,
-        )
-      : undefined
+        ? Object.values(selectedInterface.status).find(
+            status => status.id === value.statusId,
+          )
+        : undefined
     let actions: Array<Method | Property> = []
     if (selectedInterface) {
       if (selectedInterface.methods) {
@@ -157,7 +160,7 @@ export const ActionInputView = ({
   selectedStatus,
   interfaces,
   actions,
-}: PrivateActionInputProps) =>
+}: PrivateActionInputProps) => (
   <div>
     <SettingDropdown
       label="Device"
@@ -174,22 +177,23 @@ export const ActionInputView = ({
     />
     {selectedDevice &&
       interfaces &&
-      interfaces.length > 1 &&
-      <SettingDropdown
-        label="Interface"
-        source={interfaces.map(iface => ({
-          value: iface.id,
-          label: iface.name || iface.id,
-        }))}
-        value={value.interfaceId}
-        onChange={interfaceId => {
-          onChange({
-            ...value,
-            ...setInterface(interfaceId, selectedDevice),
-          })
-        }}
-      />}
-    {actions.length > 1 &&
+      interfaces.length > 1 && (
+        <SettingDropdown
+          label="Interface"
+          source={interfaces.map(iface => ({
+            value: iface.id,
+            label: iface.name || iface.id,
+          }))}
+          value={value.interfaceId}
+          onChange={interfaceId => {
+            onChange({
+              ...value,
+              ...setInterface(interfaceId, selectedDevice),
+            })
+          }}
+        />
+      )}
+    {actions.length > 1 && (
       <SettingDropdown
         label="Action"
         source={actions.map(status => ({
@@ -216,11 +220,13 @@ export const ActionInputView = ({
             })
           }
         }}
-      />}
+      />
+    )}
     {selectedInterface &&
       selectedMethod &&
-      Object.values(selectedMethod.arguments).map(argument =>
+      Object.values(selectedMethod.arguments).map(argument => (
         <PropertyView
+          propertyId={argument.id}
           property={argument}
           value={value}
           label={argument.name || argument.id}
@@ -233,17 +239,19 @@ export const ActionInputView = ({
               },
             })
           }}
-        />,
-      )}
+        />
+      ))}
     {selectedInterface &&
-      selectedStatus &&
-      <StatelessStatusView
-        {...value as Modification}
-        id=""
-        data={{interface: selectedInterface}}
-        setDeviceStatus={(_, modification) =>
-          Promise.resolve(onChange({...modification, type: 'modification'}))}
-      />}
+      selectedStatus && (
+        <StatelessStatusView
+          {...value as Modification}
+          id=""
+          data={{interface: selectedInterface}}
+          setDeviceStatus={(_, modification) =>
+            Promise.resolve(onChange({...modification, type: 'modification'}))}
+        />
+      )}
   </div>
+)
 
 export const ActionInput = enhanceActionInput(ActionInputView)
