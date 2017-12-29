@@ -1,7 +1,7 @@
 import Datastore from 'nedb'
 import nedb from 'nedb-persist'
 import {join} from 'path'
-import {Modification, Property, Result} from 'raxa-common'
+import {Modification, Property} from 'raxa-common'
 import {
   Device,
   DeviceClass,
@@ -44,6 +44,16 @@ import {autoRehydrate, persistStore} from 'redux-persist'
 import {dataDir} from '../config'
 import {pubsub} from '../graphql/schema'
 import {PluginSupervisor} from './plugin-supervisor'
+
+type Result<T, E> = {type: 'ok'; value: T} | {type: 'err'; value: E}
+namespace Result {
+  export function ok<T>(value: T): Result<T, never> {
+    return {type: 'ok', value}
+  }
+  export function err<E>(err: E): Result<never, E> {
+    return {type: 'err', value: err}
+  }
+}
 
 const deviceReducer = createReducer<DeviceState>({})
   .when(actions.deviceAdded, (state, {device}) => ({
@@ -243,11 +253,10 @@ export class StorageService extends Service {
       const deviceClass = deviceClasses[device.deviceClassId]
       if (!deviceClass.config) return false
 
-      return configHasDevice(
-        deviceToRemove.id,
-        device.config,
-        {type: 'object', properties: deviceClass.config} as ObjectProperty<any>,
-      )
+      return configHasDevice(deviceToRemove.id, device.config, {
+        type: 'object',
+        properties: deviceClass.config,
+      } as ObjectProperty<any>)
     })
 
     if (usedInDevices.length > 0) {
