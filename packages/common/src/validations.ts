@@ -157,14 +157,20 @@ function propertyToJoi(property: Property) {
     case 'action':
       joiRule = joi.alternatives([
         joi.object({
-          type: joi.string().required().only('call'),
+          type: joi
+            .string()
+            .required()
+            .only('call'),
           deviceId: joi.string().required(),
           interfaceId: joi.string().required(),
           method: joi.string().required(),
           arguments: joi.object().required(),
         }),
         joi.object({
-          type: joi.string().required().only('modification'),
+          type: joi
+            .string()
+            .required()
+            .only('modification'),
           deviceId: joi.string().required(),
           interfaceId: joi.string().required(),
           statusId: joi.string().required(),
@@ -182,9 +188,8 @@ function propertyToJoi(property: Property) {
       joiRule = joi.string()
       break
     case 'enum':
-      joiRule = joi
-        .alternatives(joi.string(), joi.number())
-        .only(property.values.map(value => value.value))
+      joiRule = joi.alternatives(joi.string(), joi.number())
+      // .only(property.values.map(value => value.value.toString()))
       break
     case 'modification':
       joiRule = joi.object({
@@ -230,8 +235,9 @@ export function validateAction(state: State, action: Call | Modification) {
     throw raxaError({type: 'missingInterface', interfaceId: action.interfaceId})
   const deviceClass = state.deviceClasses[device.deviceClassId]
   if (
-    !(device.interfaceIds || deviceClass.interfaceIds)
-      .includes(action.interfaceId)
+    !(device.interfaceIds || deviceClass.interfaceIds).includes(
+      action.interfaceId,
+    )
   ) {
     throw Error('Device does not implement inteface')
   }

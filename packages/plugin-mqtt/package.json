@@ -1,0 +1,26 @@
+{
+  "name": "raxa-plugin-mqtt",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Rasmus Eneman <rasmus@eneman.eu>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@types/node": "^8.5.2",
+    "mosca": "^2.7.0",
+    "raxa-common": "0.1.0"
+  },
+  "devDependencies": {
+    "tscomp": "^0.14.1"
+  },
+  "tscomp": {
+    "mode": "lib"
+  },
+  "scripts": {
+    "build": "tscomp build",
+    "test": "tscomp test",
+    "eject": "tscomp eject",
+    "watch": "tscomp watch"
+  },
+  "main": "./cjs/index.js",
+  "typings": "./lib/index.d.ts"
+}
