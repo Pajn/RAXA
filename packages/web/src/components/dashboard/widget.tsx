@@ -1,6 +1,6 @@
+import Card from 'material-ui/Card'
 import {Property} from 'raxa-common'
 import React from 'react'
-import {Card} from 'react-toolbox/lib/card'
 import {compose, withHandlers, withState} from 'recompose'
 import {
   InjectedInputEventsProps,
@@ -86,10 +86,7 @@ export const enhance = compose<WidgetWrapperPrivateProps, WidgetWrapperProps>(
   withState('translate', 'setTranslate', undefined),
   withState('scale', 'setScale', undefined),
   withInputEvents,
-  withHandlers<
-    WidgetWrapperPrivateProps,
-    WidgetWrapperPrivateProps
-  >(
+  withHandlers<WidgetWrapperPrivateProps, Partial<WidgetWrapperPrivateProps>>(
     ({
       onClickEvents,
       onMoveEvents,
@@ -213,7 +210,7 @@ export const WidgetView = ({
   y,
   width,
   height,
-}: WidgetWrapperPrivateProps) =>
+}: WidgetWrapperPrivateProps) => (
   <Cell
     x={x}
     y={y}
@@ -226,10 +223,11 @@ export const WidgetView = ({
             transform:
               (translate &&
                 scale &&
-                `translate(${translate.x}px, ${translate.y}px) scale(${scale.x}, ${scale.y})`) ||
-                (translate &&
-                  `translate(${translate.x}px, ${translate.y}px)`) ||
-                (scale && `scale(${scale.x}, ${scale.y})`),
+                `translate(${translate.x}px, ${translate.y}px) scale(${
+                  scale.x
+                }, ${scale.y})`) ||
+              (translate && `translate(${translate.x}px, ${translate.y}px)`) ||
+              (scale && `scale(${scale.x}, ${scale.y})`),
           }
         : undefined
     }
@@ -239,7 +237,7 @@ export const WidgetView = ({
     <Card style={{position: 'relative', padding: 8, height: '100%'}}>
       {children}
     </Card>
-    {editMode &&
+    {editMode && (
       <HandleContainer visible={showHandles}>
         <Handle
           top
@@ -293,7 +291,9 @@ export const WidgetView = ({
           onDragMove={onResize(false)}
           onDragDone={onResize(true)}
         />
-      </HandleContainer>}
+      </HandleContainer>
+    )}
   </Cell>
+)
 
 export const Widget = enhance(WidgetView)

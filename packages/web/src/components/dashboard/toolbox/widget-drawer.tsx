@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import {title} from 'material-definitions'
+import Card from 'material-ui/Card'
 import React from 'react'
-import {Card} from 'react-toolbox/lib/card'
 import {compose, withHandlers, withState} from 'recompose'
 import {
   InjectedInputEventsProps,
@@ -147,21 +147,23 @@ const WidgetDisplayView = ({
   widget: Widget,
   position,
   grabWidget,
-}: WidgetDisplayPrivateProps) =>
+}: WidgetDisplayPrivateProps) => (
   <WidgetDisplayContainer onMouseDown={grabWidget}>
     <WidgetCard raised>
       <Widget config={Widget.demoConfig} />
     </WidgetCard>
     <WidgetName>{Widget.uiName}</WidgetName>
-    {position &&
+    {position && (
       <DraggingWidget
         style={{transform: `translate(${position.x}px, ${position.y}px)`}}
       >
         <WidgetCard raised>
           <Widget config={Widget.demoConfig} />
         </WidgetCard>
-      </DraggingWidget>}
+      </DraggingWidget>
+    )}
   </WidgetDisplayContainer>
+)
 
 const WidgetDisplay = enhanceDisplay(WidgetDisplayView)
 
@@ -174,11 +176,12 @@ export const enhance = compose<WidgetDrawerPrivateProps, WidgetDrawerProps>(
   connectState(dashboardState, state => ({widgetTypes: state.widgetTypes})),
 )
 
-export const WidgetDrawerView = ({widgetTypes}: WidgetDrawerPrivateProps) =>
+export const WidgetDrawerView = ({widgetTypes}: WidgetDrawerPrivateProps) => (
   <ToolboxContainer>
-    {Object.entries(widgetTypes).map(([id, widget]) =>
-      <WidgetDisplay key={id} widget={widget} />,
-    )}
+    {Object.entries(widgetTypes).map(([id, widget]) => (
+      <WidgetDisplay key={id} widget={widget} />
+    ))}
   </ToolboxContainer>
+)
 
 export const WidgetDrawer = enhance(WidgetDrawerView)

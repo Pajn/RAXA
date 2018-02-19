@@ -1,12 +1,12 @@
 import glamorous from 'glamorous'
 import {title} from 'material-definitions'
 import React from 'react'
+import {Section} from 'react-material-app'
 import {compose} from 'recompose'
 import {row} from 'style-definitions'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
-import {Section} from '../ui/scaffold/section'
 import {DeviceSettings} from './devices'
 import {PluginSettings} from './plugins'
 
@@ -14,38 +14,9 @@ const Title = glamorous.h3(title)
 const ListHeader = glamorous.div(row({vertical: 'center'}))
 
 export type SettingsProps = {}
-// export type ListGraphQlData = {devices: Array<GraphQlDevice>}
-export type PrivateSettingsProps = SettingsProps &
-  IsMobileProps & {
-    // data: ListGraphQlData & QueryProps
-  }
+export type PrivateSettingsProps = SettingsProps & IsMobileProps & {}
 
-const enhance = compose<PrivateSettingsProps, SettingsProps>(
-  // graphql(gql`
-  //   query {
-  //     devices {
-  //       id
-  //       name
-  //       config
-  //       deviceClass {
-  //         id
-  //         name
-  //         config
-  //       }
-  //       interfaces {
-  //         id
-  //         name
-  //         methods
-  //       }
-  //     }
-  //   }
-  // `),
-  // withState('newDevice', 'setNewDevice', null),
-  // withState('createNewDevice', '', props => () =>
-  //   props.setNewDevice({interfaces: []}),
-  // ),
-  withIsMobile,
-)
+const enhance = compose<PrivateSettingsProps, SettingsProps>(withIsMobile)
 
 const SettingsList = ListDetail as React.StatelessComponent<
   ListDetailProps<

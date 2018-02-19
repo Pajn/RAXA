@@ -1,35 +1,34 @@
 import glamorous from 'glamorous'
 import {filter, flatMap, map} from 'iterates/lib/sync'
 import {title} from 'material-definitions'
+import Icon from 'material-ui/Icon'
+import IconButton from 'material-ui/IconButton'
+import MUIListSubheader from 'material-ui/List/ListSubheader'
 import {GraphQlDevice} from 'raxa-common'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
-import BadIconButton from 'react-toolbox/lib/button/IconButton'
-import BadListSubHeader from 'react-toolbox/lib/list/ListSubHeader'
+import {ContextActions} from 'react-material-app'
 import {compose, withState} from 'recompose'
 import {compose as fnCompose} from 'redux'
 import {row} from 'style-definitions'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
-import {ContextActions} from '../ui/scaffold/context-actions'
 import {DeviceDetailSettings} from './device-detail'
-
-const IconButton: any = BadIconButton
 
 const deviceTypeOther = 'Other'
 
 const Title = glamorous.h3(title)
 const ListHeader = glamorous.div({...row({vertical: 'center'}), flexShrink: 0})
-const ListSubHeader = glamorous(
-  (BadListSubHeader as any) as (typeof BadListSubHeader)['ListSubHeader'],
-)(({isMobile}: {isMobile: boolean}) => ({
-  paddingLeft: isMobile ? '' : '0 !important',
-  'div + div>&': {
-    margin: '0 !important',
-    borderTop: isMobile ? `1px solid rgba(0, 0, 0, 0.12)` : '',
-  },
-}))
+const ListSubHeader = glamorous(MUIListSubheader, {filterProps: ['isMobile']})(
+  ({isMobile}: {isMobile: boolean}) => ({
+    paddingLeft: isMobile ? '' : '0 !important',
+    'div + div>&': {
+      margin: '0 !important',
+      borderTop: isMobile ? `1px solid rgba(0, 0, 0, 0.12)` : '',
+    },
+  }),
+)
 
 export type DeviceSettingsProps = {}
 export type ListGraphQlData = {devices: Array<GraphQlDevice>}
@@ -142,19 +141,22 @@ export const DeviceSettingsView = ({
             title: item.value.name,
             path: `/settings/devices/${item.value.id}`,
           }
-        : null}
+        : null
+    }
     renderItem={(item, _, index) =>
       item.type === 'device' ? (
         <ListItem key={index} caption={item.value.name} />
       ) : (
         <div key={index}>
-          <ListSubHeader caption={item.value} isMobile={isMobile} />
+          <ListSubHeader isMobile={isMobile}>{item.value}</ListSubHeader>
         </div>
-      )}
+      )
+    }
     renderActiveItem={item =>
       item.type === 'device' ? (
         <DeviceDetailSettings device={item.value} />
-      ) : null}
+      ) : null
+    }
     activeItem={
       newDevice && {
         item: newDevice,
@@ -172,14 +174,16 @@ export const DeviceSettingsView = ({
             {
               icon: 'add',
               onClick: createNewDevice,
-              href: '/settings/devices/new',
+              to: '/settings/devices/new',
             },
           ]}
         />
       ) : (
         <ListHeader>
           <Title style={{flex: 1}}>Devices</Title>
-          <IconButton icon="add" onClick={createNewDevice} />
+          <IconButton onClick={createNewDevice}>
+            <Icon>add</Icon>
+          </IconButton>
         </ListHeader>
       )
     }

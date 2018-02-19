@@ -5,15 +5,15 @@
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@types/node": "^8.0.46",
+    "@types/node": "^8.5.2",
     "@types/node-fetch": "^1.6.7",
-    "@types/node-schedule": "^1.2.0",
+    "@types/node-schedule": "^1.2.2",
     "node-fetch": "^1.7.1",
     "node-schedule": "^1.2.3",
     "raxa-common": "0.1.0"
   },
   "devDependencies": {
-    "tscomp": "^0.13.6"
+    "tscomp": "^0.14.1"
   },
   "tscomp": {
     "mode": "lib"

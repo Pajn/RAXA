@@ -1,21 +1,49 @@
-import MuiThemeProvider from 'material-ui-old/styles/MuiThemeProvider'
+import MuiOldThemeProvider from 'material-ui-old/styles/MuiThemeProvider'
+import getMuiOldTheme from 'material-ui-old/styles/getMuiTheme'
+import {purple, teal} from 'material-ui/colors'
+import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
 import React from 'react'
 import {ApolloProvider} from 'react-apollo'
+import {Scaffold} from 'react-material-app'
 import {Route} from 'react-router'
 import {BrowserRouter} from 'react-router-dom'
-import ThemeProvider from 'react-toolbox/lib/ThemeProvider'
 import {Settings} from './components/settings/settings'
-import {Scaffold} from './components/ui/scaffold/scaffold'
 import {Ui2} from './components/ui2/main'
 import {client, store} from './lib/store'
 import {ReduxSnackbar} from './redux-snackbar/redux-snackbar'
-import theme from './toolbox/theme'
-import './toolbox/theme.css'
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: purple[100],
+      main: purple[500],
+      dark: purple[700],
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: teal[100],
+      main: teal[500],
+      dark: teal[700],
+      contrastText: '#fff',
+    },
+  },
+})
+
+const oldTheme = getMuiOldTheme({
+  palette: {
+    primary3Color: purple[100],
+    primary1Color: purple[500],
+    primary2Color: purple[700],
+    accent1Color: teal[100],
+    accent2Color: teal[500],
+    accent3Color: teal[700],
+  },
+})
 
 export const App = () => (
   <ApolloProvider client={client} store={store}>
-    <ThemeProvider theme={theme}>
-      <MuiThemeProvider>
+    <MuiOldThemeProvider theme={oldTheme}>
+      <MuiThemeProvider theme={theme}>
         <BrowserRouter>
           <Scaffold appName="RAXA">
             <Route exact path="/" component={Ui2} />
@@ -24,6 +52,6 @@ export const App = () => (
           </Scaffold>
         </BrowserRouter>
       </MuiThemeProvider>
-    </ThemeProvider>
+    </MuiOldThemeProvider>
   </ApolloProvider>
 )

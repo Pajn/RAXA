@@ -5,11 +5,14 @@
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@types/node": "^8.0.46",
+    "@types/node": "^8.5.2",
     "raxa-common": "0.1.0"
   },
   "devDependencies": {
-    "tscomp": "^0.13.6"
+    "lerna": "^2.7.0",
+    "prettier": "^1.10.2",
+    "tscomp": "^0.14.1",
+    "tslint": "^5.9.1"
   },
   "tscomp": {
     "mode": "lib"

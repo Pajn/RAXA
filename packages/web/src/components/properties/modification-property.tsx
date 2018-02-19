@@ -36,8 +36,8 @@ const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
     iface => iface.id === interfaceId,
   )!
   const selectedStatus =
-    Object.values(selectedInterface.status).length === 1
-      ? Object.values(selectedInterface.status)[0]
+    Object.values(selectedInterface.status!).length === 1
+      ? Object.values(selectedInterface.status!)[0]
       : undefined
   return {
     interfaceId,
@@ -51,9 +51,9 @@ const setDevice = (deviceId: string, devices: Array<GraphQlDevice>) => {
   const interfaces = selectedDevice.interfaces.filter(validInterface)
   return {
     deviceId,
-    ...interfaces.length === 1
+    ...(interfaces.length === 1
       ? setInterface(interfaces[0].id, selectedDevice)
-      : {interfaceId: undefined},
+      : {interfaceId: undefined}),
   }
 }
 
@@ -105,7 +105,7 @@ export const enhanceModificationInput = compose<
         selectedStatus,
         interfaces:
           selectedDevice && selectedDevice.interfaces.filter(validInterface),
-        statuses: selectedInterface && Object.values(selectedInterface.status),
+        statuses: selectedInterface && Object.values(selectedInterface.status!),
       }
     },
   ),
@@ -133,7 +133,8 @@ export const ModificationInputView = ({
       }
       value={value && value.deviceId}
       onChange={deviceId =>
-        onChange({...value, ...setDevice(deviceId, data.devices)})}
+        onChange({...value, ...setDevice(deviceId, data.devices)})
+      }
     />
     {selectedDevice &&
       interfaces &&
@@ -167,7 +168,8 @@ export const ModificationInputView = ({
               ...value,
               statusId,
               value: statuses.find(s => s.id === statusId)!.defaultValue,
-            })}
+            })
+          }
         />
       )}
     {selectedInterface &&
@@ -177,7 +179,8 @@ export const ModificationInputView = ({
           id=""
           data={{interface: selectedInterface}}
           setDeviceStatus={(_, modification) =>
-            Promise.resolve(onChange(modification))}
+            Promise.resolve(onChange(modification))
+          }
         />
       )}
   </div>

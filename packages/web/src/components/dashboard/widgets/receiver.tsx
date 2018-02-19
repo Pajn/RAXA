@@ -8,8 +8,7 @@ import {
 } from 'raxa-common/lib/entities'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
-import {LoadingButton} from 'react-toolbox-components'
-import Ripple from 'react-toolbox/lib/ripple'
+import {ProgressButton} from 'react-material-app'
 import {compose, mapProps, withHandlers} from 'recompose'
 import styled from 'styled-components'
 import {
@@ -53,22 +52,21 @@ export type PrivateReceiverWidgetProps = ReceiverWidgetProps &
   }
 
 export const enhance = compose<PrivateReceiverWidgetProps, ReceiverWidgetProps>(
-  mapProps<
-    Partial<PrivateReceiverWidgetProps>,
-    ReceiverWidgetProps
-  >(({config}) => ({
-    config,
-    deviceId: config.deviceId,
-    data: !config.deviceId
-      ? {
-          device: {
-            id: '',
-            name: 'Device',
-          } as GraphQlDevice,
-        } as PrivateReceiverWidgetProps['data']
-      : undefined,
-    ripple: true,
-  })),
+  mapProps<Partial<PrivateReceiverWidgetProps>, ReceiverWidgetProps>(
+    ({config}) => ({
+      config,
+      deviceId: config.deviceId,
+      data: !config.deviceId
+        ? ({
+            device: {
+              id: '',
+              name: 'Device',
+            } as GraphQlDevice,
+          } as PrivateReceiverWidgetProps['data'])
+        : undefined,
+      ripple: true,
+    }),
+  ),
   graphql(
     gql`
       query($deviceId: String!) {
@@ -91,7 +89,6 @@ export const enhance = compose<PrivateReceiverWidgetProps, ReceiverWidgetProps>(
         arguments: undefined,
       }),
   }),
-  Ripple({spread: 3}),
 )
 
 export const ReceiverWidgetView = ({
@@ -100,25 +97,26 @@ export const ReceiverWidgetView = ({
   config,
   call,
   setDeviceStatus,
-  ...props,
+  ...props
 }: PrivateReceiverWidgetProps) => (
   <Container {...props}>
     <DeviceName>{device && device.name}</DeviceName>
-    <LoadingButton onClick={() => call('volUp')}>+</LoadingButton>
-    <LoadingButton onClick={() => call('volDown')}>-</LoadingButton>
-    <LoadingButton onClick={() => call('tv')}>Tv</LoadingButton>
-    <LoadingButton onClick={() => call('speakers')}>Speakers</LoadingButton>
-    <LoadingButton
+    <ProgressButton onClick={() => call('volUp')}>+</ProgressButton>
+    <ProgressButton onClick={() => call('volDown')}>-</ProgressButton>
+    <ProgressButton onClick={() => call('tv')}>Tv</ProgressButton>
+    <ProgressButton onClick={() => call('speakers')}>Speakers</ProgressButton>
+    <ProgressButton
       onClick={() =>
         setDeviceStatus(undefined, {
           deviceId: config.deviceId,
           interfaceId: defaultInterfaces.Power.id,
           statusId: defaultInterfaces.Power.status.on.id,
           value: false,
-        })}
+        })
+      }
     >
       Off
-    </LoadingButton>
+    </ProgressButton>
   </Container>
 )
 

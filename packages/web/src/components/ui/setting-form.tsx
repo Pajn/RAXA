@@ -1,11 +1,16 @@
 import React from 'react'
 import {FormHelper, Properties as FormHelperProperties} from 'react-form-helper'
+import {ContextActions} from 'react-material-app'
+import {Action} from 'react-material-app/lib/Actions'
 import {compose, withState} from 'recompose'
-import {ContextAction} from './scaffold/context'
-import {ContextActions} from './scaffold/context-actions'
 import {SettingInput} from './setting-input'
 
-const ContextSaveButton = ({disabled, onClick, formId, contextActions = []}) =>
+const ContextSaveButton = ({
+  disabled,
+  onClick,
+  formId,
+  contextActions = [],
+}) => (
   <ContextActions
     contextActions={[
       {
@@ -14,13 +19,14 @@ const ContextSaveButton = ({disabled, onClick, formId, contextActions = []}) =>
         onClick,
         type: 'submit',
         form: formId,
-      } as ContextAction,
+      },
       ...contextActions,
     ]}
   />
+)
 
 export type SettingFormProps = FormHelperProperties<any, any> & {
-  contextActions?: Array<ContextAction>
+  contextActions?: Array<Action>
 }
 export type PrivateSettingFormProps = SettingFormProps & {
   formId: string
@@ -32,8 +38,8 @@ export const enhance = compose(
 
 export const SettingFormView = ({
   contextActions,
-  ...props,
-}: PrivateSettingFormProps) =>
+  ...props
+}: PrivateSettingFormProps) => (
   <FormHelper
     inputComponent={SettingInput}
     buttonComponent={ContextSaveButton}
@@ -42,6 +48,7 @@ export const SettingFormView = ({
     dirtyCheck
     {...props}
   />
+)
 
 export const SettingForm = enhance(SettingFormView) as React.ComponentClass<
   SettingFormProps

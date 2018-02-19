@@ -1,9 +1,13 @@
+import List, {
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+} from 'material-ui/List'
 import {PluginConfiguration, PluginDefinition} from 'raxa-common'
 import React, {Component} from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
+import {Switch, SwitchProps} from 'react-material-app/lib/inputs/Switch'
 import {Dispatch, connect} from 'react-redux'
-import {List, ListItem} from 'react-toolbox/lib/list'
-import Switch, {SwitchProps} from 'react-toolbox/lib/switch/Switch'
 import {compose} from 'recompose'
 import {action} from 'redux-decorated'
 import {actions} from '../../redux-snackbar/actions'
@@ -31,13 +35,13 @@ export const enhance = compose<PluginSettingsPrivateProps, PluginSettingsProps>(
   `),
   graphql<{}, PluginSettingsPrivateProps>(
     gql`
-    mutation($pluginId: String!, $enabled: Boolean!) {
-      setPluginEnabled(pluginId: $pluginId, enabled: $enabled) {
-        id
-        enabled
+      mutation($pluginId: String!, $enabled: Boolean!) {
+        setPluginEnabled(pluginId: $pluginId, enabled: $enabled) {
+          id
+          enabled
+        }
       }
-    }
-  `,
+    `,
     {
       props: ({
         mutate,
@@ -95,23 +99,25 @@ export class AsyncSwitch extends Component<SwitchProps, {loading: boolean}> {
 export const PluginSettingsView = ({
   data,
   setPluginEnabled,
-}: PluginSettingsPrivateProps) =>
+}: PluginSettingsPrivateProps) => (
   <List>
     {data.plugins &&
-      data.plugins.map(plugin =>
-        <ListItem
-          key={plugin.id}
-          caption={plugin.name}
-          legend={plugin.shortDescription || ''}
-          rightActions={[
+      data.plugins.map(plugin => (
+        <ListItem key={plugin.id}>
+          <ListItemText
+            primary={plugin.name}
+            secondary={plugin.shortDescription || ''}
+          />
+          <ListItemSecondaryAction>
             <AsyncSwitch
               key="enabled"
-              checked={plugin.enabled}
+              value={plugin.enabled}
               onChange={setPluginEnabled(plugin.id)}
-            />,
-          ]}
-        />,
-      )}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+      ))}
   </List>
+)
 
 export const PluginSettings = enhance(PluginSettingsView)

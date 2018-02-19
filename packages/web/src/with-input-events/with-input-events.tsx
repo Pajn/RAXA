@@ -85,8 +85,8 @@ export const inputEventsContainer = (): InputEventContainerEnhancer => (
       event?: React.MouseEvent<any> | React.TouchEvent<any>,
     ) => void
 
-    constructor() {
-      super()
+    constructor(props) {
+      super(props)
       this.state = {
         clickListeners: new Set(),
       }
@@ -245,7 +245,7 @@ export const inputEventsContainer = (): InputEventContainerEnhancer => (
         />
       )
     }
-  }
+  } as any
 
 export const InputEventsContainer = inputEventsContainer()(
   ({
@@ -257,6 +257,6 @@ export const InputEventsContainer = inputEventsContainer()(
     cancelClickListeners: ______,
     cancelMoveListeners: _______,
     cancelInputListeners: ________,
-    ...props,
+    ...props
   }) => <div {...props} />,
 )

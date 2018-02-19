@@ -1,4 +1,6 @@
 import glamorous from 'glamorous'
+import Slider from 'material-ui-old/Slider'
+import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
 import {
   DeviceStatus,
   GraphQlDevice,
@@ -7,10 +9,8 @@ import {
 } from 'raxa-common'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
-import Ripple from 'react-toolbox/lib/ripple'
-import {Slider} from 'react-toolbox/lib/slider'
-import Switch from 'react-toolbox/lib/switch/Switch'
-import {compose, mapProps, withState} from 'recompose'
+import {Switch} from 'react-material-app'
+import {compose, mapProps, withStateHandlers} from 'recompose'
 import {updateIn} from 'redux-decorated'
 import {
   UpdateDeviceStatusInjectedProps,
@@ -20,14 +20,22 @@ import {withThrottledMutation} from '../../../with-throttled-mutation'
 import {ColorPicker} from '../../ui/color-picker'
 import {WidgetComponent, WidgetProps} from '../widget'
 
-const Container = Ripple({})(
-  glamorous.div({
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  }),
-)
+const Container = glamorous(ButtonBase, {withProps: {component: 'div'}})({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  flexDirection: 'column',
+
+  padding: 8,
+  width: '100%',
+  height: '100%',
+
+  '> div': {
+    width: '100%',
+  },
+})
 const NameRow = glamorous.div({
   display: 'flex',
   alignItems: 'center',
@@ -36,12 +44,16 @@ const NameRow = glamorous.div({
 const DeviceName = glamorous.span({
   flexGrow: 1,
 })
-const DetailControl = glamorous.span({
+const DetailControl = glamorous.div({
   flex: 10,
 })
-const PowerSwitch = glamorous(Switch)({
+const PowerSwitch = glamorous(Switch, {
+  withProps: {
+    color: 'primary',
+  },
+})({
   flexShrink: 0,
-  ':not(#id)': {marginBottom: 5},
+  '&&': {marginBottom: 5},
 })
 
 const interfaceIds = [
@@ -53,7 +65,10 @@ const interfaceIds = [
 export type LightWidgetConfiguration = {
   deviceId: string
 }
-export type LightWidgetProps = WidgetProps<LightWidgetConfiguration>
+export type LightWidgetProps = WidgetProps<LightWidgetConfiguration> & {
+  enableSort?: (deviceId: string) => void
+  disableSort?: (deviceId: string) => void
+}
 export type PrivateLightWidgetProps = LightWidgetProps &
   UpdateDeviceStatusInjectedProps & {
     data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
@@ -76,54 +91,71 @@ function asObject<T, K extends keyof T>(
 }
 
 export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
-  mapProps<Partial<PrivateLightWidgetProps>, LightWidgetProps>(({config}) => ({
-    config,
-    deviceId: config.deviceId,
-    interfaceIds,
-    data: !config.deviceId
-      ? {
-          device: {
-            id: '',
-            name: 'Device',
-            interfaceIds: ['Power'],
-            status: [
-              {
-                interfaceId: 'Power',
-                value: 'true',
-              } as DeviceStatus,
-            ] as GraphQlDevice['status'],
-          } as GraphQlDevice,
-        } as PrivateLightWidgetProps['data']
-      : undefined,
-  })),
+  mapProps<Partial<PrivateLightWidgetProps>, LightWidgetProps>(
+    ({config, ...props}) => ({
+      ...props,
+      config,
+      deviceId: config.deviceId,
+      interfaceIds,
+      data: !config.deviceId
+        ? ({
+            device: {
+              id: '',
+              name: 'Device',
+              interfaceIds: ['Power'],
+              status: [
+                {
+                  interfaceId: 'Power',
+                  value: 'true',
+                } as DeviceStatus,
+              ] as GraphQlDevice['status'],
+            } as GraphQlDevice,
+          } as PrivateLightWidgetProps['data'])
+        : undefined,
+    }),
+  ),
   graphql(
     gql`
-    query($deviceId: String!, $interfaceIds: [String!]) {
-      device(id: $deviceId) {
-        id
-        name
-        interfaceIds
-        status(interfaceIds: $interfaceIds) {
+      query($deviceId: String!, $interfaceIds: [String!]) {
+        device(id: $deviceId) {
           id
-          interfaceId
-          statusId
-          value
+          name
+          interfaceIds
+          status(interfaceIds: $interfaceIds) {
+            id
+            interfaceId
+            statusId
+            value
+          }
         }
       }
-    }
-  `,
+    `,
     {skip: props => !props.deviceId},
   ),
-  mapProps<
-    PrivateLightWidgetProps,
-    PrivateLightWidgetProps
-  >((props: PrivateLightWidgetProps): PrivateLightWidgetProps => ({
-    ...props,
-    status:
-      props.data.device && asObject(props.data.device.status, 'interfaceId'),
-  })),
+  mapProps<PrivateLightWidgetProps, PrivateLightWidgetProps>(
+    (props: PrivateLightWidgetProps): PrivateLightWidgetProps => ({
+      ...props,
+      status:
+        props.data.device && asObject(props.data.device.status, 'interfaceId'),
+    }),
+  ),
   updateDeviceStatus(),
-  withState('showDetail', 'setShowDetail', false),
+  withStateHandlers(
+    {showDetail: false},
+    {
+      setShowDetail: (_, props: LightWidgetProps) => showDetail => {
+        if (showDetail) {
+          if (props.disableSort !== undefined)
+            props.disableSort(props.config.deviceId)
+        } else {
+          if (props.enableSort !== undefined)
+            props.enableSort(props.config.deviceId)
+        }
+
+        return {showDetail}
+      },
+    },
+  ),
   withThrottledMutation<PrivateLightWidgetProps>(
     100,
     'status',
@@ -179,52 +211,61 @@ export const LightWidgetView = ({
     <Container onClick={() => setShowDetail(!showDetail)}>
       {device &&
         (showDetail &&
-          status &&
-          device.interfaceIds!.includes(defaultInterfaces.Dimmer.id)
-          ? <NameRow>
-              <DeviceName>{device.name}</DeviceName>
-              <DetailControl>
-                <Slider
-                  value={+status.Dimmer.value}
-                  onChange={setDimmer}
-                  onDragStop={() => setShowDetail(false)}
+        status &&
+        device.interfaceIds!.includes(defaultInterfaces.Dimmer.id) ? (
+          <NameRow>
+            <DeviceName>{device.name}</DeviceName>
+            <DetailControl>
+              <Slider
+                style={{paddingRight: 16, height: 40}}
+                value={+status.Dimmer.value}
+                onChange={(_, value) => {
+                  setDimmer(value)
+                }}
+                onDragStop={() => setTimeout(() => setShowDetail(false))}
+                min={0}
+                max={100}
+              />
+            </DetailControl>
+          </NameRow>
+        ) : (
+          <NameRow>
+            <DeviceName>{device.name}</DeviceName>
+            {status ? (
+              <NameRow
+                onMouseDown={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
+              >
+                {device.interfaceIds!.includes(defaultInterfaces.Color.id) && (
+                  <ColorPicker
+                    value={+(status.Color || {}).value || 0}
+                    onChange={setColor}
+                  />
+                )}
+                <PowerSwitch
+                  value={status.Power.value !== 'false'}
+                  onChange={value => {
+                    setDeviceStatus(status.Power.id, {
+                      deviceId: device.id,
+                      interfaceId: status.Power.interfaceId,
+                      statusId: status.Power.statusId,
+                      value: value.toString(),
+                    })
+                  }}
                 />
-              </DetailControl>
-            </NameRow>
-          : <NameRow>
-              <DeviceName>{device.name}</DeviceName>
-              {status
-                ? <NameRow
-                    onMouseDown={e => e.stopPropagation()}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    {device.interfaceIds!.includes(
-                      defaultInterfaces.Color.id,
-                    ) &&
-                      <ColorPicker
-                        value={+(status.Color || {}).value || 0}
-                        onChange={setColor}
-                      />}
-                    <PowerSwitch
-                      checked={status.Power.value !== 'false'}
-                      onChange={value => {
-                        setDeviceStatus(status.Power.id, {
-                          deviceId: device.id,
-                          interfaceId: status.Power.interfaceId,
-                          statusId: status.Power.statusId,
-                          value: value.toString(),
-                        })
-                      }}
-                    />
-                  </NameRow>
-                : <div />}
-            </NameRow>)}
+              </NameRow>
+            ) : (
+              <div />
+            )}
+          </NameRow>
+        ))}
     </Container>
   )
 }
 
 export const LightWidget: WidgetComponent<
-  LightWidgetConfiguration
+  LightWidgetConfiguration,
+  LightWidgetProps
 > = Object.assign(enhance(LightWidgetView), {
   type: 'LightWidget',
   uiName: 'Light',

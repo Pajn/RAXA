@@ -25,5 +25,6 @@
     "**/.DS_Store": true,
     "packages/*/lib/**": true,
     "packages/*/cjs/**": true
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

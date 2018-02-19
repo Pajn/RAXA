@@ -1,14 +1,14 @@
 import {colorTemperature2rgb, rgb2colorTemperature} from 'color-temperature'
 import glamorous from 'glamorous'
+import Dialog, {DialogContent} from 'material-ui/Dialog'
+import Tabs, {Tab} from 'material-ui/Tabs'
 import React from 'react'
 import {Color, ColorResult, CustomPicker, RGBColor} from 'react-color'
 import Hue from 'react-color/lib/components/common/Hue'
 import HuePointer from 'react-color/lib/components/hue/HuePointer'
-import Dialog from 'react-toolbox/lib/dialog/Dialog'
-import {Tab, Tabs} from 'react-toolbox/lib/tabs'
 import {compose, withState} from 'recompose'
 import {compose as fnCompose} from 'redux'
-import {row} from 'style-definitions'
+import {column, row} from 'style-definitions'
 import {
   InjectedInputEventsProps,
   InputEventsContainer,
@@ -162,9 +162,9 @@ const colorSlider = (options: ColorSliderOptions) =>
             left: 0,
             right: 0,
             bottom: 0,
-            transform: `translate${direction === 'vertical'
-              ? 'Y'
-              : 'X'}(${lerpi(
+            transform: `translate${
+              direction === 'vertical' ? 'Y' : 'X'
+            }(${lerpi(
               options.minValue,
               options.maxValue,
               options.colorToValue(this.props),
@@ -272,28 +272,43 @@ const LightningColorPicker = compose<
   ),
 )(({onChange, index, setIndex, ...props}) => (
   <InputEventsContainer>
-    <Tabs index={index} onChange={setIndex} fixed>
-      <Tab label="Temperature">
-        <TemperatureSlider onChange={onChange} {...props} />
-        <PresetRow>
-          {Object.values(temperaturePresets).map(({color, temp}) => (
-            <ColorButton
-              key={temp}
-              big
-              color={toCSS(color)}
-              onClick={() => onChange(toShort(colorTemperature2rgb(temp)))}
-            />
-          ))}
-        </PresetRow>
-      </Tab>
-      <Tab label="Color">
-        <div style={{position: 'relative', height: 32, marginBottom: 8}}>
-          <Hue onChange={onChange} {...props} pointer={CenteredHuePointer} />
-        </div>
-        <SaturationSlider onChange={onChange} {...props} />
-        <LightnessSlider onChange={onChange} {...props} />
-      </Tab>
-    </Tabs>
+    <div style={{...column(), overflow: 'hidden'}}>
+      <Tabs value={index} onChange={(_, index) => setIndex(index)} fullWidth>
+        <Tab label="Temperature" style={{maxWidth: 'none'}} />
+        <Tab label="Color" style={{maxWidth: 'none'}} />
+      </Tabs>
+
+      <div style={{padding: 16, width: '75vw', maxWidth: 600}}>
+        {index === 0 && (
+          <>
+            <TemperatureSlider onChange={onChange} {...props} />
+            <PresetRow>
+              {Object.values(temperaturePresets).map(({color, temp}) => (
+                <ColorButton
+                  key={temp}
+                  big
+                  color={toCSS(color)}
+                  onClick={() => onChange(toShort(colorTemperature2rgb(temp)))}
+                />
+              ))}
+            </PresetRow>
+          </>
+        )}
+        {index === 1 && (
+          <>
+            <div style={{position: 'relative', height: 32, marginBottom: 8}}>
+              <Hue
+                onChange={onChange}
+                {...props}
+                pointer={CenteredHuePointer}
+              />
+            </div>
+            <SaturationSlider onChange={onChange} {...props} />
+            <LightnessSlider onChange={onChange} {...props} />
+          </>
+        )}
+      </div>
+    </div>
   </InputEventsContainer>
 ))
 
@@ -363,14 +378,15 @@ export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
             <div style={styles.color} />
           </div>
           <StyledDialog
-            active={this.state.displayColorPicker}
-            onEscKeyDown={this.handleClose}
-            onOverlayClick={this.handleClose}
+            open={this.state.displayColorPicker}
+            onClose={this.handleClose}
           >
-            <LightningColorPicker
-              color={{r: red, g: green, b: blue}}
-              onChange={this.handleChange}
-            />
+            <DialogContent>
+              <LightningColorPicker
+                color={{r: red, g: green, b: blue}}
+                onChange={this.handleChange}
+              />
+            </DialogContent>
           </StyledDialog>
         </div>
       )

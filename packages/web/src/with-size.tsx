@@ -37,9 +37,8 @@ export function withSize<
         }
       }
 
-      constructor() {
-        super()
-        this.observer
+      constructor(props) {
+        super(props)
         this.state = {sizeProps: mapSizeToProps(undefined, this.ref) as TSize}
       }
 

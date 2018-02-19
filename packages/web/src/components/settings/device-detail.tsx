@@ -1,5 +1,7 @@
 import glamorous from 'glamorous'
 import {title} from 'material-definitions'
+import List, {ListItem, ListItemText} from 'material-ui/List'
+import ListSubheader from 'material-ui/List/ListSubheader'
 import {flatten} from 'ramda'
 import {
   Device,
@@ -10,14 +12,9 @@ import {
 import {DeviceIsInUseError, isRaxaError} from 'raxa-common/lib/errors'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
+import {ProgressButton} from 'react-material-app'
 import {Dispatch, connect} from 'react-redux'
 import {RouteComponentProps, withRouter} from 'react-router'
-import {LoadingButton} from 'react-toolbox-components'
-import {
-  List,
-  ListItem as ToolboxListItem,
-  ListSubHeader,
-} from 'react-toolbox/lib/list'
 import {compose, lifecycle, mapProps, withState} from 'recompose'
 import {action} from 'redux-decorated'
 import {CallDeviceInjectedProps, callDevice} from '../../lib/mutations'
@@ -123,6 +120,12 @@ const enhance = compose(
                   `/settings/devices/${data.data.upsertDevice.id}`,
                 )
               }
+              dispatch(
+                action(actions.showSnackbar, {
+                  label: `Sucessfully saved device ${device.name}`,
+                  type: 'accept' as 'accept',
+                }),
+              )
             })
             .catch(e => {
               dispatch(
@@ -205,44 +208,46 @@ const enhance = compose(
                 ...method,
                 interfaceId: iface.id,
               }))
-            : [] as Array<Method>,
+            : ([] as Array<Method>),
       ),
     ).filter(m => m.showInSettings),
   })),
   withIsMobile,
   callDevice(),
-  lifecycle<
-    PrivateDeviceDetailSettingsProps,
-    PrivateDeviceDetailSettingsProps
-  >({
-    componentDidMount() {
-      if (this.props.deviceId) {
-        ;(this as any).unsubscribe = this.props.data.subscribeToMore({
-          document: gql`
-            subscription deviceUpdated($deviceId: String!) {
-              deviceUpdated(id: $deviceId) {
-                config
+  lifecycle<PrivateDeviceDetailSettingsProps, PrivateDeviceDetailSettingsProps>(
+    {
+      componentDidMount() {
+        if (this.props.deviceId) {
+          ;(this as any).unsubscribe = this.props.data.subscribeToMore({
+            document: gql`
+              subscription deviceUpdated($deviceId: String!) {
+                deviceUpdated(id: $deviceId) {
+                  config
+                }
               }
-            }
-          `,
-          variables: {deviceId: this.props.deviceId},
-          updateQuery: (prev, {subscriptionData}) => {
-            if (subscriptionData.data && subscriptionData.data.deviceUpdated) {
-              const config = subscriptionData.data.deviceUpdated.config
-              this.props.onChange((device => ({...device, config})) as any)
-            }
-            return prev
-          },
-        })
-      }
-    },
+            `,
+            variables: {deviceId: this.props.deviceId},
+            updateQuery: (prev, {subscriptionData}) => {
+              if (
+                subscriptionData.data &&
+                subscriptionData.data.deviceUpdated
+              ) {
+                const config = subscriptionData.data.deviceUpdated.config
+                this.props.onChange((device => ({...device, config})) as any)
+              }
+              return prev
+            },
+          })
+        }
+      },
 
-    componentWillUnmount(this: any) {
-      if (this.unsubscribe !== undefined) {
-        this.unsubscribe()
-      }
+      componentWillUnmount(this: any) {
+        if (this.unsubscribe !== undefined) {
+          this.unsubscribe()
+        }
+      },
     },
-  }),
+  ),
 )
 
 export const DeviceDetailSettingsView = ({
@@ -258,9 +263,11 @@ export const DeviceDetailSettingsView = ({
   <List>
     {!isMobile && <Title>{device.id ? device.name : 'New Device'}</Title>}
     {device.id && (
-      <ToolboxListItem caption="Type" legend={device.deviceClass.name} />
+      <ListItem>
+        <ListItemText primary="Type" secondary={device.deviceClass.name} />
+      </ListItem>
     )}
-    <ListSubHeader caption="Properties" />
+    <ListSubheader>Properties</ListSubheader>
     <SettingForm
       value={device}
       contextActions={
@@ -321,9 +328,9 @@ export const DeviceDetailSettingsView = ({
       onChange={device => onChange(device)}
     />
     {methods.length > 0 &&
-      [<ListSubHeader key={2} caption="Actions" />].concat(
+      [<ListSubheader key={2}>Actions</ListSubheader>].concat(
         methods.map(method => (
-          <LoadingButton
+          <ProgressButton
             key={`${method.interfaceId}:${method.id}`}
             onClick={() =>
               callDevice({
@@ -331,17 +338,18 @@ export const DeviceDetailSettingsView = ({
                 interfaceId: method.interfaceId,
                 method: method.id,
                 arguments: {},
-              })}
+              })
+            }
           >
             {method.name || method.id}
-          </LoadingButton>
+          </ProgressButton>
         )),
       )}
     {data &&
       data.device &&
       data.device.status &&
       data.device.status.length > 0 && [
-        <ListSubHeader key={2} caption="Status" />,
+        <ListSubheader key={2}>Status</ListSubheader>,
         data.device.status.map(status => (
           <StatusView
             key={status.id}

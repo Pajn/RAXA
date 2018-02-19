@@ -8,8 +8,8 @@ export const defaultInterfaces = {
         id: 'triggered',
         type: 'object' as 'object',
         properties: {
-          pluginId: {type: 'string' as 'string'},
-          triggerId: {type: 'string' as 'string'},
+          pluginId: {id: 'pluginId', type: 'string' as 'string'},
+          triggerId: {id: 'triggerId', type: 'string' as 'string'},
         },
       },
     },

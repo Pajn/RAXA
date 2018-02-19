@@ -12,11 +12,3 @@ body {
   display: flex;
   height: 100%;
 }
-
-/* Hack to make react-toolbox dropdowns appear in correct place */
-.ZzBNK:not(._1OA-G) > ._2767w {
-  top: 20px;
-}
-.ZzBNK._1OA-G > ._2767w {
-  bottom: 20px;
-}

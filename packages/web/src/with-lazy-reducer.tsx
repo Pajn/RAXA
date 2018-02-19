@@ -136,7 +136,7 @@ abstract class StateComponent<P, S> extends React.Component<P, S> {
     mapStateToProps: MapStateToProps<any, any, any>,
     mapDispatchToProps: MapDispatchToProps<any, any, any>,
   ) {
-    super()
+    super({} as any)
 
     if (typeof mapStateToProps === 'function') {
       this.mapStateToProps = mapStateToProps

@@ -1,5 +1,6 @@
 import glamorous from 'glamorous'
 import React from 'react'
+import {Section} from 'react-material-app'
 import {
   Route,
   RouteComponentProps,
@@ -11,7 +12,6 @@ import {compose, lifecycle, mapProps, withState} from 'recompose'
 import {column, row} from 'style-definitions'
 import {List, ListItem} from './list'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
-import {Section} from './scaffold/section'
 
 const Container = glamorous.div(row({}))
 const Detail = glamorous.div(column({flex: {grow: 1}}))
@@ -180,7 +180,8 @@ export const ListDetailView = ({
                           </Section>
                         ) : (
                           renderActiveItem(item.item)
-                        )}
+                        )
+                      }
                     />
                   ) : null,
               )

@@ -1,6 +1,6 @@
+import Snackbar from 'material-ui/Snackbar'
 import React from 'react'
 import {connect} from 'react-redux'
-import Snackbar from 'react-toolbox/lib/snackbar/Snackbar'
 import {action} from 'redux-decorated'
 import {Snackbar as SnackbarType, actions} from './actions'
 
@@ -13,21 +13,36 @@ export type PrivateReduxSnackbarProps = ReduxSnackbarProps & {
 const enhance = connect(
   state => ({snackbar: state.snackbar}),
   dispatch => ({
-    hideSnackbar: () => dispatch(action(actions.hideSnackbar, {}))
+    hideSnackbar: () => dispatch(action(actions.hideSnackbar, {})),
   }),
 )
 
-export const ReduxSnackbarView = ({hideSnackbar, snackbar}: PrivateReduxSnackbarProps) =>
+export const ReduxSnackbarView = ({
+  hideSnackbar,
+  snackbar,
+}: PrivateReduxSnackbarProps) => (
   <Snackbar
-    active={snackbar.active}
-    type={snackbar.type || 'cancel'}
-    label={snackbar.label as string}
-    action={snackbar.action}
+    open={snackbar.active}
+    message={
+      typeof snackbar.label === 'string' ? (
+        <span>{snackbar.label}</span>
+      ) : (
+        snackbar.label
+      )
+    }
+    action={
+      typeof snackbar.action === 'string' ? (
+        <span>{snackbar.action}</span>
+      ) : (
+        snackbar.action
+      )
+    }
     className={snackbar.className}
     children={snackbar.children}
     onClick={snackbar.onClick || hideSnackbar}
-    onTimeout={hideSnackbar}
-    timeout={snackbar.timeout || 5000}
+    onClose={hideSnackbar}
+    autoHideDuration={snackbar.timeout || 5000}
   />
+)
 
 export const ReduxSnackbar = enhance(ReduxSnackbarView)

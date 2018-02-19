@@ -1,6 +1,7 @@
 import glamorous from 'glamorous'
 import {grey} from 'material-definitions'
 import React from 'react'
+import {ContextActions} from 'react-material-app'
 import {compose} from 'recompose'
 import {withHandlers} from 'recompose'
 import {lifecycle} from 'recompose'
@@ -10,7 +11,6 @@ import {
 } from '../../with-input-events/with-input-events'
 import {provideState} from '../../with-lazy-reducer'
 import {Size, withSize} from '../../with-size'
-import {ContextActions} from '../ui/scaffold/context-actions'
 import {Cell, Grid} from './grid'
 import {DashboardAction, DashboardState, dashboardState} from './state'
 import {DashboardToolbox} from './toolbox/dashboard-toolbox'
@@ -28,10 +28,10 @@ const Container = glamorous.div({
   backgroundColor: '#333',
 })
 
-const Workspace = glamorous(
-  Grid,
-  {rootEl: 'div', forwardProps: ['cols', 'rows', 'gap']} as any,
-)<{
+const Workspace = glamorous(Grid, {
+  rootEl: 'div',
+  forwardProps: ['cols', 'rows', 'gap'],
+} as any)<{
   editMode: boolean
 }>(({editMode}) => ({
   display: 'flex',
@@ -48,7 +48,7 @@ const Workspace = glamorous(
   `,
 }))
 
-const Ghost = props =>
+const Ghost = props => (
   <Cell
     {...props}
     style={{
@@ -56,6 +56,7 @@ const Ghost = props =>
       borderRadius: 3,
     }}
   />
+)
 
 export type DashboardPrivateProps = InjectedInputEventsContainerProps & {
   setEditMode: (editMode: boolean) => void
@@ -67,15 +68,15 @@ export type DashboardPrivateProps = InjectedInputEventsContainerProps & {
 
 const enhance = compose<DashboardPrivateProps, {}>(
   inputEventsContainer(),
-  provideState<
-    DashboardState,
-    DashboardAction,
-    DashboardPrivateProps
-  >(dashboardState, 'state', dispatch => ({
-    setEditMode: editMode => dispatch({type: 'setEditMode', editMode}),
-    setGridSize: size => dispatch({type: 'setGridSize', size}),
-  })),
-  withHandlers<DashboardPrivateProps, DashboardPrivateProps>({
+  provideState<DashboardState, DashboardAction, DashboardPrivateProps>(
+    dashboardState,
+    'state',
+    dispatch => ({
+      setEditMode: editMode => dispatch({type: 'setEditMode', editMode}),
+      setGridSize: size => dispatch({type: 'setGridSize', size}),
+    }),
+  ),
+  withHandlers<DashboardPrivateProps, Partial<DashboardPrivateProps>>({
     onContextMenu: ({setEditMode}) => (event: React.MouseEvent<any>) => {
       if (!event.ctrlKey) {
         event.preventDefault()
@@ -99,8 +100,8 @@ export const DashboardView = ({
   onContextMenu,
   haveInputListeners,
   size: _,
-  ...eventListeners,
-}: DashboardPrivateProps) =>
+  ...eventListeners
+}: DashboardPrivateProps) => (
   <Container
     onClick={
       state.editMode && !haveInputListeners
@@ -118,9 +119,9 @@ export const DashboardView = ({
     <Workspace editMode={state.editMode}>
       {debugGrid &&
         Array.from({length: state.gridSettings.cols}).map((_, col) =>
-          Array.from({length: state.gridSettings.rows}).map((_, row) =>
-            <Ghost x={col} y={row} width={1} height={1} />,
-          ),
+          Array.from({length: state.gridSettings.rows}).map((_, row) => (
+            <Ghost x={col} y={row} width={1} height={1} />
+          )),
         )}
       {state.ghost && <Ghost {...state.ghost} />}
       {state.widgets.map(props => {
@@ -134,5 +135,6 @@ export const DashboardView = ({
     </Workspace>
     {state.editMode && <DashboardToolbox />}
   </Container>
+)
 
 export const Dashboard = enhance(DashboardView)

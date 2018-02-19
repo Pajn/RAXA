@@ -1,37 +1,33 @@
 import glamorous from 'glamorous'
 import {purple} from 'material-definitions'
+import {ButtonProps} from 'material-ui/Button'
+import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
+import Paper, {PaperProps} from 'material-ui/Paper/Paper'
 import React from 'react'
-import {RTCard} from '../../../../toolbox/theme.js'
 
 export const CircleButton = glamorous(
-  ({
-    big: _,
-    ...props,
-  }: {big?: boolean} & React.HTMLProps<HTMLButtonElement>) => (
-    <button
-      {...props}
-      className={`${RTCard.card} ${props.className}`}
-      onMouseUp={e => {
-        const target = e.currentTarget as HTMLButtonElement
+  Paper as React.ComponentType<PaperProps & ButtonProps>,
+  {
+    withProps: {
+      component: ButtonBase,
+      onMouseUp: e => {
+        const target: HTMLElement = e.currentTarget
         target.blur()
-      }}
-    />
-  ),
+      },
+    },
+  },
 )(({big}: {big?: boolean}) => ({
-  display: 'flex' as 'flex',
-  alignItems: 'center' as 'center',
-  justifyContent: 'center' as 'center',
+  width: big ? 64 : 40,
+  height: big ? 64 : 40,
+  overflow: 'hidden' as 'hidden',
 
-  border: '4px solid white',
+  backgroundColor: '#eee',
 
-  ':not(#id)': {
+  '&&': {
+    display: 'flex' as 'flex',
     marginLeft: 4,
     marginRight: 4,
-    padding: 0,
-    width: big ? 64 : 40,
-    height: big ? 64 : 40,
-
-    backgroundColor: '#eee',
+    border: '4px solid white',
     borderRadius: '50%',
   },
 
@@ -43,10 +39,10 @@ export const CircleButton = glamorous(
 
 export const DimButton = ({
   color = purple[500],
-  ...props,
+  ...props
 }: {
   color?: string
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onClick?: (e: React.MouseEvent<HTMLElement>) => void
 }) => (
   <CircleButton {...props}>
     <svg width="100%" height="100%">
@@ -61,11 +57,11 @@ export const DimButton = ({
 export const DimLevelButton = ({
   color = purple[500],
   level,
-  ...props,
+  ...props
 }: {
   color?: string
   level: number
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onClick?: (e: React.MouseEvent<HTMLElement>) => void
 }) => (
   <CircleButton {...props}>
     <div
@@ -81,11 +77,11 @@ export const DimLevelButton = ({
 
 export const ColorButton = ({
   color,
-  ...props,
+  ...props
 }: {
   big?: boolean
   color: string
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onClick?: (e: React.MouseEvent<HTMLElement>) => void
 }) => (
   <CircleButton type="button" {...props}>
     <div

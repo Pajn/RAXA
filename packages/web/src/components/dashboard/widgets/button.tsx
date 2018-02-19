@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
 import {
   DeviceStatus,
   GraphQlDevice,
@@ -7,25 +8,27 @@ import {
 } from 'raxa-common/lib/entities'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
-import Ripple from 'react-toolbox/lib/ripple'
 import {compose, mapProps} from 'recompose'
 import styled from 'styled-components'
 import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
 
-const Container = glamorous.div({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  display: 'flex',
-  alignItems: 'center',
+const Container = glamorous(ButtonBase)({
+  '&&': {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
 
-  boxSizing: 'border-box',
-  padding: 8,
-  height: '100%',
-  overflow: 'hidden',
+    boxSizing: 'border-box',
+    padding: 8,
+    height: '100%',
+    width: '100%',
+
+    fontWeight: 400,
+  },
 })
 const DeviceName = styled.span`
   flex: 1;
@@ -46,35 +49,32 @@ export type PrivateButtonWidgetProps = ButtonWidgetProps &
   }
 
 export const enhance = compose<PrivateButtonWidgetProps, ButtonWidgetProps>(
-  mapProps<
-    Partial<PrivateButtonWidgetProps>,
-    ButtonWidgetProps
-  >(({config}) => ({
-    config,
-    deviceId: config.deviceId,
-    data: !config.deviceId
-      ? {
-          device: {
-            id: '',
-            name: 'Device',
-          } as GraphQlDevice,
-        } as PrivateButtonWidgetProps['data']
-      : undefined,
-    ripple: true,
-  })),
+  mapProps<Partial<PrivateButtonWidgetProps>, ButtonWidgetProps>(
+    ({config}) => ({
+      config,
+      deviceId: config.deviceId,
+      data: !config.deviceId
+        ? ({
+            device: {
+              id: '',
+              name: 'Device',
+            } as GraphQlDevice,
+          } as PrivateButtonWidgetProps['data'])
+        : undefined,
+    }),
+  ),
   graphql(
     gql`
-    query($deviceId: String!) {
-      device(id: $deviceId) {
-        id
-        name
+      query($deviceId: String!) {
+        device(id: $deviceId) {
+          id
+          name
+        }
       }
-    }
-  `,
+    `,
     {skip: props => !props.config.deviceId},
   ),
   callDevice(),
-  Ripple({spread: 3}),
 )
 
 export const ButtonWidgetView = ({
@@ -82,21 +82,21 @@ export const ButtonWidgetView = ({
   callDevice,
   config,
   children,
-  ...props,
-}: PrivateButtonWidgetProps) =>
+}: PrivateButtonWidgetProps) => (
   <Container
-    {...props}
     onClick={() =>
       callDevice({
         deviceId: config.deviceId,
         interfaceId: config.interfaceId,
         method: config.method,
         arguments: undefined,
-      })}
+      })
+    }
   >
     <DeviceName>{device && device.name}</DeviceName>
     {children}
   </Container>
+)
 
 export const ButtonWidget: WidgetComponent<
   ButtonWidgetConfiguration

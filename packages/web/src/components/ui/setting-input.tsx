@@ -1,12 +1,7 @@
-import glamorous from 'glamorous'
+import Slider from 'material-ui-old/Slider'
 import React, {CSSProperties, ReactChild} from 'react'
-import {Checkbox} from 'react-toolbox/lib/checkbox'
-import {Dropdown} from 'react-toolbox/lib/dropdown'
-import {Input} from 'react-toolbox/lib/input'
-import {ListCheckbox} from 'react-toolbox/lib/list'
-import {Slider} from 'react-toolbox/lib/slider'
+import {Checkbox, Select, TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
-import theme from '../../toolbox/theme'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
@@ -48,12 +43,6 @@ const autoRound = (min: number, max: number, value: number) =>
 const asPercent = (min: number, max: number, value: number) =>
   Math.round(100 * (+value - min) / (max - min))
 
-const FixedSlider = glamorous(Slider)({
-  [`& .${theme.RTSlider.knob}`]: {
-    zIndex: 1,
-  },
-})
-
 export type SettingInputProps = SettingValueProps & {
   type?: 'number'
   onChange: (newValue: string) => void
@@ -84,12 +73,12 @@ export const SettingInputView = ({
       onChange={onChange}
       unit={unit}
       children={(value, setValue) => (
-        <Input type={type} value={value} onChange={setValue} />
+        <TextField type={type} value={value} onChange={setValue} />
       )}
     />
   ) : (
     <ListItem>
-      <Input
+      <TextField
         label={label}
         type={type}
         value={value || ''}
@@ -118,21 +107,16 @@ export const SettingCheckboxView = ({
   value,
   onChange,
   disabled,
-  isMobile,
-}: PrivateSettingCheckboxProps) =>
-  isMobile ? (
-    <ListCheckbox
-      caption={label}
-      checked={value}
+}: PrivateSettingCheckboxProps) => (
+  <ListItem>
+    <Checkbox
+      value={value}
       onChange={onChange}
+      label={label}
       disabled={disabled}
     />
-  ) : (
-    <ListItem>
-      <span style={{paddingRight: 4}}>{label}</span>
-      <Checkbox checked={value} onChange={onChange} disabled={disabled} />
-    </ListItem>
-  )
+  </ListItem>
+)
 
 export const SettingCheckbox = enhance(
   SettingCheckboxView,
@@ -161,13 +145,18 @@ export const SettingDropdownView = ({
       onChange={onChange}
       legend={(source.find(s => s.value === value) || {label: ''}).label}
       children={(value, setValue) => (
-        <Dropdown source={source} value={value || ''} onChange={setValue} />
+        <Select
+          fullWidth
+          choices={source}
+          value={value || ''}
+          onChange={setValue}
+        />
       )}
     />
   ) : (
     <ListItem>
-      <Dropdown
-        source={source}
+      <Select
+        choices={source}
         label={label}
         value={value || ''}
         onChange={onChange}
@@ -223,7 +212,7 @@ export const SettingSliderView = ({
       }
       children={(value, setValue) => (
         <div>
-          <FixedSlider
+          <Slider
             value={value}
             onChange={setValue}
             max={max}
@@ -240,7 +229,7 @@ export const SettingSliderView = ({
     <ListItemLayout
       caption={label}
       legend={
-        <FixedSlider
+        <Slider
           value={(tmpValue === undefined ? +value : tmpValue) || 0}
           onChange={setTmpValue}
           onDragStop={() => {
@@ -282,7 +271,7 @@ export const SettingValueView = ({
     />
   ) : (
     <ListItem>
-      <Input
+      <TextField
         label={label}
         value={unit ? `${value} ${unit}` : `${value}`}
         disabled

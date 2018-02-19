@@ -1,5 +1,10 @@
 import glamorous from 'glamorous'
 import {grey, red} from 'material-definitions'
+import Button from 'material-ui/Button'
+import Card from 'material-ui/Card'
+import Divider from 'material-ui/Divider'
+import Icon from 'material-ui/Icon'
+import IconButton from 'material-ui/IconButton'
 import {insert, remove} from 'ramda'
 import {
   ArrayProperty,
@@ -8,10 +13,6 @@ import {
 } from 'raxa-common/lib/entities'
 import React from 'react'
 import FlipMove from 'react-flip-move'
-import Button from 'react-toolbox/lib/button/Button'
-import BadIconButton from 'react-toolbox/lib/button/IconButton'
-import {Card} from 'react-toolbox/lib/card'
-import {ListDivider} from 'react-toolbox/lib/list'
 import {compose, mapProps, withState} from 'recompose'
 import {updateIn} from 'redux-decorated'
 import {row} from 'style-definitions'
@@ -19,8 +20,6 @@ import {fadeIn} from '../../lib/styles'
 import {InjectedIdProps, withIds} from '../../with-id'
 import {DeviceName} from '../device-name'
 import {PropertyProps, PropertyView} from './property'
-
-const IconButton: any = BadIconButton
 
 const CardContainer = glamorous.div({
   padding: 16,
@@ -63,9 +62,7 @@ const UndoContainer = glamorous.div({
 
 const UndoDelete = ({item: _, onUndo}) => (
   <UndoContainer>
-    <Button inverse onClick={onUndo}>
-      Undo
-    </Button>
+    <Button onClick={onUndo}>Undo</Button>
   </UndoContainer>
 )
 
@@ -110,15 +107,17 @@ export const ArrayInputView = ({
       {property.name && <Title>{property.name}</Title>}
       {property.modifiable && (
         <IconButton
-          icon="add"
           onClick={() =>
             onChange([
               ...(value || []),
               (property.items as NumberProperty).defaultValue !== undefined
                 ? (property.items as NumberProperty).defaultValue
                 : property.items.type === 'modification' ? {} : undefined,
-            ])}
-        />
+            ])
+          }
+        >
+          <Icon>add</Icon>
+        </IconButton>
       )}
     </TitleBar>
     <CardContainer>
@@ -142,7 +141,6 @@ export const ArrayInputView = ({
                         </SubTitle>
                       )}
                       <IconButton
-                        icon="delete"
                         onClick={() => {
                           onChange(remove(index, 1, value))
                           if (
@@ -155,9 +153,11 @@ export const ArrayInputView = ({
                             setUndoItem()
                           }
                         }}
-                      />
+                      >
+                        <Icon>delete</Icon>
+                      </IconButton>
                     </ItemHeader>
-                    <ListDivider />
+                    <Divider />
                   </div>
                 )}
                 <div style={{padding: '8px 16px'}}>

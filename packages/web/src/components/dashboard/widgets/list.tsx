@@ -4,7 +4,7 @@ import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {gql, graphql} from 'react-apollo'
 import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
-import {compose, mapProps, withHandlers} from 'recompose'
+import {compose, mapProps, withHandlers, withStateHandlers} from 'recompose'
 import {withInnerState} from '../../../with-lazy-reducer'
 import {WidgetComponent, WidgetProps} from '../widget'
 import {ButtonWidget} from './button'
@@ -86,6 +86,9 @@ export type ListWidgetPrivateProps = ListWidgetProps & {
   onSortEnd: (c: {oldIndex: number; newIndex: number}) => void
   setData: (data: {devices?: Array<GraphQlDevice>}) => void
   canSort: boolean
+  disabledSort: Array<string>
+  enableSort: (deviceId: string) => void
+  disableSort: (deviceId: string) => void
 }
 
 export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
@@ -123,8 +126,22 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
     canSort: !!props.setSortOrder,
   })),
   withInnerState('data', 'setData'),
-  withHandlers<ListWidgetPrivateProps, ListWidgetPrivateProps>({
-    onSortEnd: ({data, setData, setSortOrder}) => ({oldIndex, newIndex}) => {
+  withStateHandlers(
+    {disabledSort: [] as Array<string>},
+    {
+      disableSort: state => deviceId => ({
+        disabledSort: [...state.disabledSort, deviceId],
+      }),
+      enableSort: state => deviceId => ({
+        disabledSort: state.disabledSort.filter(id => id !== deviceId),
+      }),
+    },
+  ),
+  withHandlers({
+    onSortEnd: ({data, setData, setSortOrder}: ListWidgetPrivateProps) => ({
+      oldIndex,
+      newIndex,
+    }) => {
       if (setSortOrder) {
         const sorted = arrayMove(data.devices!, oldIndex, newIndex)
         setData({...data, devices: sorted})
@@ -140,6 +157,9 @@ export const ListWidgetView = ({
   interfaceIds,
   onSortEnd,
   canSort,
+  enableSort,
+  disableSort,
+  disabledSort,
 }: ListWidgetPrivateProps) => (
   <Container
     row={row}
@@ -186,7 +206,12 @@ export const ListWidgetView = ({
               (!interfaceIds ||
                 interfaceIds.includes(defaultInterfaces.Power.id) ||
                 interfaceIds.includes(defaultInterfaces.Dimmer.id)) ? (
-                <LightWidget key={device.id} config={{deviceId: device.id}} />
+                <LightWidget
+                  key={device.id}
+                  config={{deviceId: device.id}}
+                  enableSort={enableSort}
+                  disableSort={disableSort}
+                />
               ) : null
             ) : null,
         )
@@ -197,7 +222,9 @@ export const ListWidgetView = ({
                 key={innerWidget.key!}
                 index={i}
                 row={row}
-                disabled={!canSort}
+                disabled={
+                  !canSort || disabledSort.includes(data.devices![i].id)
+                }
               >
                 {innerWidget}
               </DeviceWrapper>

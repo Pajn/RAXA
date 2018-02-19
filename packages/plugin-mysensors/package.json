@@ -5,13 +5,13 @@
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@types/node": "^8.0.46",
+    "@types/node": "^8.5.2",
     "iconv-lite": "^0.4.13",
     "raxa-common": "0.1.0",
     "serialport-js": "^1.1.0"
   },
   "devDependencies": {
-    "tscomp": "^0.13.6"
+    "tscomp": "^0.14.1"
   },
   "tscomp": {
     "mode": "lib"

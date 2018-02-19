@@ -1,20 +1,20 @@
-import {ReactChild} from 'react'
+import {MouseEvent, ReactChild, ReactElement} from 'react'
 import {Action, createActions} from 'redux-decorated'
 
 export type SnackbarSeed = {
   /// Label for the action component inside the Snackbar.
-  action?: string
+  action?: ReactElement<any> | string
   /// Text or node to be displayed in the content as alternative to label.
   children?: ReactChild
   /// Additional class name to provide custom styling.
-  className?:	string
+  className?: string
   /// Text to display in the content.
-  label: ReactChild
+  label: ReactElement<any> | string
   /// Callback function that will be called when the button action is clicked.
-  onClick?: Function
+  onClick?: (event: MouseEvent<HTMLDivElement>) => void
   /// Amount of time in milliseconds after the Snackbar will be automatically hidden.
   timeout?: number
-  type?: 'accept'|'warning'|'cancel',
+  type?: 'accept' | 'warning' | 'cancel'
 }
 export type Snackbar = SnackbarSeed & {
   active: boolean

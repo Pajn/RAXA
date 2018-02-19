@@ -1,12 +1,12 @@
 import glamorous from 'glamorous'
 import {grey} from 'material-definitions'
+import ListSubheader from 'material-ui/List/ListSubheader'
 import {defaultInterfaces} from 'raxa-common'
 import React from 'react'
+import {ContextActions} from 'react-material-app'
 import {connect} from 'react-redux'
-import {ListSubHeader} from 'react-toolbox/lib/list'
 import {Action, action, createActions, createReducer} from 'redux-decorated'
 import {ListWidget} from '../dashboard/widgets/list'
-import {ContextActions} from '../ui/scaffold/context-actions'
 
 const Ui2Container = glamorous.div({
   paddingTop: 8,
@@ -31,15 +31,16 @@ const enhance = connect(state => ({sortOrders: state.mainScreen}))
 
 export const Ui2View = ({sortOrders, dispatch}) => (
   <Ui2Container>
-    <ContextActions contextActions={[{href: '/settings', icon: 'settings'}]} />
-    <ListSubHeader caption="Scenes" />
+    <ContextActions contextActions={[{to: '/settings', icon: 'settings'}]} />
+    <ListSubheader>Scenes</ListSubheader>
     <ListWidget
       config={{interfaceIds: ['Scenery']}}
       sortOrder={sortOrders.Scenes}
       setSortOrder={sortOrder =>
-        dispatch(action(actions.sortedWidgets, {section: 'Scenes', sortOrder}))}
+        dispatch(action(actions.sortedWidgets, {section: 'Scenes', sortOrder}))
+      }
     />
-    <ListSubHeader caption="Lighting" />
+    <ListSubheader>Lighting</ListSubheader>
     <ListWidget
       column
       config={{
@@ -53,11 +54,12 @@ export const Ui2View = ({sortOrders, dispatch}) => (
       setSortOrder={sortOrder =>
         dispatch(
           action(actions.sortedWidgets, {section: 'Lighting', sortOrder}),
-        )}
+        )
+      }
     />
     {/* <ListSubHeader caption="Receiver" />
     <ListWidget column config={{interfaceIds: ['SonyReceiver']}} /> */}
-    <ListSubHeader caption="Temperature" />
+    <ListSubheader>Temperature</ListSubheader>
     <ListWidget column config={{interfaceIds: ['Temperature']}} />
   </Ui2Container>
 )

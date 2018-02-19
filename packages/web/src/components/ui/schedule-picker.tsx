@@ -1,13 +1,13 @@
 import glamorous from 'glamorous'
 import TimePicker from 'material-ui-old/TimePicker'
+import Button from 'material-ui/Button'
+import Dialog, {DialogContent} from 'material-ui/Dialog'
+import Tabs, {Tab} from 'material-ui/Tabs'
 import {fromPairs, toPairs} from 'ramda'
 import React from 'react'
-import Button from 'react-toolbox/lib/button/Button'
-import Dialog from 'react-toolbox/lib/dialog/Dialog'
-import Input from 'react-toolbox/lib/input/Input'
-import {Tab, Tabs} from 'react-toolbox/lib/tabs'
+import {TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
-import {row} from 'style-definitions'
+import {column, row} from 'style-definitions'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 import {ListItemLayout} from './setting-input'
 
@@ -89,42 +89,24 @@ const SchedulePickerDialog = compose<
       isWeekdayExpression(props.value) ? 0 : 1,
   ),
 )(({value, onChange, index, setIndex}) => (
-  <Tabs index={index} onChange={setIndex} fixed>
-    <Tab label="Weekdays">
-      <TimePicker
-        format="24hr"
-        value={timeFromWeekdayExpression(value)}
-        onChange={(_, date: Date) => {
-          const weekdays = daysFromWeekdayExpression(value)
-          const minutes = date.getUTCMinutes()
-          const hours = date.getUTCHours()
+  <div style={column()}>
+    <Tabs value={index} onChange={(_, index) => setIndex(index)} fullWidth>
+      <Tab label="Weekdays" style={{maxWidth: 'none'}} />
+      <Tab label="Advanced" style={{maxWidth: 'none'}} />
+    </Tabs>
 
-          onChange(
-            `${minutes} ${hours} * * ${weekdays
-              .map(day => days.indexOf(day, 1))
-              .sort()
-              .join(',')}`,
-          )
-        }}
-      />
-      <DayRow>
-        {isActive(
-          days.slice(1),
-          daysFromWeekdayExpression(value),
-        ).map(([day, active]) => (
-          <Button
-            key={day}
-            onClick={() => {
+    <div>
+      {index === 0 && (
+        <>
+          <TimePicker
+            name="time"
+            format="24hr"
+            style={{padding: '8px 16px'}}
+            value={timeFromWeekdayExpression(value)}
+            onChange={(_, date: Date) => {
               const weekdays = daysFromWeekdayExpression(value)
-              const date = timeFromWeekdayExpression(value)
-              const minutes = date.getMinutes()
-              const hours = date.getHours()
-
-              if (active) {
-                weekdays.splice(weekdays.indexOf(day), 1)
-              } else {
-                weekdays.push(day)
-              }
+              const minutes = date.getUTCMinutes()
+              const hours = date.getUTCHours()
 
               onChange(
                 `${minutes} ${hours} * * ${weekdays
@@ -133,19 +115,53 @@ const SchedulePickerDialog = compose<
                   .join(',')}`,
               )
             }}
-            raised={active}
-            primary={active}
-            style={{marginLeft: 4, marginRight: 4, minWidth: 0}}
-          >
-            {dayNames[day]}
-          </Button>
-        ))}
-      </DayRow>
-    </Tab>
-    <Tab label="Advanced">
-      <Input value={value} onChange={onChange} />
-    </Tab>
-  </Tabs>
+          />
+          <DayRow>
+            {isActive(days.slice(1), daysFromWeekdayExpression(value)).map(
+              ([day, active]) => (
+                <Button
+                  key={day}
+                  onClick={() => {
+                    const weekdays = daysFromWeekdayExpression(value)
+                    const date = timeFromWeekdayExpression(value)
+                    const minutes = date.getMinutes()
+                    const hours = date.getHours()
+
+                    if (active) {
+                      weekdays.splice(weekdays.indexOf(day), 1)
+                    } else {
+                      weekdays.push(day)
+                    }
+
+                    onChange(
+                      `${minutes} ${hours} * * ${weekdays
+                        .map(day => days.indexOf(day, 1))
+                        .sort()
+                        .join(',')}`,
+                    )
+                  }}
+                  variant={active ? 'raised' : 'flat'}
+                  color={active ? 'primary' : 'default'}
+                  style={{marginLeft: 4, marginRight: 4, minWidth: 0}}
+                >
+                  {dayNames[day]}
+                </Button>
+              ),
+            )}
+          </DayRow>
+        </>
+      )}
+      {index === 1 && (
+        <>
+          <TextField
+            label="Cron Expression"
+            value={value}
+            onChange={onChange}
+          />
+        </>
+      )}
+    </div>
+  </div>
 ))
 
 const StyledDialog = glamorous(Dialog)({
@@ -186,14 +202,15 @@ export const ScheduleInput = compose<
         />,
         <StyledDialog
           key="Dialog"
-          active={this.state.displaySchedulePicker}
-          onEscKeyDown={this.handleClose}
-          onOverlayClick={this.handleClose}
+          open={this.state.displaySchedulePicker}
+          onClose={this.handleClose}
         >
-          <SchedulePickerDialog
-            value={this.props.value}
-            onChange={this.props.onChange}
-          />
+          <DialogContent>
+            <SchedulePickerDialog
+              value={this.props.value}
+              onChange={this.props.onChange}
+            />
+          </DialogContent>
         </StyledDialog>,
       ]
     }

@@ -13,8 +13,8 @@
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "tscomp": "^0.13.6",
-    "typescript": "^2.4.1"
+    "tscomp": "^0.14.1",
+    "typescript": "^2.6.2"
   },
   "dependencies": {
     "raxa-common": "*",

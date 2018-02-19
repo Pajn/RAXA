@@ -1,7 +1,12 @@
+import Button from 'material-ui/Button/Button'
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from 'material-ui/Dialog'
+import {ListItem, ListItemSecondaryAction, ListItemText} from 'material-ui/List'
 import React from 'react'
-import Dialog from 'react-toolbox/lib/dialog/Dialog'
-import {ListItem} from 'react-toolbox/lib/list'
-import {compose, withHandlers, withState} from 'recompose'
+import {compose, withStateHandlers} from 'recompose'
 
 export type DialogInputProps = {
   label: string
@@ -24,19 +29,17 @@ export type PrivateDialogInputProps = DialogInputProps & {
 }
 
 const enhance = compose<PrivateDialogInputProps, DialogInputProps>(
-  withState('dialogActive', 'setShowDialog', false),
-  withState('tmpValue', 'setTmpValue', null),
-  withHandlers<
-    PrivateDialogInputProps & {setShowDialog: (active: boolean) => void},
-    PrivateDialogInputProps
-  >({
-    setTmpValue: props => value => props.setTmpValue(value),
-    showDialog: props => () => {
-      props.setTmpValue(props.value)
-      props.setShowDialog(true)
+  withStateHandlers(
+    {dialogActive: false, tmpValue: null},
+    {
+      setTmpValue: state => tmpValue => ({...state, tmpValue}),
+      showDialog: (_, props: DialogInputProps) => () => ({
+        tmpValue: props.value,
+        dialogActive: true,
+      }),
+      hideDialog: state => () => ({...state, dialogActive: false}),
     },
-    hideDialog: props => () => props.setShowDialog(false),
-  }),
+  ),
 )
 
 export const DialogInputView = ({
@@ -52,38 +55,35 @@ export const DialogInputView = ({
   setTmpValue,
   children,
 }: PrivateDialogInputProps) => (
-  <ListItem
-    caption={label}
-    leftActions={[]}
-    legend={legend || (unit ? `${value} ${unit}` : `${value}`)}
-    onClick={showDialog}
-    rightActions={[
-      <Dialog
-        key={1}
-        active={dialogActive}
-        onEscKeyDown={hideDialog}
-        onOverlayClick={hideDialog}
-        type="small"
-        title={label}
-        actions={[
-          {
-            label: 'Cancel',
-            onClick: hideDialog,
-          },
-          {
-            primary: true,
-            label: 'Ok',
-            onClick: () => {
+  <ListItem onClick={showDialog}>
+    <ListItemText
+      primary={label}
+      secondary={legend || (unit ? `${value} ${unit}` : `${value}`)}
+    />
+    <ListItemSecondaryAction>
+      <Dialog key={1} open={dialogActive} onClose={hideDialog}>
+        <DialogTitle>{label}</DialogTitle>
+        <DialogContent style={{width: '75vw', maxWidth: 'calc(100vw - 112px)'}}>
+          {children(tmpValue, setTmpValue)}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={hideDialog} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
               onChange(tmpValue)
               hideDialog()
-            },
-          },
-        ]}
-      >
-        {children(tmpValue, setTmpValue)}
-      </Dialog>,
-    ]}
-  />
+            }}
+            color="primary"
+            autoFocus
+          >
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ListItemSecondaryAction>
+  </ListItem>
 )
 
 export const DialogInput = enhance(DialogInputView)
