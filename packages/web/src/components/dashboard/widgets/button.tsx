@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import {subheading1} from 'material-definitions'
 import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
 import {
   DeviceStatus,
@@ -27,7 +28,7 @@ const Container = glamorous(ButtonBase)({
     height: '100%',
     width: '100%',
 
-    fontWeight: 400,
+    ...subheading1,
   },
 })
 const DeviceName = styled.span`

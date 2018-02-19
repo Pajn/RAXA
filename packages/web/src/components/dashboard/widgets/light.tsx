@@ -53,7 +53,6 @@ const PowerSwitch = glamorous(Switch, {
   },
 })({
   flexShrink: 0,
-  '&&': {marginBottom: 5},
 })
 
 const interfaceIds = [

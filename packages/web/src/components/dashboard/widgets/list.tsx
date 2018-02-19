@@ -1,5 +1,6 @@
 import glamorous from 'glamorous'
 import {shadow} from 'material-definitions'
+import {ListSubheader} from 'material-ui/List'
 import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {gql, graphql} from 'react-apollo'
@@ -78,6 +79,7 @@ export type ListWidgetProps = WidgetProps<ListWidgetConfiguration> & {
   column?: true
   sortOrder?: Array<string>
   setSortOrder?: (sortOrder: Array<string>) => void
+  header?: string
 }
 export type ListWidgetPrivateProps = ListWidgetProps & {
   row: boolean
@@ -152,6 +154,7 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
 )
 
 export const ListWidgetView = ({
+  header,
   data,
   row,
   interfaceIds,
@@ -160,78 +163,81 @@ export const ListWidgetView = ({
   enableSort,
   disableSort,
   disabledSort,
-}: ListWidgetPrivateProps) => (
-  <Container
-    row={row}
-    pressDelay={300}
-    axis={row ? 'xy' : 'y'}
-    onSortEnd={onSortEnd}
-  >
-    {data.devices &&
-      data.devices
-        .map(
-          device =>
-            device.interfaceIds ? (
-              device.types!.includes(DeviceType.Thermometer) &&
-              (!interfaceIds ||
-                interfaceIds.includes(defaultInterfaces.Temperature.id)) ? (
-                <DisplayWidget
-                  key={device.id}
-                  config={{
-                    deviceId: device.id,
-                    interfaceId: defaultInterfaces.Temperature.id,
-                    statusId: defaultInterfaces.Temperature.status.temp.id,
-                  }}
-                />
-              ) : device.interfaceIds!.includes('Scenery') &&
-              (!interfaceIds || interfaceIds.includes('Scenery')) ? (
-                <ButtonWidget
-                  key={device.id}
-                  config={{
-                    deviceId: device.id,
-                    interfaceId: 'Scenery',
-                    method: 'set',
-                  }}
-                />
-              ) : device.interfaceIds!.includes('SonyReceiver') &&
-              (!interfaceIds || interfaceIds.includes('SonyReceiver')) ? (
-                <ReceiverWidget
-                  key={device.id}
-                  config={{
-                    deviceId: device.id,
-                  }}
-                />
-              ) : (device.types!.includes(DeviceType.Light) ||
-                device.types!.includes(DeviceType.Outlet)) &&
-              (!interfaceIds ||
-                interfaceIds.includes(defaultInterfaces.Power.id) ||
-                interfaceIds.includes(defaultInterfaces.Dimmer.id)) ? (
-                <LightWidget
-                  key={device.id}
-                  config={{deviceId: device.id}}
-                  enableSort={enableSort}
-                  disableSort={disableSort}
-                />
-              ) : null
-            ) : null,
-        )
-        .map(
-          (innerWidget, i) =>
-            innerWidget && (
-              <DeviceWrapper
-                key={innerWidget.key!}
-                index={i}
-                row={row}
-                disabled={
-                  !canSort || disabledSort.includes(data.devices![i].id)
-                }
-              >
-                {innerWidget}
-              </DeviceWrapper>
-            ),
-        )}
-  </Container>
-)
+}: ListWidgetPrivateProps) =>
+  data.devices && data.devices.length > 0 ? (
+    <>
+      {header && <ListSubheader>{header}</ListSubheader>}
+      <Container
+        row={row}
+        pressDelay={300}
+        axis={row ? 'xy' : 'y'}
+        onSortEnd={onSortEnd}
+      >
+        {data.devices
+          .map(
+            device =>
+              device.interfaceIds ? (
+                device.types!.includes(DeviceType.Thermometer) &&
+                (!interfaceIds ||
+                  interfaceIds.includes(defaultInterfaces.Temperature.id)) ? (
+                  <DisplayWidget
+                    key={device.id}
+                    config={{
+                      deviceId: device.id,
+                      interfaceId: defaultInterfaces.Temperature.id,
+                      statusId: defaultInterfaces.Temperature.status.temp.id,
+                    }}
+                  />
+                ) : device.interfaceIds!.includes('Scenery') &&
+                (!interfaceIds || interfaceIds.includes('Scenery')) ? (
+                  <ButtonWidget
+                    key={device.id}
+                    config={{
+                      deviceId: device.id,
+                      interfaceId: 'Scenery',
+                      method: 'set',
+                    }}
+                  />
+                ) : device.interfaceIds!.includes('SonyReceiver') &&
+                (!interfaceIds || interfaceIds.includes('SonyReceiver')) ? (
+                  <ReceiverWidget
+                    key={device.id}
+                    config={{
+                      deviceId: device.id,
+                    }}
+                  />
+                ) : (device.types!.includes(DeviceType.Light) ||
+                  device.types!.includes(DeviceType.Outlet)) &&
+                (!interfaceIds ||
+                  interfaceIds.includes(defaultInterfaces.Power.id) ||
+                  interfaceIds.includes(defaultInterfaces.Dimmer.id)) ? (
+                  <LightWidget
+                    key={device.id}
+                    config={{deviceId: device.id}}
+                    enableSort={enableSort}
+                    disableSort={disableSort}
+                  />
+                ) : null
+              ) : null,
+          )
+          .map(
+            (innerWidget, i) =>
+              innerWidget && (
+                <DeviceWrapper
+                  key={innerWidget.key!}
+                  index={i}
+                  row={row}
+                  disabled={
+                    !canSort || disabledSort.includes(data.devices![i].id)
+                  }
+                >
+                  {innerWidget}
+                </DeviceWrapper>
+              ),
+          )}
+      </Container>
+    </>
+  ) : null
 
 export const ListWidget: WidgetComponent<
   ListWidgetConfiguration,
