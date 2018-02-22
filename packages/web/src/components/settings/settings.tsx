@@ -7,6 +7,7 @@ import {row} from 'style-definitions'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
+import {AppSettings, isInApp} from './app'
 import {DeviceSettings} from './devices'
 import {PluginSettings} from './plugins'
 
@@ -32,6 +33,7 @@ export const SettingsView = ({isMobile}: PrivateSettingsProps) => (
     getItems={() => [
       {name: 'Devices', url: 'devices', component: DeviceSettings},
       {name: 'Plugins', url: 'plugins', component: PluginSettings},
+      ...(isInApp ? [{name: 'App', url: 'app', component: AppSettings}] : []),
     ]}
     getSection={setting => ({
       title: setting.name,
