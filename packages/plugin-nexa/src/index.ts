@@ -16,7 +16,7 @@ const ON = 0
 const OFF = 1
 const DIM = 2
 
-const HOUSE_CODES = {
+export const HOUSE_CODES = {
   A: 0,
   B: 1,
   C: 2,
@@ -40,7 +40,7 @@ const DEVICE_CODE_MAX = 67234433
 export interface NexaDevice extends Device {
   config: {
     sender: string
-    houseCode: number
+    houseCode: keyof typeof HOUSE_CODES
     deviceCode: number
     onLevel: number
   }
@@ -110,7 +110,6 @@ export default class NexaPlugin extends Plugin {
   }
 
   onDeviceStatusModified(modification: Modification, device: NexaDevice) {
-    console.log('onDeviceStatusModified', modification)
     if (this.className(device) === 'NexaCodeSwitch') {
       return this.codeSwitchModified(modification, device, false)
     } else {
@@ -148,28 +147,36 @@ export default class NexaPlugin extends Plugin {
   ) {
     if (isStatus(modification, defaultInterfaces.Power.status.on)) {
       let senderId = device.config.sender
-      let houseCode = (HOUSE_CODES as any)[device.config.houseCode]
+      let houseCode = HOUSE_CODES[device.config.houseCode]
       let deviceCode = device.config.deviceCode - 1
 
       let action = modification.value ? ON : OFF
 
       this.log.debug(
-        `Turning ${action === ON
-          ? 'on'
-          : 'off'} code switch device ${device.name} ${houseCode}-${deviceCode}`,
+        `Turning ${action === ON ? 'on' : 'off'} code switch device ${
+          device.name
+        } ${houseCode}-${deviceCode}`,
       )
+
+      if (modification.value) {
+        await this.sendPulse(
+          codeSwitchPulse(houseCode, deviceCode, OFF),
+          senderId,
+          {selfLearning: false, learning},
+        )
+      }
 
       await this.sendPulse(
         codeSwitchPulse(houseCode, deviceCode, action),
         senderId,
         {selfLearning: false, learning},
-      ).then(() => {
-        return this.dispatch(actions.statusUpdated, {
-          deviceId: device.id,
-          interfaceId: defaultInterfaces.Power.id,
-          statusId: defaultInterfaces.Power.status.on.id,
-          value: modification.value,
-        })
+      )
+
+      this.dispatch(actions.statusUpdated, {
+        deviceId: device.id,
+        interfaceId: defaultInterfaces.Power.id,
+        statusId: defaultInterfaces.Power.status.on.id,
+        value: modification.value,
       })
     }
   }
