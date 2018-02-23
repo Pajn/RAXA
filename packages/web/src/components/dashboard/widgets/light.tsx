@@ -21,14 +21,17 @@ import {ColorPicker} from '../../ui/color-picker'
 import {WidgetComponent, WidgetProps} from '../widget'
 
 const Container = glamorous(ButtonBase, {withProps: {component: 'div'}})({
-  position: 'absolute',
+  '&&': {
+    position: 'absolute',
+    padding: 8,
+  },
   top: 0,
   left: 0,
   right: 0,
   bottom: 0,
   flexDirection: 'column',
 
-  padding: 8,
+  boxSizing: 'border-box',
   width: '100%',
   height: '100%',
 
