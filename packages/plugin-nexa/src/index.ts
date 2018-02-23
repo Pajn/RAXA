@@ -37,6 +37,8 @@ export const HOUSE_CODES = {
 
 const DEVICE_CODE_MAX = 67234433
 
+const tellstickNexaSCReceverPattern = /arctech;model:codeswitch;house:([A-P]);unit:(1?[0-9]);method:turn((?:on)|(?:off));/
+
 export interface NexaDevice extends Device {
   config: {
     sender: string
@@ -66,6 +68,32 @@ export default class NexaPlugin extends Plugin {
               triggerId: message,
             },
           )
+
+          if (tellstickNexaSCReceverPattern.test(message)) {
+            const [
+              ,
+              houseCode,
+              deviceCode,
+              action,
+            ] = tellstickNexaSCReceverPattern.exec(message)!
+
+            Object.values(this.state.getState().devices)
+              .filter(
+                d =>
+                  d.pluginId === plugin.id &&
+                  d.deviceClassId === plugin.deviceClasses.NexaCodeSwitch.id &&
+                  (d as NexaDevice).config.houseCode === houseCode &&
+                  (d as NexaDevice).config.deviceCode === +deviceCode,
+              )
+              .forEach(device => {
+                const modification = createModification(
+                  device,
+                  defaultInterfaces.Power.status.on,
+                  action === 'on',
+                )
+                this.dispatch(actions.statusUpdated, modification)
+              })
+          }
         }
       },
     )
@@ -158,6 +186,7 @@ export default class NexaPlugin extends Plugin {
         } ${houseCode}-${deviceCode}`,
       )
 
+      // Send off before on for old nexa devices that would otherwise start dimming if already on
       if (modification.value) {
         await this.sendPulse(
           codeSwitchPulse(houseCode, deviceCode, OFF),
@@ -213,22 +242,18 @@ export default class NexaPlugin extends Plugin {
           senderId,
           {selfLearning: true, learning: learn},
         )
-          .then(() => {
-            return this.dispatch(actions.statusUpdated, {
-              deviceId: device.id,
-              interfaceId: defaultInterfaces.Power.id,
-              statusId: defaultInterfaces.Power.status.on.id,
-              value: true,
-            })
-          })
-          .then(() => {
-            return this.dispatch(actions.statusUpdated, {
-              deviceId: device.id,
-              interfaceId: defaultInterfaces.Dimmer.id,
-              statusId: defaultInterfaces.Dimmer.status.level.id,
-              value: dimLevel / 16 * 100,
-            })
-          })
+        this.dispatch(actions.statusUpdated, {
+          deviceId: device.id,
+          interfaceId: defaultInterfaces.Power.id,
+          statusId: defaultInterfaces.Power.status.on.id,
+          value: true,
+        })
+        this.dispatch(actions.statusUpdated, {
+          deviceId: device.id,
+          interfaceId: defaultInterfaces.Dimmer.id,
+          statusId: defaultInterfaces.Dimmer.status.level.id,
+          value: dimLevel / 16 * 100,
+        })
 
         return
       }
@@ -245,13 +270,12 @@ export default class NexaPlugin extends Plugin {
         selfLearningPulse(deviceCode, groupMode, 7, action),
         senderId,
         {selfLearning: true, learning: learn},
-      ).then(() => {
-        return this.dispatch(actions.statusUpdated, {
-          deviceId: device.id,
-          interfaceId: defaultInterfaces.Power.id,
-          statusId: defaultInterfaces.Power.status.on.id,
-          value: modification.value,
-        })
+      )
+      this.dispatch(actions.statusUpdated, {
+        deviceId: device.id,
+        interfaceId: defaultInterfaces.Power.id,
+        statusId: defaultInterfaces.Power.status.on.id,
+        value: modification.value,
       })
     }
   }
