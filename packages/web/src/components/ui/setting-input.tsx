@@ -214,7 +214,7 @@ export const SettingSliderView = ({
         <div>
           <Slider
             value={value}
-            onChange={setValue}
+            onChange={(_, value) => setValue(value)}
             max={max}
             min={min}
             step={step}
@@ -231,7 +231,7 @@ export const SettingSliderView = ({
       legend={
         <Slider
           value={(tmpValue === undefined ? +value : tmpValue) || 0}
-          onChange={setTmpValue}
+          onChange={(_, value) => setTmpValue(value)}
           onDragStop={() => {
             setTmpValue(undefined)
             onChange(tmpValue)
