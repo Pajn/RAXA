@@ -45,7 +45,7 @@ export const App = () => (
     <MuiOldThemeProvider theme={oldTheme}>
       <MuiThemeProvider theme={theme}>
         <BrowserRouter>
-          <Scaffold appName="RAXA">
+          <Scaffold appName="Raxa">
             <Route exact path="/" component={Ui2} />
             <Route path="/settings" component={Settings} />
             <ReduxSnackbar />
