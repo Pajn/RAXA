@@ -139,7 +139,7 @@ export default class RaxaTellstickNetPlugin extends Plugin {
       const tellstick = this.tellsticks[activationCode]
 
       if (Date.now() - tellstick.time > CLEAR_INTERVAL_MS) {
-        this.tellsticks[activationCode] = null
+        delete this.tellsticks[activationCode]
       }
     })
   }
