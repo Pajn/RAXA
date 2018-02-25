@@ -9,3 +9,4 @@ lerna-debug.log
 Dockerfile.gen*
 publish.sh
 qemu-arm-static
+.env*.local

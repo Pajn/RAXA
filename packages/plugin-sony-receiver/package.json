@@ -11,7 +11,7 @@
     "raxa-common": "0.1.0"
   },
   "devDependencies": {
-    "tscomp": "^0.14.1"
+    "tscomp": "^0.15.0"
   },
   "tscomp": {
     "mode": "lib"

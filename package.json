@@ -14,7 +14,7 @@
   "dependencies": {},
   "devDependencies": {
     "globby": "^6.1.0",
-    "lerna": "^2.7.0",
+    "lerna": "^2.9.0",
     "prettier": "^1.10.2",
     "tslint": "^5.9.1",
     "tslint-config-pajn": "^1.0.0",
@@ -26,7 +26,5 @@
     "@types/react-dom": "16.0.4",
     "@types/recompose": "0.24.5"
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": ["packages/*"]
 }
