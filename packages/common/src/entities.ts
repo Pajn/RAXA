@@ -252,6 +252,10 @@ export interface PluginDefinition {
   description: string
   deviceClasses: {[id: string]: DeviceClass}
   interfaces: {[id: string]: Interface}
+  httpForwarding?: {
+    port: number
+    basePath?: string
+  }
 }
 
 export interface PluginConfiguration extends PluginDefinition {

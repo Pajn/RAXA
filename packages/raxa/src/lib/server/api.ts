@@ -4,6 +4,7 @@ import {graphiqlHapi, graphqlHapi} from 'graphql-server-hapi'
 import {subscribe} from 'graphql/subscription'
 import {Server} from 'hapi'
 import {Server as HttpServer, createServer} from 'http'
+import fetch from 'node-fetch'
 import {Service} from 'raxa-common/cjs'
 import {SubscriptionServer} from 'subscriptions-transport-ws'
 import {sslCert, sslKey} from '../config'
@@ -45,7 +46,7 @@ export class ApiService extends Service {
     } else {
       this.log.info('No cert found, skipping HTTPS server')
     }
-    const server = new Server()
+    const server = new Server({debug: {request: ['error']}})
     const storage = this.serviceManager.runningServices
       .StorageService as StorageService
     const plugins = this.serviceManager.runningServices
@@ -78,6 +79,53 @@ export class ApiService extends Service {
           endpointURL: '/graphql',
           subscriptionsEndpoint: `ws://localhost:9000/subscriptions`,
         },
+      },
+    })
+
+    server.on('response', request => {
+      this.log.debug(
+        request.info.remoteAddress +
+          ': ' +
+          request.method.toUpperCase() +
+          ' ' +
+          request.url.path +
+          ' --> ' +
+          request.response!.statusCode,
+      )
+    })
+
+    server.route({
+      method: '*',
+      path: '/plugin/{pluginId}/{path*}',
+      handler: async (request, reply) => {
+        const {pluginId, path} = request.params
+        const pluginDefinition = storage.getState().plugins[pluginId]
+        if (
+          pluginSupervisor.isRunning(pluginId) &&
+          pluginDefinition.httpForwarding !== undefined
+        ) {
+          const {port, basePath = ''} = pluginDefinition.httpForwarding
+          const response = await fetch(
+            `http://127.0.0.1:${port}${basePath}/${path}${request.url.search}`,
+            {
+              method: request.method.toUpperCase(),
+              headers: request.headers,
+              redirect: 'manual',
+            },
+          )
+          const responseObj = reply(null, response.buffer()).code(
+            response.status,
+          )
+          response.headers.forEach((value, key) => {
+            responseObj.header(key, value)
+          })
+        } else {
+          reply({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'Not Found',
+          }).code(404)
+        }
       },
     })
 

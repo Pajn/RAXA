@@ -94,9 +94,9 @@
     "@types/podium" "*"
     "@types/shot" "*"
 
-"@types/hapi@^17.0.0":
-  version "17.0.0"
-  resolved "https://registry.yarnpkg.com/@types/hapi/-/hapi-17.0.0.tgz#2fd9ec4e32b82ce894c5d08d744f2e3f3c7a52a0"
+"@types/hapi@^17.0.1":
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/@types/hapi/-/hapi-17.0.1.tgz#8638e51ccf7dc54110ecf3415722a26906200288"
   dependencies:
     "@types/boom" "^4"
     "@types/catbox" "*"
@@ -10772,6 +10772,12 @@ source-map-support@^0.4.15:
 source-map-support@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.0.tgz#2018a7ad2bdf8faf2691e5fddab26bed5a2bacab"
+  dependencies:
+    source-map "^0.6.0"
+
+source-map-support@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.3.tgz#2b3d5fff298cfa4d1afd7d4352d569e9a0158e76"
   dependencies:
     source-map "^0.6.0"
 
