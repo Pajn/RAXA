@@ -17,8 +17,8 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
-    "raxa-common": "*",
-    "raxa-plugin-raxa-tellsticknet": "0.1.0"
+    "raxa-common": "^0.1.0",
+    "raxa-plugin-raxa-tellsticknet": "^0.1.0"
   },
   "tscomp": {
     "mode": "lib"

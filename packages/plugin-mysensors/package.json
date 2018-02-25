@@ -7,7 +7,7 @@
   "dependencies": {
     "@types/node": "^8.5.2",
     "iconv-lite": "^0.4.13",
-    "raxa-common": "0.1.0",
+    "raxa-common": "^0.1.0",
     "serialport-js": "^1.1.0"
   },
   "devDependencies": {

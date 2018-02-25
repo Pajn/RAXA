@@ -1,5 +1,5 @@
 {
-  "name": "raxa-plugin-sonoff",
+  "name": "raxa-plugin-customscript",
   "version": "0.1.0",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
@@ -7,7 +7,8 @@
   "dependencies": {
     "@types/node": "^8.5.2",
     "raxa-common": "^0.1.0",
-    "raxa-plugin-mqtt": "0.1.0"
+    "raxa-plugin-mqtt": "0.1.0",
+    "raxa-plugin-scenery": "^0.1.0"
   },
   "devDependencies": {
     "tscomp": "^0.15.0"

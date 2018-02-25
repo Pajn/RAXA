@@ -30,7 +30,7 @@
     "material-ui": "^1.0.0-beta.34",
     "material-ui-old": "npm:material-ui@latest",
     "prop-types": "^15.5.10",
-    "raxa-common": "0.1.0",
+    "raxa-common": "^0.1.0",
     "react": "16.2.0",
     "react-apollo": "^1.4.7",
     "react-color": "^2.13.4",
