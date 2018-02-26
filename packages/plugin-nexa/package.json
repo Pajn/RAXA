@@ -1,6 +1,6 @@
 {
   "name": "raxa-plugin-nexa",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
   "main": "cjs/index.js",
   "typings": "lib/index.d.ts",
