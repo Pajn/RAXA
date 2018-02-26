@@ -7,6 +7,6 @@ const prodEnv = (name: string) => {
 }
 
 export const dataDir = production ? prodEnv('RAXA_DATA_DIR') : '.'
-export const pluginDir = `${dataDir}/plugins`
+export const pluginDir = process.env['RAXA_PLUGIN_DIR'] || `${dataDir}/plugins`
 export const sslCert = process.env['SSL_CERT']
 export const sslKey = process.env['SSL_KEY']

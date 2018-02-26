@@ -260,6 +260,7 @@ export interface PluginDefinition {
 
 export interface PluginConfiguration extends PluginDefinition {
   enabled: boolean
+  version: string
 }
 
 export type DeviceStatus = {

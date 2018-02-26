@@ -1,6 +1,7 @@
-import {ServiceManager} from 'raxa-common/cjs'
+import {ServiceManager, defaultInterfaces} from 'raxa-common/cjs'
 import {production} from '../config'
 import {ApiService} from './api'
+import {PluginManager, ProductionPluginManager} from './plugin-manager'
 import {PluginSupervisor} from './plugin-supervisor'
 import {StorageService} from './storage'
 import {WebService} from './web'
@@ -10,6 +11,7 @@ export async function main() {
 
   await serviceManager.startServices(
     StorageService,
+    production ? ProductionPluginManager : PluginManager,
     PluginSupervisor,
     ApiService,
     production && WebService,
@@ -27,4 +29,32 @@ export async function main() {
       process.exit(1)
     }
   })
+}
+
+export async function installDefaults() {
+  console.log('Installing default interfacees and plugins')
+
+  const serviceManager = new ServiceManager()
+
+  await serviceManager.startServices(
+    StorageService,
+    production ? ProductionPluginManager : PluginManager,
+  )
+
+  const storage = serviceManager.runningServices
+    .StorageService as StorageService
+  const pluginManager = serviceManager.runningServices
+    .PluginManager as PluginManager
+
+  Object.values(defaultInterfaces).forEach(iface => {
+    storage.installInterface(iface)
+  })
+
+  for (const pluginId of ['mqtt', 'scenery', 'timer', 'trigger']) {
+    await pluginManager.installPlugin(pluginId)
+  }
+
+  await pluginManager.stop()
+  await storage.stop()
+  process.exit(0)
 }

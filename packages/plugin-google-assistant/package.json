@@ -1,16 +1,19 @@
 {
   "name": "raxa-plugin-google-assistant",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
+  "keywords": [
+    "raxa-plugin"
+  ],
   "dependencies": {
     "@types/hapi": "^17.0.1",
     "@types/node": "^8.5.2",
     "hapi": "^17.2.0",
     "iterates": "^0.3.5",
-    "raxa-common": "^0.1.0",
-    "raxa-plugin-scenery": "^0.1.0"
+    "raxa-common": "^0.2.1",
+    "raxa-plugin-scenery": "^0.2.1"
   },
   "devDependencies": {
     "tscomp": "^0.15.0"

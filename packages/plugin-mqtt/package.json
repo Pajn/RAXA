@@ -1,6 +1,6 @@
 {
   "name": "raxa-plugin-mqtt",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
@@ -10,7 +10,7 @@
   "dependencies": {
     "@types/node": "^8.5.2",
     "mosca": "^2.7.0",
-    "raxa-common": "^0.1.0"
+    "raxa-common": "^0.2.1"
   },
   "devDependencies": {
     "tscomp": "^0.15.0"

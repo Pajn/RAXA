@@ -13,6 +13,11 @@ const baseImage = isArm ? 'arm32v7/node:8.9-slim' : 'node:8.9-alpine'
 
 const setup = isArm ? 'COPY qemu-arm-static /usr/bin/qemu-arm-static' : ''
 
+const subprojects = ['common', 'raxa', 'web']
+const subprojectFiles = globby.sync([
+  `packages/{${subprojects.join(',')}}/{package.json,yarn.lock}`,
+])
+
 console.log(`
 FROM ${baseImage} as build
 WORKDIR /app
@@ -23,15 +28,14 @@ COPY .yarnrc .
 COPY yarn.lock .
 COPY lerna.json .
 COPY install.sh .
-${globby
-  .sync(['packages/*/{package.json,yarn.lock}'])
-  .map(path => `COPY ${path} /app/${path}`)
-  .join('\n')}
+${subprojectFiles.map(path => `COPY ${path} /app/${path}`).join('\n')}
 
 ${setup}
 RUN ./install.sh && yarn cache clean
 
-COPY packages /app/packages
+${subprojects
+  .map(project => `COPY packages/${project} /app/packages/${project}`)
+  .join('\n')}
 COPY run.sh .
 
 ENV NODE_ENV=production
@@ -51,10 +55,7 @@ COPY .yarnrc .
 COPY yarn.lock .
 COPY lerna.json .
 COPY install.sh .
-${globby
-  .sync(['packages/*/{package.json,yarn.lock}'])
-  .map(path => `COPY ${path} /app/${path}`)
-  .join('\n')}
+${subprojectFiles.map(path => `COPY ${path} /app/${path}`).join('\n')}
 
 ${setup}
 RUN SKIP_WEB=1 ./install.sh --concurrency=1 --production && yarn cache clean
@@ -64,5 +65,8 @@ COPY --from=build /app /app/
 ENV NODE_ENV=production
 ENV RAXA_DATA_DIR=/config
 
-CMD [ "node", "packages/raxa/build/index.js" ]
+RUN RAXA_DATA_DIR=/default-config node packages/raxa/build/index.js --install-defaults
+
+COPY docker-start.sh /app/start.sh
+CMD [ "./start.sh" ]
 `)

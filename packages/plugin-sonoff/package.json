@@ -1,13 +1,16 @@
 {
   "name": "raxa-plugin-sonoff",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
+  "keywords": [
+    "raxa-plugin"
+  ],
   "dependencies": {
     "@types/node": "^8.5.2",
-    "raxa-common": "^0.1.0",
-    "raxa-plugin-mqtt": "0.1.0"
+    "raxa-common": "^0.2.1",
+    "raxa-plugin-mqtt": "^0.2.1"
   },
   "devDependencies": {
     "tscomp": "^0.15.0"

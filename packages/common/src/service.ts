@@ -99,6 +99,7 @@ export abstract class Service {
 
 export interface ServiceImplementation {
   new (): Service
+  serviceName?: string
 }
 
 export class ServiceManager {
@@ -124,13 +125,13 @@ export class ServiceManager {
   }
 
   async startService(service: ServiceImplementation) {
-    const {name} = service
+    const name = service.serviceName || service.name
     this.log.info(`Starting service ${name}`)
     const serviceInstance = new service()
     this.configureService(service, serviceInstance)
     await serviceInstance.start()
     this.startOrder.push(name)
-    this.runningServices[service.name] = serviceInstance
+    this.runningServices[name] = serviceInstance
     this.log.info(`Started service ${name}`)
     return serviceInstance
   }

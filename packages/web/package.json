@@ -1,6 +1,6 @@
 {
   "name": "raxa-web",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "private": true,
   "dependencies": {
     "@types/history": "^4.6.2",
@@ -30,7 +30,7 @@
     "material-ui": "^1.0.0-beta.34",
     "material-ui-old": "npm:material-ui@latest",
     "prop-types": "^15.5.10",
-    "raxa-common": "^0.1.0",
+    "raxa-common": "^0.2.1",
     "react": "16.2.0",
     "react-apollo": "^1.4.7",
     "react-color": "^2.13.4",
@@ -38,7 +38,7 @@
     "react-dom": "16.2.0",
     "react-flip-move": "^3.0.1",
     "react-form-helper": "^0.5.1",
-    "react-material-app": "^0.1.2",
+    "react-material-app": "^0.1.3",
     "react-redux": "^5.0.7",
     "react-router": "^4.1.2",
     "react-router-dom": "^4.1.2",
@@ -52,8 +52,7 @@
     "resize-observer-lite": "^0.2.3",
     "style-definitions": "^0.1.4",
     "styled-components": "^3.1.6",
-    "subscriptions-transport-ws": "0.8",
-    "typescript": "^2.8.0-dev.20180217"
+    "subscriptions-transport-ws": "0.8"
   },
   "devDependencies": {
     "lerna": "^2.9.0",

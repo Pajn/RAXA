@@ -1,26 +1,29 @@
 {
   "name": "raxa-plugin-raxa-tellsticknet",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "",
   "main": "cjs/index.js",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
-  "scripts": {
-    "build": "tscomp build",
-    "watch": "tscomp watch",
-    "test": "tscomp test"
-  },
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
+  "keywords": [
+    "raxa-plugin"
+  ],
+  "dependencies": {
+    "iconv-lite": "^0.4.13",
+    "promise-land": "^0.1.2",
+    "raxa-common": "^0.2.1"
+  },
   "devDependencies": {
     "@types/node": "^8.5.2",
     "tscomp": "^0.15.0",
     "typescript": "^2.7.2"
   },
-  "dependencies": {
-    "iconv-lite": "^0.4.13",
-    "promise-land": "^0.1.2",
-    "raxa-common": "^0.1.0"
+  "scripts": {
+    "build": "tscomp build",
+    "watch": "tscomp watch",
+    "test": "tscomp test"
   },
   "tscomp": {
     "mode": "lib"

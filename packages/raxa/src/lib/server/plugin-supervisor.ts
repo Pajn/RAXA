@@ -5,7 +5,6 @@ import {
   Device,
   Modification,
   Plugin,
-  PluginDefinition,
   Service,
   ServiceManager,
   actions,
@@ -13,11 +12,12 @@ import {
 } from 'raxa-common/cjs'
 import {ServiceImplementation} from 'raxa-common/cjs/service'
 import {validateAction} from 'raxa-common/cjs/validations'
-import {production, sslCert, sslKey} from '../config'
+import {sslCert, sslKey} from '../config'
 import {pubsub} from '../graphql/schema'
+import {PluginManager} from './plugin-manager'
 import {StorageService} from './storage'
 
-class PluginManager extends ServiceManager {
+class PluginServiceManager extends ServiceManager {
   supervisor: PluginSupervisor
   eventEmitter = new EventEmitter()
 
@@ -49,46 +49,28 @@ class PluginManager extends ServiceManager {
   }
 }
 
-function pluginPath(pluginId: string) {
-  return `raxa-plugin-${pluginId}`
-  // return production
-  //   ? join(pluginDir, pluginId, 'node_modules', `raxa-plugin-${pluginId}`)
-  //   : `raxa-plugin-${pluginId}`
-}
-
 export class PluginSupervisor extends Service {
   private runningPlugins: {[name: string]: Plugin} = {}
-  private pluginServiceManager: PluginManager
+  private pluginServiceManager: PluginServiceManager
   private subscriptions: Array<number> = []
 
   async start() {
-    this.pluginServiceManager = new PluginManager(this.log)
+    const storage = this.serviceManager.runningServices
+      .StorageService as StorageService
+
+    this.pluginServiceManager = new PluginServiceManager(this.log)
     this.pluginServiceManager.supervisor = this
-    this.pluginServiceManager.runningServices.StorageService = this.serviceManager.runningServices.StorageService
+    this.pluginServiceManager.runningServices.StorageService = storage
 
-    const storage = (this.serviceManager.runningServices
-      .StorageService as any) as StorageService
-    await Promise.all(
-      [
-        'scenery',
-        'ledstrip',
-        'nexa',
-        'raxa-tellsticknet',
-        'timer',
-        'trigger',
-        'sunricher',
-        'mysensors',
-        'sony-receiver',
-      ]
-        // .filter(plugin => !storage.getState().plugins[plugin])
-        .map(plugin => this.installPlugin(plugin)),
-    )
-
-    await Promise.all(
-      Object.values(storage.getState().plugins)
-        .filter(plugin => plugin.enabled)
-        .map(plugin => this.startPlugin(plugin.id)),
-    )
+    try {
+      await Promise.all(
+        Object.values(storage.getState().plugins)
+          .filter(plugin => plugin.enabled)
+          .map(plugin => this.startPlugin(plugin.id)),
+      )
+    } catch (e) {
+      this.log.error('Error starting plugin', e)
+    }
 
     pubsub
       .subscribe(
@@ -116,60 +98,12 @@ export class PluginSupervisor extends Service {
     }
   }
 
-  private async installPlugin(id: string) {
-    const storage = (this.serviceManager.runningServices
-      .StorageService as any) as StorageService
-
-    this.log.info(`Installing plugin ${id}`)
-
-    if (production) {
-      // const dir = join(pluginDir, id)
-      // await mkdirp(dir)
-      // await execa('yarn', ['init', '--yes'], {cwd: dir})
-      // await execa('yarn', ['add', `raxa-plugin-${id}`], {cwd: dir})
-    }
-
-    const pluginDefinitionModule = require(`${pluginPath(id)}/plugin`)
-    const pluginDefinition = (pluginDefinitionModule.default ||
-      pluginDefinitionModule) as PluginDefinition
-    let plugin = require(pluginPath(id))
-    if (plugin.default) {
-      plugin = plugin.default
-    }
-
-    if (typeof plugin !== 'function') {
-      this.log.warn(`Plugin ${id} has no default exported class`)
-      return
-    }
-
-    if (id !== pluginDefinition.id)
-      throw new Error(`Invalid plugin id ${id} !== ${pluginDefinition.id}`)
-
-    Object.entries(pluginDefinition.interfaces || {}).forEach(([id, iface]) => {
-      if (id !== iface.id)
-        throw new Error(`Invalid interface id ${id} !== ${iface.id}`)
-      iface.pluginId = id
-      storage.installInterface(iface)
-    })
-
-    Object.entries(
-      pluginDefinition.deviceClasses,
-    ).forEach(([id, deviceClass]) => {
-      if (id !== deviceClass.id)
-        throw new Error(`Invalid device class id ${id} !== ${deviceClass.id}`)
-      deviceClass.pluginId = pluginDefinition.id
-      storage.installDeviceClass(deviceClass)
-    })
-
-    storage.installPlugin({...pluginDefinition, id, enabled: true})
-  }
-
   private async startPlugin(id: string) {
+    const pluginManager = (this.serviceManager.runningServices
+      .PluginManager as any) as PluginManager
+
     this.log.info(`Starting plugin ${id}`)
-    let plugin = require(pluginPath(id))
-    if (plugin.default) {
-      plugin = plugin.default
-    }
+    let plugin = pluginManager.requirePlugin(id)
 
     const pluginInstance = await this.pluginServiceManager.startService(plugin)
     this.runningPlugins[id] = pluginInstance as Plugin
@@ -188,6 +122,10 @@ export class PluginSupervisor extends Service {
       throw raxaError({type: 'pluginNotEnabled', pluginId: id})
     }
     return plugin
+  }
+
+  public isRunning(id: string) {
+    return this.runningPlugins[id] !== undefined
   }
 
   public onDeviceCreated(device: Device): Awaitable<void | Device> {

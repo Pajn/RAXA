@@ -163,8 +163,14 @@ export const deviceQueries = buildQueries({
   devices: {
     type: [DeviceType],
     validate: joi.object({
-      interfaceIds: joi.array().items(joi.string().required()).allow(null),
-      deviceClassIds: joi.array().items(joi.string().required()).allow(null),
+      interfaceIds: joi
+        .array()
+        .items(joi.string().required())
+        .allow(null),
+      deviceClassIds: joi
+        .array()
+        .items(joi.string().required())
+        .allow(null),
     }),
     resolve(
       _,
@@ -239,8 +245,8 @@ export const deviceMutations = buildMutations({
       // arguments: joi.string(),
     }),
     writeRules: false,
-    async resolve(_, call: Call, {storage, plugins}: Context) {
-      await plugins.callDevice(call)
+    async resolve(_, call: Call, {storage, pluginSupervisor}: Context) {
+      await pluginSupervisor.callDevice(call)
       const state = storage.getState()
       return state.devices[call.deviceId]
     },
@@ -259,7 +265,7 @@ export const deviceMutations = buildMutations({
       modification: Modification,
       context: Context,
     ): Promise<Array<DeviceStatus> | undefined> {
-      await context.plugins.setDeviceStatus(modification)
+      await context.pluginSupervisor.setDeviceStatus(modification)
       const device = context.storage.getState().devices[modification.deviceId]
       if (!device.interfaceIds) {
         device.interfaceIds = context.storage.getState().deviceClasses[
@@ -274,7 +280,7 @@ export const deviceMutations = buildMutations({
 export const deviceSubscriptions = {
   deviceStatusUpdated: {
     type: DeviceStatusType.graphQLType,
-    subscribe: (_, __, {storage}: Context) =>
+    subscribe: (_, __, context: Context) =>
       map((action: typeof actions.statusUpdated) => {
         const status = statusesForDevice(
           {id: action.payload!.deviceId} as any,
@@ -282,7 +288,7 @@ export const deviceSubscriptions = {
             interfaceIds: [action.payload!.interfaceId],
             statusIds: [action.payload!.statusId],
           },
-          {storage, plugins: undefined as any},
+          context,
         )
 
         return {

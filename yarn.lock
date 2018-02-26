@@ -33,6 +33,10 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
+"@types/async@2.0.31":
+  version "2.0.31"
+  resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.31.tgz#26842998c4425c19aea32f774fc67e8d28ecd206"
+
 "@types/boom@*":
   version "4.3.8"
   resolved "https://registry.yarnpkg.com/@types/boom/-/boom-4.3.8.tgz#73acac4aa33d78b030a7797f4a74b4dfb058d418"
@@ -173,6 +177,10 @@
   dependencies:
     "@types/mime-db" "*"
 
+"@types/nedb@^1.8.5":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@types/nedb/-/nedb-1.8.5.tgz#badacf5f70e8c4ae1d6c3ad09dddc055ed2e044f"
+
 "@types/node-fetch@^1.6.7":
   version "1.6.7"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-1.6.7.tgz#521078e8f0c69a158e5022005aca92d2620f6d57"
@@ -216,7 +224,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^16.0.4":
+"@types/react-dom@16.0.4", "@types/react-dom@^16.0.4":
   version "16.0.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.4.tgz#2e8fd45f5443780ed49bf2cdd9809e6091177a7d"
   dependencies:
@@ -257,15 +265,19 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.0.38":
+"@types/react@*", "@types/react@16.0.38", "@types/react@^16.0.38":
   version "16.0.38"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.38.tgz#76617433ea10274505f60bb86eddfdd0476ffdc2"
 
-"@types/recompose@^0.24.2", "@types/recompose@^0.24.3", "@types/recompose@^0.24.5":
+"@types/recompose@0.24.5", "@types/recompose@^0.24.2", "@types/recompose@^0.24.3", "@types/recompose@^0.24.5":
   version "0.24.5"
   resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.24.5.tgz#5cc94c4c92e310c96993c70f7ef5915ca19a1eff"
   dependencies:
     "@types/react" "*"
+
+"@types/semver@^5.5.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
 
 "@types/shot@*":
   version "3.4.0"
@@ -7496,6 +7508,10 @@ make-iterator@^1.0.0:
   dependencies:
     kind-of "^3.1.0"
 
+make-promises-safe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-1.1.0.tgz#b4d28c61ef8ad5502f38dbb3a0ee89627f76ad61"
+
 makeerror@1.0.x:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/makeerror/-/makeerror-1.0.11.tgz#e01a5c9109f2af79660e4e8b9587790184f5a96c"
@@ -9590,10 +9606,6 @@ rafl@~1.2.1:
   dependencies:
     global "~4.3.0"
 
-ramda@^0.23.0:
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.23.0.tgz#ccd13fff73497a93974e3e86327bfd87bd6e8e2b"
-
 ramda@^0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
@@ -9678,13 +9690,6 @@ react-container-query@^0.11.0:
   dependencies:
     container-query-toolkit "0.1.3"
     resize-observer-lite "0.2.3"
-
-react-css-themr@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/react-css-themr/-/react-css-themr-2.1.2.tgz#e017514e471c232f43a754a55b49d81faf5dafb8"
-  dependencies:
-    hoist-non-react-statics "^1.2.0"
-    invariant "^2.2.1"
 
 react-dev-utils@4.1.0:
   version "4.1.0"
@@ -9779,9 +9784,9 @@ react-jss@^8.1.0:
     prop-types "^15.6.0"
     theming "^1.3.0"
 
-react-material-app@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/react-material-app/-/react-material-app-0.1.2.tgz#b2ef7c2539f0ebbbdd461aa39c1306bcc8527b74"
+react-material-app@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/react-material-app/-/react-material-app-0.1.3.tgz#b9774be2404c8232472f14f517a7e5ffb61d3ea2"
   dependencies:
     "@types/prop-types" "^15.5.2"
     "@types/react" "^16.0.38"
@@ -9794,7 +9799,6 @@ react-material-app@^0.1.2:
     material-ui "^1.0.0-beta.34"
     material-ui-icons "^1.0.0-beta.17"
     react-router "^4.2.0"
-    react-toolbox "^2.0.0-beta.12"
     react-with-media "^0.3.0"
     recompose "^0.26.0"
     style-definitions "^0.1.3"
@@ -9858,24 +9862,7 @@ react-sortable-hoc@^0.6.8:
     lodash "^4.12.0"
     prop-types "^15.5.7"
 
-react-style-proptype@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-style-proptype/-/react-style-proptype-3.0.0.tgz#89e0b646f266c656abb0f0dd8202dbd5036c31e6"
-  dependencies:
-    prop-types "^15.5.4"
-
-react-toolbox@^2.0.0-beta.12:
-  version "2.0.0-beta.12"
-  resolved "https://registry.yarnpkg.com/react-toolbox/-/react-toolbox-2.0.0-beta.12.tgz#1d9dd7cc41e3b35dabdce5eb100a8068eee88c45"
-  dependencies:
-    classnames "^2.2.5"
-    core-js "^2.4.0"
-    ramda "^0.23.0"
-    react-css-themr "^2.1.2"
-    react-style-proptype "^3.0.0"
-    react-transition-group "^1.1.3"
-
-react-transition-group@^1.1.3, react-transition-group@^1.2.1:
+react-transition-group@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.1.tgz#e11f72b257f921b213229a774df46612346c7ca6"
   dependencies:

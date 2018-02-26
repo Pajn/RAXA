@@ -10,7 +10,6 @@ import {
   PluginConfiguration,
   Service,
   actions,
-  defaultInterfaces,
 } from 'raxa-common/cjs'
 import {DeviceIsInUseError} from 'raxa-common/cjs/errors'
 import {
@@ -151,12 +150,7 @@ export class StorageService extends Service {
         autoload: true,
       })
       db.persistence.setAutocompactionInterval(1000 * 60 * 10)
-      console.log('db', db)
       persistStore(this.store, {storage: nedb(db)}, resolve)
-    })
-
-    Object.values(defaultInterfaces).forEach(iface => {
-      this.installInterface(iface)
     })
   }
 

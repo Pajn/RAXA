@@ -28,7 +28,7 @@
       (
         cd "${PLUGIN}"
         echo ""
-        echo "${plugin}"
+        echo "${PLUGIN}"
         exec "$@"
       )
     fi

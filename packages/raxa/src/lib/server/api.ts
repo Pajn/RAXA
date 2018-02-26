@@ -10,6 +10,7 @@ import {SubscriptionServer} from 'subscriptions-transport-ws'
 import {sslCert, sslKey} from '../config'
 import {Context} from '../graphql/context'
 import {schema} from '../graphql/schema'
+import {PluginManager} from './plugin-manager'
 import {PluginSupervisor} from './plugin-supervisor'
 import {StorageService} from './storage'
 
@@ -49,9 +50,11 @@ export class ApiService extends Service {
     const server = new Server({debug: {request: ['error']}})
     const storage = this.serviceManager.runningServices
       .StorageService as StorageService
-    const plugins = this.serviceManager.runningServices
+    const pluginManager = this.serviceManager.runningServices
+      .PluginManager as PluginManager
+    const pluginSupervisor = this.serviceManager.runningServices
       .PluginSupervisor as PluginSupervisor
-    const context: Context = {storage, plugins}
+    const context: Context = {storage, pluginManager, pluginSupervisor}
 
     server.connection({listener: httpServer, port: 9000, routes: {cors: true}})
     if (httpsServer) {
