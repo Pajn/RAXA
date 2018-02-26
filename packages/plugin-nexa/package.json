@@ -1,24 +1,27 @@
 {
   "name": "raxa-plugin-nexa",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "description": "",
   "main": "cjs/index.js",
   "typings": "lib/index.d.ts",
   "module": "lib/index.d.ts",
-  "scripts": {
-    "build": "tscomp build",
-    "watch": "tscomp watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
+  "keywords": [
+    "raxa-plugin"
+  ],
+  "dependencies": {
+    "raxa-common": "^0.2.1",
+    "raxa-plugin-raxa-tellsticknet": "^0.2.1"
+  },
   "devDependencies": {
     "tscomp": "^0.15.0",
     "typescript": "^2.7.2"
   },
-  "dependencies": {
-    "raxa-common": "^0.1.0",
-    "raxa-plugin-raxa-tellsticknet": "^0.1.0"
+  "scripts": {
+    "build": "tscomp build",
+    "watch": "tscomp watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "tscomp": {
     "mode": "lib"
