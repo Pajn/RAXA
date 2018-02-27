@@ -7,10 +7,13 @@ import {compose} from 'recompose'
 import {column, row} from 'style-definitions'
 import {IsTouchProps, withIsTouch} from './mediaQueries'
 
-const DesktopList = glamorous.div({
-  ...column({}),
-  padding: 8,
-})
+const DesktopList = glamorous.div(
+  {
+    ...column({}),
+    padding: 8,
+  },
+  {displayName: 'DesktopList'},
+)
 
 const DesktopListItem = glamorous.div(
   ({isMobile, selected}: {isMobile?: boolean; selected?: boolean}) => ({

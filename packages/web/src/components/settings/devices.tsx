@@ -7,14 +7,22 @@ import MUIListSubheader from 'material-ui/List/ListSubheader'
 import {GraphQlDevice} from 'raxa-common'
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
-import {ContextActions} from 'react-material-app'
-import {compose, withState} from 'recompose'
+import {ContextActions, Section} from 'react-material-app'
+import {Route, withRouter} from 'react-router'
+import {Link} from 'react-router-dom'
+import {compose, withStateHandlers} from 'recompose'
 import {compose as fnCompose} from 'redux'
 import {row} from 'style-definitions'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
 import {DeviceDetailSettings} from './device-detail'
+
+declare module 'material-ui/IconButton/IconButton' {
+  interface IconButtonProps {
+    to?: string
+  }
+}
 
 const deviceTypeOther = 'Other'
 
@@ -36,8 +44,8 @@ export type PrivateDeviceSettingsProps = DeviceSettingsProps &
   IsMobileProps & {
     data: ListGraphQlData & QueryProps
     newDevice?: DeviceOrHeader
-    setNewDevice: (newDevice?: Partial<DeviceOrHeader>) => void
     createNewDevice: () => void
+    clearNewDevice: () => void
   }
 
 export const deviceListQuery = gql`
@@ -63,12 +71,19 @@ export const deviceListQuery = gql`
 
 const enhance = compose<PrivateDeviceSettingsProps, DeviceSettingsProps>(
   graphql(deviceListQuery),
-  withState('newDevice', 'setNewDevice', null),
-  // Using withState instead of mapProps or withProps as we want to create only one
-  // function instance isntead of a new one for every render to avoid infinite recursion
-  // due to always changing context
-  withState('createNewDevice', '', (props: PrivateDeviceSettingsProps) => () =>
-    props.setNewDevice({type: 'device', value: {interfaces: []} as any}),
+  // Inject the location to avoid sCU in withStateHandlers blocking <Route> changes
+  withRouter,
+  withStateHandlers(
+    {newDevice: null as null | DeviceOrHeader},
+    {
+      clearNewDevice: () => () => ({newDevice: null}),
+      createNewDevice: () => () => ({
+        newDevice: {
+          type: 'device' as 'device',
+          value: {interfaces: []} as any,
+        },
+      }),
+    },
   ),
   withIsMobile,
 )
@@ -136,66 +151,95 @@ export const DeviceSettingsView = ({
   data,
   newDevice,
   createNewDevice,
-  setNewDevice,
+  clearNewDevice,
   isMobile,
 }: PrivateDeviceSettingsProps) => (
-  <DeviceList
-    path="/settings/devices"
-    data={data}
-    getItems={data => groupDevices(data.devices || [])}
-    getSection={item =>
-      item.type === 'device'
-        ? {
-            title: item.value.name,
-            path: `/settings/devices/${item.value.id}`,
-          }
-        : null
-    }
-    renderItem={(item, _, index) =>
-      item.type === 'device' ? (
-        <ListItem key={index} caption={item.value.name} />
-      ) : (
-        <div key={index}>
-          <ListSubHeader isMobile={isMobile}>{item.value}</ListSubHeader>
-        </div>
-      )
-    }
-    renderActiveItem={item =>
-      item.type === 'device' ? (
-        <DeviceDetailSettings device={item.value} />
-      ) : null
-    }
-    activeItem={
-      newDevice && {
-        item: newDevice,
-        section: {
-          title: 'New Device',
-          path: '/settings/devices/new',
-          onUnload: () => setNewDevice(undefined),
-        },
+  <>
+    {isMobile ? (
+      <Route
+        path="/settings/devices/new"
+        children={({match}) => {
+          if (match && !newDevice) setTimeout(createNewDevice)
+          return null
+        }}
+      />
+    ) : (
+      <Route
+        path="/settings/devices/new"
+        children={({match}) => {
+          if (match && !newDevice) setTimeout(createNewDevice)
+          return match ? (
+            <Section
+              title="New Device"
+              path="/settings/devices/new"
+              onUnload={clearNewDevice}
+            />
+          ) : null
+        }}
+      />
+    )}
+    <DeviceList
+      path="/settings/devices"
+      data={data}
+      getItems={data => groupDevices(data.devices || [])}
+      getSection={item =>
+        item.type === 'device'
+          ? {
+              title: item.value.name,
+              path: `/settings/devices/${item.value.id}`,
+            }
+          : null
       }
-    }
-    listHeader={
-      isMobile ? (
-        <ContextActions
-          contextActions={[
-            {
-              icon: 'add',
-              onClick: createNewDevice,
-              to: '/settings/devices/new',
-            },
-          ]}
-        />
-      ) : (
-        <ListHeader>
-          <Title style={{flex: 1}}>Devices</Title>
-          <IconButton onClick={createNewDevice}>
-            <Icon>add</Icon>
-          </IconButton>
-        </ListHeader>
-      )
-    }
-  />
+      renderItem={(item, _, index) =>
+        item.type === 'device' ? (
+          <ListItem key={index} caption={item.value.name} />
+        ) : (
+          <div key={index}>
+            <ListSubHeader isMobile={isMobile}>{item.value}</ListSubHeader>
+          </div>
+        )
+      }
+      renderActiveItem={item =>
+        item.type === 'device' ? (
+          <DeviceDetailSettings device={item.value} />
+        ) : null
+      }
+      activeItem={
+        newDevice && {
+          item: newDevice,
+          section: {
+            title: 'New Device',
+            path: '/settings/devices/new',
+            onUnload: clearNewDevice,
+          },
+        }
+      }
+      listHeader={
+        isMobile ? (
+          <ContextActions
+            contextActions={[
+              {
+                icon: 'add',
+                onClick: createNewDevice,
+                to: '/settings/devices/new',
+              },
+            ]}
+          />
+        ) : (
+          <ListHeader>
+            <Title style={{flex: 1}}>Devices</Title>
+            <IconButton
+              onClick={createNewDevice}
+              component={Link}
+              to="/settings/devices/new"
+            >
+              <Icon>add</Icon>
+            </IconButton>
+          </ListHeader>
+        )
+      }
+    />
+  </>
 )
 
 export const DeviceSettings = enhance(DeviceSettingsView)

@@ -13,8 +13,8 @@ import {column, row} from 'style-definitions'
 import {List, ListItem} from './list'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
-const Container = glamorous.div(row({}))
-const Detail = glamorous.div(column({flex: {grow: 1}}))
+const Container = glamorous.div(row({}), {displayName: 'Container'})
+const Detail = glamorous.div(column({flex: {grow: 1}}), {displayName: 'Detail'})
 
 export type ListDetailProps<E, T> = {
   path: string
