@@ -14,6 +14,7 @@ export type DialogInputProps = {
   value: any
   unit?: string
   onChange: (newValue: any) => void
+  actions?: boolean
   children: (
     tmpValue: any,
     setTmpValue: (newValue: any) => void,
@@ -32,7 +33,13 @@ const enhance = compose<PrivateDialogInputProps, DialogInputProps>(
   withStateHandlers(
     {dialogActive: false, tmpValue: null},
     {
-      setTmpValue: state => tmpValue => ({...state, tmpValue}),
+      setTmpValue: (state, props: DialogInputProps) => tmpValue => {
+        if (props.actions === false) {
+          props.onChange(tmpValue)
+          return {...state, dialogActive: false}
+        }
+        return {...state, tmpValue}
+      },
       showDialog: (_, props: DialogInputProps) => () => ({
         tmpValue: props.value,
         dialogActive: true,
@@ -48,6 +55,7 @@ export const DialogInputView = ({
   value,
   onChange,
   unit,
+  actions = true,
   dialogActive,
   showDialog,
   hideDialog,
@@ -66,21 +74,23 @@ export const DialogInputView = ({
         <DialogContent style={{width: '75vw', maxWidth: 'calc(100vw - 112px)'}}>
           {children(tmpValue, setTmpValue)}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={hideDialog} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              onChange(tmpValue)
-              hideDialog()
-            }}
-            color="primary"
-            autoFocus
-          >
-            Ok
-          </Button>
-        </DialogActions>
+        {actions && (
+          <DialogActions>
+            <Button onClick={hideDialog} color="primary">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                onChange(tmpValue)
+                hideDialog()
+              }}
+              color="primary"
+              autoFocus
+            >
+              Ok
+            </Button>
+          </DialogActions>
+        )}
       </Dialog>
     </ListItemSecondaryAction>
   </ListItem>

@@ -1,11 +1,12 @@
 import Slider from 'material-ui-old/Slider'
+import List, {ListItem, ListItemText} from 'material-ui/List'
 import React, {CSSProperties, ReactChild} from 'react'
 import {Checkbox, Select, TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
-const ListItem = ({
+const RTListItem = ({
   style,
   children,
   onClick,
@@ -19,7 +20,7 @@ const ListItem = ({
   </div>
 )
 
-export const ListItemLayout = ({
+export const RTListItemLayout = ({
   caption,
   legend,
   onClick,
@@ -28,10 +29,10 @@ export const ListItemLayout = ({
   legend: ReactChild
   onClick?: () => void
 }) => (
-  <ListItem style={{flexDirection: 'column'}} onClick={onClick}>
+  <RTListItem style={{flexDirection: 'column'}} onClick={onClick}>
     <div style={{fontSize: 16, color: '#212121'}}>{caption}</div>
     <div style={{paddingTop: 3, fontSize: 14, color: '#757575'}}>{legend}</div>
-  </ListItem>
+  </RTListItem>
 )
 
 const round = (decimals: number, value: number) =>
@@ -73,18 +74,18 @@ export const SettingInputView = ({
       onChange={onChange}
       unit={unit}
       children={(value, setValue) => (
-        <TextField type={type} value={value} onChange={setValue} />
+        <TextField type={type} value={value} onChange={setValue} fullWidth />
       )}
     />
   ) : (
-    <ListItem>
+    <RTListItem>
       <TextField
         label={label}
         type={type}
         value={value || ''}
         onChange={onChange}
       />
-    </ListItem>
+    </RTListItem>
   )
 
 export const SettingInput = enhance(SettingInputView) as React.ComponentClass<
@@ -108,14 +109,14 @@ export const SettingCheckboxView = ({
   onChange,
   disabled,
 }: PrivateSettingCheckboxProps) => (
-  <ListItem>
+  <RTListItem>
     <Checkbox
       value={value}
       onChange={onChange}
       label={label}
       disabled={disabled}
     />
-  </ListItem>
+  </RTListItem>
 )
 
 export const SettingCheckbox = enhance(
@@ -144,24 +145,26 @@ export const SettingDropdownView = ({
       value={value}
       onChange={onChange}
       legend={(source.find(s => s.value === value) || {label: ''}).label}
-      children={(value, setValue) => (
-        <Select
-          fullWidth
-          choices={source}
-          value={value || ''}
-          onChange={setValue}
-        />
+      actions={false}
+      children={(_value, setValue) => (
+        <List>
+          {source.map((item, i) => (
+            <ListItem button onClick={() => setValue(item.value)} key={i}>
+              <ListItemText primary={item.label} />
+            </ListItem>
+          ))}
+        </List>
       )}
     />
   ) : (
-    <ListItem>
+    <RTListItem>
       <Select
         choices={source}
         label={label}
         value={value || ''}
         onChange={onChange}
       />
-    </ListItem>
+    </RTListItem>
   )
 
 export const SettingDropdown = enhance(
@@ -226,7 +229,7 @@ export const SettingSliderView = ({
       )}
     />
   ) : (
-    <ListItemLayout
+    <RTListItemLayout
       caption={label}
       legend={
         <Slider
@@ -265,18 +268,18 @@ export const SettingValueView = ({
   isMobile,
 }: PrivateSettingValueProps) =>
   isMobile ? (
-    <ListItemLayout
+    <RTListItemLayout
       caption={label}
       legend={unit ? `${value} ${unit}` : `${value}`}
     />
   ) : (
-    <ListItem>
+    <RTListItem>
       <TextField
         label={label}
         value={unit ? `${value} ${unit}` : `${value}`}
         disabled
       />
-    </ListItem>
+    </RTListItem>
   )
 
 export const SettingValue = enhance(SettingValueView) as React.ComponentClass<

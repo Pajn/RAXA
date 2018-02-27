@@ -9,7 +9,7 @@ import {TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
 import {column, row} from 'style-definitions'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
-import {ListItemLayout} from './setting-input'
+import {RTListItemLayout} from './setting-input'
 
 type Days = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sun' | 'sat'
 const days = ['sat', 'mon', 'tue', 'wed', 'thu', 'fri', 'sun', 'sat']
@@ -194,7 +194,7 @@ export const ScheduleInput = compose<
 
     render() {
       return [
-        <ListItemLayout
+        <RTListItemLayout
           key="ListItem"
           caption={this.props.label}
           legend={this.props.value}
