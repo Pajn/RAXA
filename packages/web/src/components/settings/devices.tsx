@@ -1,5 +1,5 @@
 import glamorous from 'glamorous'
-import {filter, flatMap, map} from 'iterates/lib/sync'
+import {filter, first, flatMap, map} from 'iterates/lib/sync'
 import {title} from 'material-definitions'
 import Icon from 'material-ui/Icon'
 import IconButton from 'material-ui/IconButton'
@@ -94,16 +94,24 @@ const groupDevices = (devices: Array<GraphQlDevice>): Array<DeviceOrHeader> => {
   }
 
   groups.forEach((devices, type) => {
-    if (devices.length < 2) {
-      let others = groups.get(deviceTypeOther)
-      if (!others) {
-        others = []
-        groups.set(deviceTypeOther, others)
-      }
-      others.concat(devices)
+    if (type !== deviceTypeOther && devices.length < 2 && groups.size > 1) {
+      let others = groups.get(deviceTypeOther) || []
+      groups.set(
+        deviceTypeOther,
+        others.concat(devices.filter(d => !others.some(o => d.id === o.id))),
+      )
       groups.delete(type)
     }
   })
+
+  if (groups.size === 1) {
+    return [
+      ...map(
+        device => ({type: 'device' as 'device', value: device}),
+        first(groups.values())!,
+      ),
+    ]
+  }
 
   return [
     ...fnCompose(
