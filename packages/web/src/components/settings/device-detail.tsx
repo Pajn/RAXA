@@ -267,7 +267,7 @@ export const DeviceDetailSettingsView = ({
         <ListItemText primary="Type" secondary={device.deviceClass.name} />
       </ListItem>
     )}
-    <ListSubheader>Properties</ListSubheader>
+    <ListSubheader disableSticky>Properties</ListSubheader>
     <SettingForm
       value={device}
       contextActions={

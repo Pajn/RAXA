@@ -52,7 +52,7 @@ const enhance = compose<PrivateDialogInputProps, DialogInputProps>(
 export const DialogInputView = ({
   label,
   legend,
-  value,
+  value = '',
   onChange,
   unit,
   actions = true,
@@ -63,7 +63,7 @@ export const DialogInputView = ({
   setTmpValue,
   children,
 }: PrivateDialogInputProps) => (
-  <ListItem onClick={showDialog}>
+  <ListItem onClick={showDialog} button>
     <ListItemText
       primary={label}
       secondary={legend || (unit ? `${value} ${unit}` : `${value}`)}

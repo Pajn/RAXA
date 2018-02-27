@@ -11,7 +11,7 @@ import {
   Modification,
   NumberProperty,
 } from 'raxa-common/lib/entities'
-import React from 'react'
+import React, {Component} from 'react'
 import FlipMove from 'react-flip-move'
 import {compose, mapProps, withState} from 'recompose'
 import {updateIn} from 'redux-decorated'
@@ -51,6 +51,7 @@ const UndoContainer = glamorous.div({
   justifyContent: 'center',
 
   position: 'absolute',
+  top: 0,
   width: '100%',
   height: '100%',
   zIndex: 1,
@@ -62,7 +63,9 @@ const UndoContainer = glamorous.div({
 
 const UndoDelete = ({item: _, onUndo}) => (
   <UndoContainer>
-    <Button onClick={onUndo}>Undo</Button>
+    <Button onClick={onUndo} style={{color: 'white'}}>
+      Undo
+    </Button>
   </UndoContainer>
 )
 
@@ -92,103 +95,129 @@ export const enhance = compose<ArrayInputPrivateProps, ArrayInputProps>(
   withIds('valueWithUndo'),
 )
 
-export const ArrayInputView = ({
-  property,
-  value,
-  valueWithUndo,
-  onChange,
-  undoItem,
-  setUndoItem,
-  ids,
-  replace,
-}: ArrayInputPrivateProps) => (
-  <div>
-    <TitleBar>
-      {property.name && <Title>{property.name}</Title>}
-      {property.modifiable && (
-        <IconButton
-          onClick={() =>
-            onChange([
-              ...(value || []),
-              (property.items as NumberProperty).defaultValue !== undefined
-                ? (property.items as NumberProperty).defaultValue
-                : property.items.type === 'modification' ? {} : undefined,
-            ])
-          }
-        >
-          <Icon>add</Icon>
-        </IconButton>
-      )}
-    </TitleBar>
-    <CardContainer>
-      <FlipMove>
-        {valueWithUndo.map((item, i) => {
-          const index = undoItem && undoItem.index < i ? i - 1 : i
+export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
+  didAdd = false
 
-          return (
-            <div key={ids[i]} style={{marginTop: i > 0 ? 24 : 0}}>
-              <Card style={{position: 'relative', overflow: 'visible'}}>
-                {property.modifiable && (
-                  <div>
-                    <ItemHeader>
-                      {property.items.type === 'modification' && (
-                        <SubTitle>
-                          {(item as Modification).deviceId ? (
-                            <DeviceName id={(item as Modification).deviceId} />
-                          ) : (
-                            'Add Device'
-                          )}
-                        </SubTitle>
-                      )}
-                      <IconButton
-                        onClick={() => {
-                          onChange(remove(index, 1, value))
-                          if (
-                            value[index] &&
-                            (property.items.type !== 'modification' ||
-                              value[index].statusId)
-                          ) {
-                            setUndoItem({index, item: value[index]})
-                          } else {
-                            setUndoItem()
+  render() {
+    const {
+      property,
+      value,
+      valueWithUndo,
+      onChange,
+      undoItem,
+      setUndoItem,
+      ids,
+      replace,
+    } = this.props
+
+    return (
+      <div>
+        <TitleBar>
+          {property.name && <Title>{property.name}</Title>}
+          {property.modifiable && (
+            <IconButton
+              onClick={() => {
+                onChange([
+                  ...(value || []),
+                  (property.items as NumberProperty).defaultValue !== undefined
+                    ? (property.items as NumberProperty).defaultValue
+                    : property.items.type === 'modification' ? {} : undefined,
+                ])
+                this.didAdd = true
+              }}
+            >
+              <Icon>add</Icon>
+            </IconButton>
+          )}
+        </TitleBar>
+        <CardContainer>
+          <FlipMove>
+            {valueWithUndo.map((item, i) => {
+              const index = undoItem && undoItem.index < i ? i - 1 : i
+
+              return (
+                <div key={ids[i]} style={{marginTop: i > 0 ? 24 : 0}}>
+                  <div
+                    ref={
+                      valueWithUndo.length - 1 === i && this.didAdd
+                        ? e => {
+                            if (e) {
+                              this.didAdd = false
+                              e.scrollIntoView({behavior: 'smooth'})
+                            }
                           }
-                        }}
-                      >
-                        <Icon>delete</Icon>
-                      </IconButton>
-                    </ItemHeader>
-                    <Divider />
+                        : undefined
+                    }
+                  >
+                    <Card style={{position: 'relative', overflow: 'visible'}}>
+                      {property.modifiable && (
+                        <div>
+                          <ItemHeader>
+                            {property.items.type === 'modification' && (
+                              <SubTitle>
+                                {(item as Modification).deviceId ? (
+                                  <DeviceName
+                                    id={(item as Modification).deviceId}
+                                  />
+                                ) : (
+                                  'Add Device'
+                                )}
+                              </SubTitle>
+                            )}
+                            <IconButton
+                              onClick={() => {
+                                onChange(remove(index, 1, value))
+                                if (
+                                  value[index] &&
+                                  (property.items.type !== 'modification' ||
+                                    value[index].statusId)
+                                ) {
+                                  setUndoItem({index, item: value[index]})
+                                } else {
+                                  setUndoItem()
+                                }
+                              }}
+                            >
+                              <Icon>delete</Icon>
+                            </IconButton>
+                          </ItemHeader>
+                          <Divider />
+                        </div>
+                      )}
+                      <div style={{padding: '8px 16px'}}>
+                        <PropertyView
+                          propertyId={property.items.id}
+                          property={property.items}
+                          value={item}
+                          onChange={updated => {
+                            const newValue = updateIn(index, updated, value)
+                            replace(ids[i], newValue[index])
+                            onChange(newValue)
+                          }}
+                        />
+                      </div>
+                      {undoItem &&
+                        undoItem.index === i && (
+                          <UndoDelete
+                            item={undoItem}
+                            onUndo={() => {
+                              onChange(
+                                insert(undoItem.index, undoItem.item, value),
+                              )
+                              setUndoItem()
+                            }}
+                          />
+                        )}
+                    </Card>
                   </div>
-                )}
-                <div style={{padding: '8px 16px'}}>
-                  <PropertyView
-                    propertyId={property.items.id}
-                    property={property.items}
-                    value={item}
-                    onChange={updated => {
-                      const newValue = updateIn(index, updated, value)
-                      replace(ids[i], newValue[index])
-                      onChange(newValue)
-                    }}
-                  />
                 </div>
-                {undoItem &&
-                  undoItem.index === i && (
-                    <UndoDelete
-                      item={undoItem}
-                      onUndo={() => {
-                        onChange(insert(undoItem.index, undoItem.item, value))
-                        setUndoItem()
-                      }}
-                    />
-                  )}
-              </Card>
-            </div>
-          )
-        })}
-      </FlipMove>
-    </CardContainer>
-  </div>
-)
+              )
+            })}
+          </FlipMove>
+        </CardContainer>
+      </div>
+    )
+  }
+}
 
 export const ArrayInput = enhance(ArrayInputView)
