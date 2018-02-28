@@ -44,6 +44,7 @@ export interface NexaDevice extends Device {
     sender: string
     houseCode: keyof typeof HOUSE_CODES
     deviceCode: number
+    groupCode: number
     onLevel: number
   }
 
@@ -102,6 +103,7 @@ export default class NexaPlugin extends Plugin {
   onDeviceCreated(device: NexaDevice) {
     if (this.className(device).startsWith('NexaSelfLearning')) {
       device.config.deviceCode = Math.floor(Math.random() * DEVICE_CODE_MAX)
+      device.config.groupCode = 7
       return device
     }
   }
@@ -216,7 +218,7 @@ export default class NexaPlugin extends Plugin {
     {forceOn = false, groupMode = false, learn = false} = {},
   ) {
     const senderId = device.config.sender
-    const deviceCode = device.config.deviceCode
+    const {deviceCode, groupCode = 7} = device.config
 
     if (
       this.className(device) === plugin.deviceClasses.NexaSelfLearningDimable.id
@@ -238,7 +240,7 @@ export default class NexaPlugin extends Plugin {
 
         this.log.debug(`Dimming device ${device.name} to level ${dimLevel}`)
         await this.sendPulse(
-          selfLearningPulse(deviceCode, groupMode, 7, DIM, dimLevel),
+          selfLearningPulse(deviceCode, groupMode, groupCode, DIM, dimLevel),
           senderId,
           {selfLearning: true, learning: learn},
         )
@@ -267,7 +269,7 @@ export default class NexaPlugin extends Plugin {
       )
 
       await this.sendPulse(
-        selfLearningPulse(deviceCode, groupMode, 7, action),
+        selfLearningPulse(deviceCode, groupMode, groupCode, action),
         senderId,
         {selfLearning: true, learning: learn},
       )

@@ -84,7 +84,14 @@ const plugin = {
           modifiable: true,
         },
         deviceCode: {
-          id: 'onLevel',
+          id: 'deviceCode',
+          type: 'integer' as 'integer',
+          modifiable: false,
+          optional: true,
+          showInSettings: false,
+        },
+        groupCode: {
+          id: 'groupCode',
           type: 'integer' as 'integer',
           modifiable: false,
           optional: true,
@@ -120,6 +127,13 @@ const plugin = {
         },
         deviceCode: {
           id: 'deviceCode',
+          type: 'integer' as 'integer',
+          modifiable: false,
+          optional: true,
+          showInSettings: false,
+        },
+        groupCode: {
+          id: 'groupCode',
           type: 'integer' as 'integer',
           modifiable: false,
           optional: true,
