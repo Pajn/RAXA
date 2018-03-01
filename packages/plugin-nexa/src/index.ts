@@ -231,7 +231,7 @@ export default class NexaPlugin extends Plugin {
         modification = createModification(
           device,
           defaultInterfaces.Dimmer.status.level,
-          device.config.onLevel,
+          device.config.onLevel / 16 * 100,
         )
       }
 
