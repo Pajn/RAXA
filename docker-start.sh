@@ -1,7 +1,10 @@
 #!/bin/sh
 
 if [ ! -f "/config/.defaults-installed" ]; then
-  if [ -f "/config/package.json" ]; then
+  if [ -f "/config/db.json" ]; then
+    echo "WARNING: Defaults missing but db.json found"
+    echo "skipping installation of default interfaces and plugins"
+  elif [ -f "/config/package.json" ]; then
     echo "WARNING: Defaults missing but package.json found"
     echo "skipping installation of default interfaces and plugins"
   else
