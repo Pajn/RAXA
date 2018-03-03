@@ -91,9 +91,9 @@ export const pluginMutations = buildMutations({
     async resolve(
       _,
       {pluginId}: {pluginId: string},
-      {pluginManager, storage}: Context,
+      {pluginSupervisor, storage}: Context,
     ) {
-      await pluginManager.upgradePlugin(pluginId)
+      await pluginSupervisor.upgradePlugin(pluginId)
 
       return {...storage.getState().plugins[pluginId], installed: true}
     },

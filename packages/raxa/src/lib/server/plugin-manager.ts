@@ -101,7 +101,7 @@ export class PluginManager extends Service {
     this.storage.installPlugin({
       ...pluginDefinition,
       id,
-      enabled: true,
+      enabled: false,
       version: pluginPackageJson.version,
     })
   }
@@ -168,5 +168,6 @@ export class ProductionPluginManager extends PluginManager {
     await execa('yarn', ['upgrade', '--latest', `raxa-plugin-${id}`], {
       cwd: pluginDir,
     })
+    delete require.cache[require.resolve(this.pluginPath(id))]
   }
 }

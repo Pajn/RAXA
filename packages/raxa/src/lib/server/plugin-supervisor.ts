@@ -98,6 +98,15 @@ export class PluginSupervisor extends Service {
     }
   }
 
+  public async upgradePlugin(id: string) {
+    const pluginManager = this.serviceManager.runningServices
+      .PluginManager as PluginManager
+
+    await this.stopPlugin(id)
+    await pluginManager.upgradePlugin(id)
+    await this.startPlugin(id)
+  }
+
   private async startPlugin(id: string) {
     const pluginManager = (this.serviceManager.runningServices
       .PluginManager as any) as PluginManager
