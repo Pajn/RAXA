@@ -1,6 +1,7 @@
 import {ServiceManager, defaultInterfaces} from 'raxa-common/cjs'
 import {production} from '../config'
 import {ApiService} from './api'
+import {HttpService} from './http'
 import {PluginManager, ProductionPluginManager} from './plugin-manager'
 import {PluginSupervisor} from './plugin-supervisor'
 import {StorageService} from './storage'
@@ -13,22 +14,27 @@ export async function main() {
     StorageService,
     production ? ProductionPluginManager : PluginManager,
     PluginSupervisor,
+    HttpService,
     ApiService,
     production && WebService,
   )
 
-  let firstInt = true
-  process.on('SIGINT', () => {
-    if (firstInt) {
-      console.log(
-        '\n\nStopping services gracefully, press ctrl+c again to force quit\n',
-      )
-      firstInt = false
-      serviceManager.stopServices()
-    } else {
-      process.exit(1)
-    }
-  })
+  function registerSignalListener(signal: NodeJS.Signals) {
+    let firstInt = true
+    process.on(signal, () => {
+      if (firstInt) {
+        console.log(
+          '\n\nStopping services gracefully, press ctrl+c again to force quit\n',
+        )
+        firstInt = false
+        serviceManager.stopServices()
+      } else {
+        process.exit(1)
+      }
+    })
+  }
+  registerSignalListener('SIGINT')
+  registerSignalListener('SIGHUP')
 }
 
 export async function installDefaults() {

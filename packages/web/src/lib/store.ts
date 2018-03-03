@@ -9,17 +9,18 @@ import {reducer as mainScreenReducer} from '../components/ui2/main'
 import {snackbarReducer} from '../redux-snackbar/reducer'
 
 const ssl = location.protocol === 'https:'
-const port = ssl ? 9001 : 9000
+const port =
+  process.env.NODE_ENV === 'production' ? '' : `:${ssl ? 9001 : 9000}`
 
 const wsClient = new SubscriptionClient(
-  `${ssl ? 'wss' : 'ws'}://${location.hostname}:${port}/subscriptions`,
+  `${ssl ? 'wss' : 'ws'}://${location.hostname}${port}/subscriptions`,
   {
     reconnect: true,
   },
 )
 
 const networkInterface = createNetworkInterface({
-  uri: `${ssl ? 'https' : 'http'}://${location.hostname}:${port}/graphql`,
+  uri: `${ssl ? 'https' : 'http'}://${location.hostname}${port}/graphql`,
 })
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   networkInterface,

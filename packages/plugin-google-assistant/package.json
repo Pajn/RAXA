@@ -8,10 +8,10 @@
     "raxa-plugin"
   ],
   "dependencies": {
-    "@types/hapi": "^17.0.1",
+    "@types/hapi": "^17.0.4",
     "@types/node": "^8.5.2",
-    "hapi": "^17.2.0",
-    "iterates": "^0.3.5",
+    "hapi": "^17.2.1",
+    "iterates": "^0.3.6",
     "raxa-common": "^0.2.1",
     "raxa-plugin-scenery": "^0.2.1"
   },

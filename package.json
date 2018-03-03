@@ -4,11 +4,7 @@
   "private": true,
   "description": "",
   "main": "-",
-  "scripts": {
-    "build": "gulp",
-    "watch": "gulp watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "dependencies": {},
@@ -22,7 +18,7 @@
   },
   "resolutions": {
     "@types/async": "2.0.31",
-    "@types/react": "16.0.38",
+    "@types/react": "16.0.40",
     "@types/react-dom": "16.0.4",
     "@types/recompose": "0.24.5"
   },
