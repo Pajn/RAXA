@@ -16,7 +16,7 @@ export class WebService extends Service {
         path: '/{param*}',
         handler: {
           directory: {
-            path: '/app/packages/web/build',
+            path: '/app/web/build',
             index: true,
             lookupCompressed: true,
           },
@@ -27,7 +27,7 @@ export class WebService extends Service {
       server.ext('onPostHandler', (request, reply) => {
         const response = request.response!
         if (response.isBoom && response.output!.statusCode === 404) {
-          return reply.file('/app/packages/web/build/index.html')
+          return reply.file('/app/web/build/index.html')
         }
         return reply.continue
       })

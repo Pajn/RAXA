@@ -13,36 +13,50 @@ const baseImage = isArm ? 'arm32v7/node:8.9-slim' : 'node:8.9-alpine'
 
 const setup = isArm ? 'COPY qemu-arm-static /usr/bin/qemu-arm-static' : ''
 
-const subprojects = ['common', 'raxa', 'web']
-const subprojectFiles = globby.sync([
-  `packages/{${subprojects.join(',')}}/{package.json,yarn.lock}`,
-])
+const subprojectFiles = (...projects) =>
+  globby.sync([`packages/{${projects.join(',')}}/{package.json,yarn.lock}`])
 
 console.log(`
-FROM ${baseImage} as build
-WORKDIR /app
+FROM ${baseImage} as common
+WORKDIR /app/common
 
-
-COPY package.json .
-COPY .yarnrc .
-COPY yarn.lock .
-COPY lerna.json .
-COPY install.sh .
-${subprojectFiles.map(path => `COPY ${path} /app/${path}`).join('\n')}
+COPY .yarnrc /app
+COPY package.json /app
+COPY yarn.lock /app
+COPY packages/common/package.json /app/common/
+COPY packages/common/yarn.lock /app/common/
 
 ${setup}
-RUN ./install.sh && yarn cache clean
+RUN yarn
 
-${subprojects
-  .map(project => `COPY packages/${project} /app/packages/${project}`)
-  .join('\n')}
-COPY run.sh .
+COPY packages/common /app/common
 
-ENV NODE_ENV=production
-ENV RAXA_DATA_DIR=/config
+RUN NODE_ENV=production yarn build
+RUN rm -rf node_modules
 
-RUN ./run.sh yarn build
-RUN ./run.sh rm -rf node_modules
+FROM common as raxa
+WORKDIR /app/raxa
+COPY packages/raxa/package.json /app/raxa/
+COPY packages/raxa/yarn.lock /app/raxa/
+
+RUN yarn
+
+COPY packages/raxa /app/raxa
+
+RUN NODE_ENV=production yarn build
+RUN rm -rf node_modules
+
+FROM common as web
+WORKDIR /app/web
+COPY packages/web/package.json /app/web/
+COPY packages/web/yarn.lock /app/web/
+
+RUN yarn
+
+COPY packages/web /app/web
+
+RUN NODE_ENV=production yarn build
+RUN rm -rf node_modules
 
 FROM ${baseImage}
 WORKDIR /app
@@ -50,22 +64,23 @@ WORKDIR /app
 EXPOSE 8000
 EXPOSE 9000
 
-COPY package.json .
 COPY .yarnrc .
+COPY package.json .
 COPY yarn.lock .
-COPY lerna.json .
-COPY install.sh .
-${subprojectFiles.map(path => `COPY ${path} /app/${path}`).join('\n')}
+${subprojectFiles('common', 'raxa', 'web')
+  .map(path => `COPY ${path} /app/${path.replace('packages/', '')}`)
+  .join('\n')}
 
 ${setup}
-RUN SKIP_WEB=1 ./install.sh --concurrency=1 --production && yarn cache clean
+RUN cd /app/common && yarn --production && cd /app/raxa && yarn --production && yarn cache clean
 
-COPY --from=build /app /app/
+COPY --from=raxa /app /app
+COPY --from=web /app/web/build /app/web/build
 
 ENV NODE_ENV=production
 ENV RAXA_DATA_DIR=/config
 
-RUN RAXA_DATA_DIR=/default-config node packages/raxa/build/index.js --install-defaults
+RUN RAXA_DATA_DIR=/default-config node raxa/build/index.js --install-defaults
 
 COPY docker-start.sh /app/start.sh
 CMD [ "./start.sh" ]

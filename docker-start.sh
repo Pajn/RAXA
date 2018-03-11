@@ -14,4 +14,4 @@ if [ ! -f "/config/.defaults-installed" ]; then
   fi
 fi
 
-node packages/raxa/build/index.js
+node raxa/build/index.js
