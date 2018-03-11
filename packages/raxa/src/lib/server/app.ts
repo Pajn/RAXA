@@ -27,7 +27,7 @@ export async function main() {
           '\n\nStopping services gracefully, press ctrl+c again to force quit\n',
         )
         firstInt = false
-        serviceManager.stopServices()
+        serviceManager.stopServices().then(() => process.exit(0))
       } else {
         process.exit(1)
       }
