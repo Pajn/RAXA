@@ -25,7 +25,7 @@ const ContextSaveButton = ({
   />
 )
 
-export type SettingFormProps = FormHelperProperties<any, any> & {
+export type SettingFormProps = FormHelperProperties<any> & {
   contextActions?: Array<Action>
 }
 export type PrivateSettingFormProps = SettingFormProps & {

@@ -79,7 +79,7 @@ export function withLazyReducer(
           />
         )
       }
-    }
+    } as any
 }
 
 export type StorageConfiguration<TState, TAction, TOuterProps = any> = {
@@ -274,7 +274,7 @@ export function provideState<TState, TAction, TOuterProps = Readonly<{}>>(
           },
         }
       }
-    }
+    } as any
 }
 
 export function connectState<

@@ -12,16 +12,14 @@ export const defaultMapSizeToProps = (
 export function withSize<
   TOutter,
   TSize = {size: Size; ref: (element?: Element) => void}
->(
-  {
-    mapSizeToProps = defaultMapSizeToProps,
-  }: {
-    mapSizeToProps?: (
-      size: Size | undefined,
-      ref: (element?: Element) => void,
-    ) => TSize
-  } = {},
-): ComponentEnhancer<TSize & TOutter, TOutter> {
+>({
+  mapSizeToProps = defaultMapSizeToProps,
+}: {
+  mapSizeToProps?: (
+    size: Size | undefined,
+    ref: (element?: Element) => void,
+  ) => TSize
+} = {}): ComponentEnhancer<TSize & TOutter, TOutter> {
   return WrappedComponent =>
     class extends React.Component<TOutter, {sizeProps: TSize}> {
       static displayName = wrapDisplayName(WrappedComponent, 'withSize')
@@ -45,5 +43,5 @@ export function withSize<
       render() {
         return <WrappedComponent {...this.props} {...this.state.sizeProps} />
       }
-    }
+    } as any
 }

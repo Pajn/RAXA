@@ -230,7 +230,7 @@ export const DeviceSettingsView = ({
             <Title style={{flex: 1}}>Devices</Title>
             <IconButton
               onClick={createNewDevice}
-              component={Link}
+              component={Link as any}
               to="/settings/devices/new"
             >
               <Icon>add</Icon>

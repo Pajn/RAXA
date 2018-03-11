@@ -5,9 +5,9 @@
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@types/jest": "22.1.4",
+    "@types/jest": "22.2.0",
     "@types/joi": "^13.0.5",
-    "@types/ramda": "^0.25.19",
+    "@types/ramda": "^0.25.20",
     "babel-runtime": "^6.26.0",
     "joi": "^13.1.2",
     "ramda": "^0.25.0",

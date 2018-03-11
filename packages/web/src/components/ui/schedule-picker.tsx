@@ -3,7 +3,7 @@ import TimePicker from 'material-ui-old/TimePicker'
 import Button from 'material-ui/Button'
 import Dialog, {DialogContent} from 'material-ui/Dialog'
 import Tabs, {Tab} from 'material-ui/Tabs'
-import {fromPairs, toPairs} from 'ramda'
+import {fromPairs} from 'ramda'
 import React from 'react'
 import {TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
@@ -66,7 +66,7 @@ const daysFromWeekdayExpression = (cronExpression: string): Array<Days> => {
 const isActive = (keys: Array<string>, active: Array<string>) => {
   const obj = fromPairs(keys.map(key => [key, false] as [Days, boolean]))
   active.forEach(key => (obj[key] = true))
-  return toPairs<Days, boolean>(obj)
+  return Object.entries(obj) as Array<[Days, boolean]>
 }
 
 type SchedulePickerDialogProps = {
