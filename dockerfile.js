@@ -55,7 +55,9 @@ RUN yarn
 
 COPY packages/web /app/web
 
-RUN NODE_ENV=production yarn build
+RUN NODE_ENV=production REACT_APP_BUILD_DATE=${
+  process.env.BUILD_DATE
+} REACT_APP_BUILD_HASH=${process.env.GIT_HASH} yarn build
 RUN rm -rf node_modules
 
 FROM ${baseImage}

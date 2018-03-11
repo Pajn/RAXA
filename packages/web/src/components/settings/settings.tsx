@@ -10,6 +10,7 @@ import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
 import {AppSettings, isInApp} from './app'
 import {DeviceSettings} from './devices'
 import {PluginSettings} from './plugins'
+import {SystemSettings} from './system'
 
 const Title = glamorous.h3(title)
 const ListHeader = glamorous.div(row({vertical: 'center'}))
@@ -33,6 +34,7 @@ export const SettingsView = ({isMobile}: PrivateSettingsProps) => (
     getItems={() => [
       {name: 'Devices', url: 'devices', component: DeviceSettings},
       {name: 'Plugins', url: 'plugins', component: PluginSettings},
+      {name: 'System', url: 'system', component: SystemSettings},
       ...(isInApp ? [{name: 'App', url: 'app', component: AppSettings}] : []),
     ]}
     getSection={setting => ({
