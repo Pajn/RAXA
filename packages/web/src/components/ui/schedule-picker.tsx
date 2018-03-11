@@ -2,6 +2,7 @@ import glamorous from 'glamorous'
 import TimePicker from 'material-ui-old/TimePicker'
 import Button from 'material-ui/Button'
 import Dialog, {DialogContent} from 'material-ui/Dialog'
+import {ListItem} from 'material-ui/List'
 import Tabs, {Tab} from 'material-ui/Tabs'
 import {fromPairs} from 'ramda'
 import React from 'react'
@@ -9,7 +10,6 @@ import {TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
 import {column, row} from 'style-definitions'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
-import {RTListItemLayout} from './setting-input'
 
 type Days = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sun' | 'sat'
 const days = ['sat', 'mon', 'tue', 'wed', 'thu', 'fri', 'sun', 'sat']
@@ -24,7 +24,7 @@ const dayNames = {
 }
 
 const DayRow = glamorous.div(row({horizontal: 'center', vertical: 'center'}))
-const weekdayCronPattern = /^(\d\d?) (\d\d?) \* \* (\d(?:-\d)?(?:,\d(?:-\d)?)+)$/
+const weekdayCronPattern = /^(\d\d?) (\d\d?) \* \* (\d(?:-\d)?(?:,\d(?:-\d)?)*)$/
 
 const isWeekdayExpression = (cronExpression: string) =>
   weekdayCronPattern.test(cronExpression)
@@ -124,8 +124,8 @@ const SchedulePickerDialog = compose<
                   onClick={() => {
                     const weekdays = daysFromWeekdayExpression(value)
                     const date = timeFromWeekdayExpression(value)
-                    const minutes = date.getMinutes()
-                    const hours = date.getHours()
+                    const minutes = date.getUTCMinutes()
+                    const hours = date.getUTCHours()
 
                     if (active) {
                       weekdays.splice(weekdays.indexOf(day), 1)
@@ -183,36 +183,46 @@ export const ScheduleInput = compose<
     state = {
       displaySchedulePicker: false,
     }
-
-    handleClick = () => {
-      this.setState({displaySchedulePicker: !this.state.displaySchedulePicker})
-    }
-
-    handleClose = () => {
-      this.setState({displaySchedulePicker: false})
-    }
+    didClose = false
 
     render() {
-      return [
-        <RTListItemLayout
-          key="ListItem"
-          caption={this.props.label}
-          legend={this.props.value}
-          onClick={this.handleClick}
-        />,
-        <StyledDialog
-          key="Dialog"
-          open={this.state.displaySchedulePicker}
-          onClose={this.handleClose}
-        >
-          <DialogContent>
-            <SchedulePickerDialog
-              value={this.props.value}
-              onChange={this.props.onChange}
+      const {label, onChange, value} = this.props
+
+      return (
+        <>
+          <ListItem>
+            <TextField
+              label={label}
+              value={value}
+              onFocus={() => {
+                if (!this.didClose) {
+                  this.setState({displaySchedulePicker: true})
+                }
+              }}
+              onBlur={() => (this.didClose = false)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  this.setState({displaySchedulePicker: true})
+                }
+              }}
             />
-          </DialogContent>
-        </StyledDialog>,
-      ]
+          </ListItem>
+          <StyledDialog
+            open={this.state.displaySchedulePicker}
+            onClose={() => {
+              this.setState({displaySchedulePicker: false})
+              this.didClose = true
+            }}
+          >
+            <DialogContent>
+              <SchedulePickerDialog
+                value={value || '0 12 * * 1-7'}
+                onChange={onChange}
+              />
+            </DialogContent>
+          </StyledDialog>
+        </>
+      )
     }
   },
 )
