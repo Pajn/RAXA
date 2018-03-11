@@ -369,7 +369,7 @@ export const ColorPicker = compose<PrivateColorPickerProps, ColorPickerProps>(
       } as any
 
       return (
-        <div>
+        <div onTouchStart={e => e.stopPropagation()}>
           <ColorButton
             color={`rgb(${red}, ${green}, ${blue})`}
             onClick={this.handleClick}
