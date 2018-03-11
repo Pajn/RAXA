@@ -10,7 +10,9 @@ import {snackbarReducer} from '../redux-snackbar/reducer'
 
 const ssl = location.protocol === 'https:'
 const port =
-  process.env.NODE_ENV === 'production' ? '' : `:${ssl ? 9001 : 9000}`
+  process.env.NODE_ENV === 'production'
+    ? location.port && `:${location.port}`
+    : `:${ssl ? 9001 : 9000}`
 
 const wsClient = new SubscriptionClient(
   `${ssl ? 'wss' : 'ws'}://${location.hostname}${port}/subscriptions`,
