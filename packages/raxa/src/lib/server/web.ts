@@ -24,12 +24,13 @@ export class WebService extends Service {
       })
 
       // return index.html for everything else
-      server.ext('onPostHandler', (request, reply) => {
-        const response = request.response!
+      server.ext('onPreResponse', (request, h) => {
+        const response = request.response
         if (response.isBoom && response.output!.statusCode === 404) {
-          return reply.file('/app/web/build/index.html')
+          return h.file('/app/web/build/index.html')
         }
-        return reply.continue
+
+        return h.continue
       })
 
       await server.start()

@@ -38,7 +38,7 @@ export async function main() {
 }
 
 export async function installDefaults() {
-  console.log('Installing default interfacees and plugins')
+  console.log('Installing default interfaces and plugins')
 
   const serviceManager = new ServiceManager()
 
