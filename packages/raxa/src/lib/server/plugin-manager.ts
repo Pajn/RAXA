@@ -2,7 +2,7 @@ import execa from 'execa'
 import {mkdirp, pathExists, writeFile} from 'fs-extra'
 import fetch from 'node-fetch'
 import {join} from 'path'
-import {PluginDefinition, Service} from 'raxa-common/cjs'
+import {PluginDefinition, Service, actions} from 'raxa-common/cjs'
 import {Omit} from 'react-router'
 import * as semver from 'semver'
 import {pluginDir} from '../config'
@@ -106,7 +106,19 @@ export class PluginManager extends Service {
     })
   }
 
-  async upgradePlugin(_id: string) {}
+  async upgradePlugin(id: string) {
+    this.log.info(`Upgrading plugin ${id}`)
+
+    const pluginPackageJson = require(`${this.pluginPath(id)}/package.json`)
+
+    if (!semver.valid(pluginPackageJson.version)) {
+      throw Error(`Plugin ${id} has no valid semver version`)
+    }
+
+    this.storage.dispatch(actions.pluginUpdated, {
+      plugin: {id, version: pluginPackageJson.version},
+    })
+  }
 
   async listAvaliblePlugins() {
     const response = await fetch(
@@ -140,6 +152,7 @@ export class ProductionPluginManager extends PluginManager {
     await mkdirp(pluginDir)
     const packageJson = join(pluginDir, 'package.json')
     if (!await pathExists(packageJson)) {
+      this.log.info(`Plugin package.json missing, creating`)
       await writeFile(
         packageJson,
         JSON.stringify({
@@ -157,6 +170,7 @@ export class ProductionPluginManager extends PluginManager {
   }
 
   async installPlugin(id: string) {
+    this.log.debug(`Running yarn add raxa-plugin-${id} --prod`)
     await execa('yarn', ['add', `raxa-plugin-${id}`, '--prod'], {
       cwd: pluginDir,
     })
@@ -165,9 +179,14 @@ export class ProductionPluginManager extends PluginManager {
   }
 
   async upgradePlugin(id: string) {
+    this.log.debug(`Running yarn upgrade --latest raxa-plugin-${id}`)
     await execa('yarn', ['upgrade', '--latest', `raxa-plugin-${id}`], {
       cwd: pluginDir,
     })
     delete require.cache[require.resolve(this.pluginPath(id))]
+    delete require.cache[
+      require.resolve(require(`${this.pluginPath(id)}/package.json`))
+    ]
+    await super.upgradePlugin(id)
   }
 }
