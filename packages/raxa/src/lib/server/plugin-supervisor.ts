@@ -102,9 +102,14 @@ export class PluginSupervisor extends Service {
     const pluginManager = this.serviceManager.runningServices
       .PluginManager as PluginManager
 
-    await this.stopPlugin(id)
+    const isRunning = this.isRunning(id)
+    if (isRunning) {
+      await this.stopPlugin(id)
+    }
     await pluginManager.upgradePlugin(id)
-    await this.startPlugin(id)
+    if (isRunning) {
+      await this.startPlugin(id)
+    }
   }
 
   private async startPlugin(id: string) {
@@ -121,7 +126,12 @@ export class PluginSupervisor extends Service {
   private async stopPlugin(id: string) {
     this.log.info(`Stopping plugin ${id}`)
     const plugin = this.runningPlugins[id]
-    await plugin.stop()
+    try {
+      await plugin.stop()
+    } catch (e) {
+      this.log.error(`Error stopping plugin ${id}`, e)
+      throw e
+    }
     delete this.runningPlugins[id]
   }
 
