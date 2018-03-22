@@ -14,7 +14,7 @@
     "serialport-js": "^1.1.0"
   },
   "devDependencies": {
-    "tscomp": "^0.15.0"
+    "tscomp": "^0.15.1"
   },
   "tscomp": {
     "mode": "lib"

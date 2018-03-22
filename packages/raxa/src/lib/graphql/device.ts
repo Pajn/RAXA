@@ -26,7 +26,7 @@ export const DeviceStatusType = buildType<DeviceStatus>({
     id: {type: GraphQLString},
     interfaceId: {type: GraphQLString},
     statusId: {type: GraphQLString},
-    value: {type: GraphQLString},
+    value: {type: GraphQLJSON},
   },
   readRules: false,
   writeRules: false,
@@ -56,7 +56,10 @@ export function statusesForDevice(
   {storage}: Context,
 ) {
   const state = storage.getState()
-  const interfaces = specifiedInterfaces || device.interfaceIds
+  const interfaces =
+    specifiedInterfaces ||
+    device.interfaceIds ||
+    state.deviceClasses[device.deviceClassId].interfaceIds
 
   return (
     interfaces && [

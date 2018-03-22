@@ -1,6 +1,6 @@
 {
-  "name": "raxa-plugin-trigger",
-  "version": "0.2.1",
+  "name": "raxa-plugin-chromecast",
+  "version": "0.1.0",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
@@ -9,10 +9,14 @@
   ],
   "dependencies": {
     "@types/node": "^8.5.2",
+    "castv2-player": "^1.1.10",
     "raxa-common": "^0.2.1"
   },
   "devDependencies": {
-    "tscomp": "^0.15.1"
+    "lerna": "^2.9.0",
+    "prettier": "^1.11.1",
+    "tscomp": "^0.15.1",
+    "tslint": "^5.9.1"
   },
   "tscomp": {
     "mode": "lib"

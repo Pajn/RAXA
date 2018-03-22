@@ -1,3 +1,4 @@
+import {ListSubheader} from 'material-ui/List'
 import {
   ActionProperty,
   ArrayProperty,
@@ -6,6 +7,7 @@ import {
   EnumProperty,
   ModificationProperty,
   NumberProperty,
+  ObjectProperty,
   Property,
   PropertyBase,
   StringProperty,
@@ -159,6 +161,21 @@ const types = {
       />
     ) : (
       <GenericDisplay {...props} />
+    )
+  },
+  object(props: PropertyProps<ObjectProperty<any>>) {
+    return (
+      <div style={{paddingLeft: 16, paddingBottom: 8}}>
+        <ListSubheader>{props.label || props.property.name}</ListSubheader>
+        {Object.entries(props.property.properties).map(([id, property]) => (
+          <PropertyView
+            propertyId={id}
+            property={property}
+            value={props.value && props.value[id]}
+            onChange={() => {}}
+          />
+        ))}
+      </div>
     )
   },
 }

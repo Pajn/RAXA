@@ -13,7 +13,7 @@
     "raxa-plugin-mqtt": "^0.2.1"
   },
   "devDependencies": {
-    "tscomp": "^0.15.0"
+    "tscomp": "^0.15.1"
   },
   "tscomp": {
     "mode": "lib"

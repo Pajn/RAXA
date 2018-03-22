@@ -1,5 +1,9 @@
 import {Device, Interface, Modification, Status} from './entities'
 
+export function assert<T>(value: T) {
+  return value
+}
+
 export function createModification(
   device: Device,
   status: Status,

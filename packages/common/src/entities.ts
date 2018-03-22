@@ -39,6 +39,7 @@ export enum DeviceType {
   Thermometer = 'Thermometer',
   Connector = 'Connector',
   Automation = 'Automation',
+  Media = 'Media',
 }
 
 /**
