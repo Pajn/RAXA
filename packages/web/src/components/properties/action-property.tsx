@@ -45,6 +45,12 @@ const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
     Object.values(selectedInterface.status).length === 1
       ? Object.values(selectedInterface.status)[0].id
       : undefined
+
+  let value =
+    statusId && !method
+      ? Object.values(selectedInterface.status!)[0].defaultValue
+      : undefined
+
   return {
     interfaceId,
     method: method && statusId ? undefined : method,
@@ -53,8 +59,8 @@ const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
       !method && statusId
         ? 'modification'
         : method && !statusId ? 'call' : undefined,
-    arguments: {},
-    value: undefined,
+    arguments: method && !statusId ? {} : undefined,
+    value,
   }
 }
 
@@ -63,9 +69,9 @@ const setDevice = (deviceId: string, devices: Array<GraphQlDevice>) => {
   const interfaces = selectedDevice.interfaces.filter(validInterface)
   return {
     deviceId,
-    ...interfaces.length === 1
+    ...(interfaces.length === 1
       ? setInterface(interfaces[0].id, selectedDevice)
-      : {interfaceId: undefined},
+      : {interfaceId: undefined}),
   }
 }
 
@@ -173,7 +179,8 @@ export const ActionInputView = ({
       }
       value={value && value.deviceId}
       onChange={deviceId =>
-        onChange({...value, ...setDevice(deviceId, data.devices)})}
+        onChange({...value, ...setDevice(deviceId, data.devices)})
+      }
     />
     {selectedDevice &&
       interfaces &&
@@ -210,13 +217,17 @@ export const ActionInputView = ({
               method: actionId.slice(1),
               type: 'call',
               arguments: {},
+              value: undefined,
             })
           } else {
             onChange({
               ...value,
               statusId: actionId.slice(1),
               type: 'modification',
-              value: undefined,
+              value: (actions.find(
+                status => status.id === actionId.slice(1),
+              )! as Property).defaultValue,
+              arguments: undefined,
             })
           }
         }}
@@ -226,9 +237,12 @@ export const ActionInputView = ({
       selectedMethod &&
       Object.values(selectedMethod.arguments).map(argument => (
         <PropertyView
+          key={argument.id}
           propertyId={argument.id}
           property={argument}
-          value={value}
+          value={
+            (value as Call).arguments && (value as Call).arguments[argument.id]
+          }
           label={argument.name || argument.id}
           onChange={argValue => {
             onChange({
@@ -248,7 +262,8 @@ export const ActionInputView = ({
           id=""
           data={{interface: selectedInterface}}
           setDeviceStatus={(_, modification) =>
-            Promise.resolve(onChange({...modification, type: 'modification'}))}
+            Promise.resolve(onChange({...modification, type: 'modification'}))
+          }
         />
       )}
   </div>

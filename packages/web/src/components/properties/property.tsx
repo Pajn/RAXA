@@ -169,6 +169,7 @@ const types = {
         <ListSubheader>{props.label || props.property.name}</ListSubheader>
         {Object.entries(props.property.properties).map(([id, property]) => (
           <PropertyView
+            key={id}
             propertyId={id}
             property={property}
             value={props.value && props.value[id]}

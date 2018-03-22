@@ -21,7 +21,7 @@ export function withIds<TOuter>(
       }
 
       render() {
-        const values = this.props[prop]
+        const values = this.props[prop] || []
         const ids = values.map(value => {
           if (this.map.has(value)) {
             return this.map.get(value)
