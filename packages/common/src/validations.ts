@@ -150,7 +150,7 @@ function propertiesToJoi(properties: {[id: string]: Property}) {
   return joi.object(joiObject).required()
 }
 
-function propertyToJoi(property: Property) {
+function propertyToJoi(property: Property, optional = false) {
   let joiRule
 
   switch (property.type) {
@@ -179,7 +179,7 @@ function propertyToJoi(property: Property) {
       ])
       break
     case 'array':
-      joiRule = joi.array().items(propertyToJoi(property.items))
+      joiRule = joi.array().items(propertyToJoi(property.items, true))
       break
     case 'boolean':
       joiRule = joi.boolean()
@@ -201,7 +201,6 @@ function propertyToJoi(property: Property) {
       break
     case 'integer':
       joiRule = joi.number().integer()
-      break
     // fall through
     case 'number':
       let numberJoiRule: joi.NumberSchema = joiRule || joi.number()
@@ -219,7 +218,7 @@ function propertyToJoi(property: Property) {
       break
   }
 
-  if (!property.optional) {
+  if (!property.optional && !optional) {
     joiRule = joiRule.required()
   }
 
