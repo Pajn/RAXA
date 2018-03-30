@@ -1,18 +1,11 @@
 /* tslint:disable:no-empty */
 import {actions} from '.'
-import {
-  Awaitable,
-  Call,
-  Device,
-  Modification,
-  PluginDefinition,
-} from './entities'
+import {Awaitable, Call, Device, Modification} from './entities'
 import {Service} from './service'
 
 export type Actions = (typeof actions)[keyof typeof actions]
 
 export abstract class Plugin extends Service {
-  definition: PluginDefinition
   config: {sslCert?: string; sslKey?: string}
 
   fireEvent: (interfaceId: string, eventId: string, data?: any) => Promise<void>

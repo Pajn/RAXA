@@ -259,9 +259,10 @@ export interface PluginDefinition {
   }
 }
 
-export interface PluginConfiguration extends PluginDefinition {
+export interface PluginConfiguration<T = any> extends PluginDefinition {
   enabled: boolean
   version: string
+  settings: T
 }
 
 export type DeviceStatus = {

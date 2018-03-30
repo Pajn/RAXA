@@ -29,7 +29,9 @@ export const actions = createActions({
   interfaceRemoved: {} as Action<{iface: Interface}>,
 
   pluginAdded: {} as Action<{plugin: PluginConfiguration}>,
-  pluginUpdated: {} as Action<{plugin: Partial<PluginConfiguration>}>,
+  pluginUpdated: {} as Action<{
+    plugin: {id: string} & Partial<PluginConfiguration>
+  }>,
   pluginRemoved: {} as Action<{plugin: PluginConfiguration}>,
 
   statusUpdated: {} as Action<{

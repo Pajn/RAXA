@@ -188,7 +188,12 @@ export class StorageService extends Service {
     }
   }
 
-  public installPlugin(plugin: PluginConfiguration) {
+  public installPlugin(
+    plugin: Pick<
+      PluginConfiguration,
+      Exclude<keyof PluginConfiguration, 'settings'>
+    >,
+  ) {
     this.log.info(`Installing plugin ${plugin.id}`)
     const state = this.getState()
     if (state.plugins[plugin.id]) {

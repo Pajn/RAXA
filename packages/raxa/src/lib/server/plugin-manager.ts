@@ -2,7 +2,7 @@ import execa from 'execa'
 import {mkdirp, pathExists, writeFile} from 'fs-extra'
 import fetch from 'node-fetch'
 import {join} from 'path'
-import {PluginDefinition, Service, actions} from 'raxa-common/cjs'
+import {Plugin, PluginDefinition, Service, actions} from 'raxa-common/cjs'
 import {Omit} from 'react-router'
 import * as semver from 'semver'
 import {pluginDir} from '../config'
@@ -39,7 +39,7 @@ export class PluginManager extends Service {
     return `../../../../plugin-${pluginId}`
   }
 
-  requirePlugin(id: string) {
+  requirePlugin(id: string): new () => Plugin {
     let plugin = require(this.pluginPath(id))
     if (plugin.default) {
       plugin = plugin.default
@@ -223,9 +223,9 @@ export class ProductionPluginManager extends PluginManager {
   async upgradePlugin(id: string) {
     this.log.debug(`Running yarn upgrade --latest raxa-plugin-${id}`)
     try {
-    await execa('yarn', ['upgrade', '--latest', `raxa-plugin-${id}`], {
-      cwd: pluginDir,
-    })
+      await execa('yarn', ['upgrade', '--latest', `raxa-plugin-${id}`], {
+        cwd: pluginDir,
+      })
     } catch (e) {
       this.log.error(`Error upgrading plugin ${id}`, e)
       throw e
