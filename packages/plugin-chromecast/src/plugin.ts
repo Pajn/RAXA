@@ -4,6 +4,7 @@ const config = {
   host: {id: 'host', type: 'string' as 'string'},
   port: {id: 'port', type: 'number' as 'number'},
   name: {id: 'name', type: 'string' as 'string'},
+  id: {id: 'id', type: 'string' as 'string'},
 }
 
 const mediaItem = {

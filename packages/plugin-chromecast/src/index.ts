@@ -204,12 +204,14 @@ export default class ChromecastPlugin extends Plugin {
               interfaceId: plugin.interfaces.CurrentlyPlaying.id,
               statusId:
                 plugin.interfaces.CurrentlyPlaying.status.currentMedia.id,
-              value: assert<MediaItem>({
-                title: e.media.metadata.title,
-                artwork:
-                  e.media.metadata.images && e.media.metadata.images[0].url,
-                duration: e.media.duration,
-              }),
+              value:
+                e.media &&
+                assert<MediaItem>({
+                  title: e.media.metadata.title,
+                  artwork:
+                    e.media.metadata.images && e.media.metadata.images[0].url,
+                  duration: e.media.duration,
+                }),
             })
             this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
