@@ -110,10 +110,52 @@ export class PluginManager extends Service {
     this.log.info(`Upgrading plugin ${id}`)
 
     const pluginPackageJson = require(`${this.pluginPath(id)}/package.json`)
+    const pluginDefinitionModule = require(`${this.pluginPath(id)}/plugin`)
+    const pluginDefinition = (pluginDefinitionModule.default ||
+      pluginDefinitionModule) as PluginDefinition
+    let plugin = require(this.pluginPath(id))
+    if (plugin.default) {
+      plugin = plugin.default
+    }
+    if (pluginDefinition.interfaces === undefined) {
+      pluginDefinition.interfaces = {}
+    }
+    if (pluginDefinition.deviceClasses === undefined) {
+      pluginDefinition.deviceClasses = {}
+    }
 
     if (!semver.valid(pluginPackageJson.version)) {
       throw Error(`Plugin ${id} has no valid semver version`)
     }
+
+    if (typeof plugin !== 'function') {
+      throw Error(`Plugin ${id} has no default exported class`)
+    }
+
+    if (id !== pluginDefinition.id)
+      throw Error(`Invalid plugin id ${id} !== ${pluginDefinition.id}`)
+
+    Object.entries(pluginDefinition.interfaces).forEach(([id, iface]) => {
+      if (id !== iface.id)
+        throw Error(`Invalid interface id ${id} !== ${iface.id}`)
+      iface.pluginId = id
+    })
+
+    Object.entries(pluginDefinition.deviceClasses).forEach(
+      ([id, deviceClass]) => {
+        if (id !== deviceClass.id)
+          throw Error(`Invalid device class id ${id} !== ${deviceClass.id}`)
+        deviceClass.pluginId = pluginDefinition.id
+      },
+    )
+
+    Object.values(pluginDefinition.interfaces).forEach(iface => {
+      this.storage.installInterface(iface)
+    })
+
+    Object.values(pluginDefinition.deviceClasses).forEach(deviceClass => {
+      this.storage.installDeviceClass(deviceClass)
+    })
 
     this.storage.dispatch(actions.pluginUpdated, {
       plugin: {id, version: pluginPackageJson.version},
@@ -180,9 +222,14 @@ export class ProductionPluginManager extends PluginManager {
 
   async upgradePlugin(id: string) {
     this.log.debug(`Running yarn upgrade --latest raxa-plugin-${id}`)
+    try {
     await execa('yarn', ['upgrade', '--latest', `raxa-plugin-${id}`], {
       cwd: pluginDir,
     })
+    } catch (e) {
+      this.log.error(`Error upgrading plugin ${id}`, e)
+      throw e
+    }
     delete require.cache[require.resolve(this.pluginPath(id))]
     delete require.cache[
       require.resolve(require(`${this.pluginPath(id)}/package.json`))
