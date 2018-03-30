@@ -108,7 +108,7 @@ export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
               status: [
                 {
                   interfaceId: 'Power',
-                  value: 'true',
+                  value: true,
                 } as DeviceStatus,
               ] as GraphQlDevice['status'],
             } as GraphQlDevice,
@@ -245,7 +245,7 @@ export const LightWidgetView = ({
                   />
                 )}
                 <PowerSwitch
-                  value={status.Power.value !== 'false'}
+                  value={status.Power.value || false}
                   onChange={value => {
                     setDeviceStatus(status.Power.id, {
                       deviceId: device.id,
