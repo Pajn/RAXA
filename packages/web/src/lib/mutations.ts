@@ -27,7 +27,7 @@ export const updateDeviceStatus = () =>
           $deviceId: String!
           $interfaceId: String!
           $statusId: String!
-          $value: String!
+          $value: JSON!
         ) {
           setDeviceStatus(
             deviceId: $deviceId
@@ -51,7 +51,7 @@ export const updateDeviceStatus = () =>
           ) {
             return mutate!({
               variables: modification,
-              ...deviceStatusId
+              ...(deviceStatusId
                 ? {
                     optimisticResponse: {
                       __typename: 'Mutation',
@@ -62,7 +62,7 @@ export const updateDeviceStatus = () =>
                       },
                     },
                   }
-                : undefined,
+                : undefined),
             }).catch(() => {
               dispatch(
                 action(actions.showSnackbar, {

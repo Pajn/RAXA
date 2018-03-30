@@ -245,8 +245,11 @@ export const deviceMutations = buildMutations({
       deviceId: joi.string(),
       interfaceId: joi.string(),
       method: joi.string(),
-      // arguments: joi.string(),
+      arguments: joi.object(),
     }),
+    args: {
+      arguments: {type: GraphQLJSON},
+    },
     writeRules: false,
     async resolve(_, call: Call, {storage, pluginSupervisor}: Context) {
       await pluginSupervisor.callDevice(call)
@@ -260,8 +263,11 @@ export const deviceMutations = buildMutations({
       deviceId: joi.string(),
       interfaceId: joi.string(),
       statusId: joi.string(),
-      value: joi.string(),
+      value: joi.any(),
     }),
+    args: {
+      value: {type: GraphQLJSON},
+    },
     writeRules: false,
     async resolve(
       _,
