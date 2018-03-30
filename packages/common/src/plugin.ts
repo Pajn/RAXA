@@ -1,4 +1,5 @@
 /* tslint:disable:no-empty */
+import {actions} from '.'
 import {
   Awaitable,
   Call,
@@ -7,6 +8,8 @@ import {
   PluginDefinition,
 } from './entities'
 import {Service} from './service'
+
+export type Actions = (typeof actions)[keyof typeof actions]
 
 export abstract class Plugin extends Service {
   definition: PluginDefinition
@@ -21,6 +24,8 @@ export abstract class Plugin extends Service {
   setDeviceStatus: (modification: Modification) => Promise<void>
   callDevice: (call: Call) => Promise<void>
   upsertDevice: (device: Device) => Promise<Device>
+
+  onAction(_action: Actions): void {}
 
   /**
    * Called when a device is being created from one of the plugins DeviceClasses

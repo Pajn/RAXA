@@ -135,7 +135,12 @@ export class StorageService extends Service {
         applyMiddleware(_ => next => action => {
           const result = next(action)
           if (typeof action.type === 'string') {
-            pubsub.publish(action.type, action)
+            try {
+              pubsub.publish(action.type, action)
+              pubsub.publish('action', action)
+            } catch (e) {
+              this.log.error('Pubsub error', e)
+            }
           }
           this.log.debug(action)
           return result

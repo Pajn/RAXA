@@ -268,7 +268,7 @@ export type DeviceStatus = {
   id: string
   interfaceId: string
   statusId: string
-  value: string
+  value: any
 }
 
 export interface GraphQlDevice extends Device {

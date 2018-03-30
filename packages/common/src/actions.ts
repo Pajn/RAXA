@@ -1,6 +1,19 @@
-import {Action, createActions} from 'redux-decorated'
+import {Action, createActions as origCreateActions} from 'redux-decorated'
 import {Device, DeviceClass, Interface, PluginConfiguration} from './entities'
 import {InterfaceState} from './state'
+
+export const createActions = <T extends Record<string, Action<{}>>>(
+  actions: T,
+  {
+    prefix,
+  }: {
+    prefix?: string
+  } = {},
+): {
+  [K in keyof T]: Pick<T[K], 'payload'> & {
+    type: K
+  }
+} => origCreateActions(actions, {prefix}) as any
 
 export const actions = createActions({
   deviceAdded: {} as Action<{device: Device; interfaces: InterfaceState}>,

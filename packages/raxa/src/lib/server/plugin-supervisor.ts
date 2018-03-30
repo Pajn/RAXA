@@ -10,6 +10,7 @@ import {
   actions,
   raxaError,
 } from 'raxa-common/cjs'
+import {Actions} from 'raxa-common/cjs/plugin'
 import {ServiceImplementation} from 'raxa-common/cjs/service'
 import {validateAction} from 'raxa-common/cjs/validations'
 import {sslCert, sslKey} from '../config'
@@ -62,15 +63,11 @@ export class PluginSupervisor extends Service {
     this.pluginServiceManager.supervisor = this
     this.pluginServiceManager.runningServices.StorageService = storage
 
-    try {
-      await Promise.all(
-        Object.values(storage.getState().plugins)
-          .filter(plugin => plugin.enabled)
-          .map(plugin => this.startPlugin(plugin.id)),
-      )
-    } catch (e) {
-      this.log.error('Error starting plugin', e)
-    }
+    await Promise.all(
+      Object.values(storage.getState().plugins)
+        .filter(plugin => plugin.enabled)
+        .map(plugin => this.startPlugin(plugin.id)),
+    )
 
     pubsub
       .subscribe(
@@ -85,6 +82,14 @@ export class PluginSupervisor extends Service {
           }
         },
       )
+      .then(id => this.subscriptions.push(id))
+
+    pubsub
+      .subscribe('action', (action: Actions) => {
+        for (const plugin of Object.values(this.runningPlugins)) {
+          plugin.onAction(action)
+        }
+      })
       .then(id => this.subscriptions.push(id))
   }
 
@@ -117,10 +122,16 @@ export class PluginSupervisor extends Service {
       .PluginManager as any) as PluginManager
 
     this.log.info(`Starting plugin ${id}`)
-    let plugin = pluginManager.requirePlugin(id)
 
-    const pluginInstance = await this.pluginServiceManager.startService(plugin)
-    this.runningPlugins[id] = pluginInstance as Plugin
+    try {
+      let plugin = pluginManager.requirePlugin(id)
+      const pluginInstance = await this.pluginServiceManager.startService(
+        plugin,
+      )
+      this.runningPlugins[id] = pluginInstance as Plugin
+    } catch (e) {
+      this.log.error(`Error starting plugin ${id}`, e)
+    }
   }
 
   private async stopPlugin(id: string) {
