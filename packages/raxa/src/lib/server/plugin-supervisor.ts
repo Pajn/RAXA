@@ -87,7 +87,9 @@ export class PluginSupervisor extends Service {
     pubsub
       .subscribe('action', (action: Actions) => {
         for (const plugin of Object.values(this.runningPlugins)) {
-          plugin.onAction(action)
+          if (plugin.onAction !== undefined) {
+            plugin.onAction(action)
+          }
         }
       })
       .then(id => this.subscriptions.push(id))
