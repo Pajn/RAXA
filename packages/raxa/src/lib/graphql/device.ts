@@ -166,6 +166,10 @@ export const deviceQueries = buildQueries({
   devices: {
     type: [DeviceType],
     validate: joi.object({
+      types: joi
+        .array()
+        .items(joi.string().required())
+        .allow(null),
       interfaceIds: joi
         .array()
         .items(joi.string().required())
@@ -178,13 +182,25 @@ export const deviceQueries = buildQueries({
     resolve(
       _,
       {
+        types,
         interfaceIds,
         deviceClassIds,
-      }: {interfaceIds: Array<string>; deviceClassIds: Array<string>},
+      }: {
+        types: Array<string>
+        interfaceIds: Array<string>
+        deviceClassIds: Array<string>
+      },
       {storage}: Context,
     ) {
       const state = storage.getState()
       let devices = Object.values(state.devices)
+      if (types) {
+        devices = devices.filter(device => {
+          const a =
+            device.types || state.deviceClasses[device.deviceClassId].types
+          return a.some(id => types.includes(id))
+        })
+      }
       if (interfaceIds) {
         devices = devices.filter(device => {
           const a =
