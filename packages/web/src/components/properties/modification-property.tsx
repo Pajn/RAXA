@@ -8,7 +8,7 @@ import {
 import React from 'react'
 import {QueryProps} from 'react-apollo'
 import {gql, graphql} from 'react-apollo'
-import {compose, mapProps} from 'recompose'
+import {compose, mapProps, withStateHandlers} from 'recompose'
 import {SettingDropdown} from '../ui/setting-input'
 import {PropertyProps} from './property'
 import {StatelessStatusView} from './status'
@@ -25,6 +25,9 @@ export type PrivateModificationInputProps = ModificationInputProps & {
   selectedStatus?: Property
   interfaces?: Array<Interface>
   statuses?: Array<Property>
+
+  divElement: HTMLDivElement | null
+  setDivElement: (divElement: HTMLDivElement | null) => void
 }
 
 const validInterface = (iface: Interface) =>
@@ -109,6 +112,10 @@ export const enhanceModificationInput = compose<
       }
     },
   ),
+  withStateHandlers(
+    {divElement: null},
+    {setDivElement: () => divElement => ({divElement})},
+  ),
 )
 
 export const ModificationInputView = ({
@@ -120,8 +127,11 @@ export const ModificationInputView = ({
   selectedStatus,
   interfaces,
   statuses,
+  divElement,
+  setDivElement,
 }: PrivateModificationInputProps) => (
-  <div>
+  <div ref={setDivElement}>
+    {(!!divElement).toString()}
     <SettingDropdown
       label="Device"
       source={
@@ -132,9 +142,23 @@ export const ModificationInputView = ({
           : []
       }
       value={value && value.deviceId}
-      onChange={deviceId =>
-        onChange({...value, ...setDevice(deviceId, data.devices)})
-      }
+      onChange={deviceId => {
+        const modification = {...value, ...setDevice(deviceId, data.devices)}
+        onChange(modification)
+        setTimeout(() => {
+          if (divElement && !modification.interfaceId) {
+            const select = divElement.querySelector(
+              '[data-select="Interface"]',
+            ) as HTMLElement
+            if (select) select.click()
+          } else if (divElement && !modification.statusId) {
+            const select = divElement.querySelector(
+              '[data-select="Status"]',
+            ) as HTMLElement
+            if (select) select.click()
+          }
+        })
+      }}
     />
     {selectedDevice &&
       interfaces &&
@@ -147,9 +171,18 @@ export const ModificationInputView = ({
           }))}
           value={value.interfaceId}
           onChange={interfaceId => {
-            onChange({
+            const modification = {
               ...value,
               ...setInterface(interfaceId, selectedDevice),
+            }
+            onChange(modification)
+            setTimeout(() => {
+              if (divElement && !modification.statusId) {
+                const select = divElement.querySelector(
+                  '[data-select="Status"]',
+                ) as HTMLElement
+                if (select) select.click()
+              }
             })
           }}
         />

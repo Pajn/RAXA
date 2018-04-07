@@ -155,6 +155,7 @@ export const SettingDropdownView = ({
           ))}
         </List>
       )}
+      data-select={label}
     />
   ) : (
     <RTListItem>
@@ -163,6 +164,7 @@ export const SettingDropdownView = ({
         label={label}
         value={value || ''}
         onChange={onChange}
+        data-select={label}
       />
     </RTListItem>
   )
@@ -268,10 +270,12 @@ export const SettingValueView = ({
   isMobile,
 }: PrivateSettingValueProps) =>
   isMobile ? (
-    <RTListItemLayout
-      caption={label}
-      legend={unit ? `${value} ${unit}` : `${value}`}
-    />
+    <ListItem>
+      <ListItemText
+        primary={label}
+        secondary={unit ? `${value} ${unit}` : `${value}`}
+      />
+    </ListItem>
   ) : (
     <RTListItem>
       <TextField
