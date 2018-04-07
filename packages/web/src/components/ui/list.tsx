@@ -43,7 +43,7 @@ const Container = ({
   children?
 }) =>
   isMobile ? (
-    <MUIList style={style}>{children}</MUIList>
+    <MUIList style={{...style, width: '100%'}}>{children}</MUIList>
   ) : (
     <DesktopList style={style}>{children}</DesktopList>
   )
@@ -56,6 +56,7 @@ export type ListItemProps = {
   isTouch?: boolean
   selected?: boolean
   selectable?: boolean
+  button?: boolean
 }
 
 export const ListItem = ({

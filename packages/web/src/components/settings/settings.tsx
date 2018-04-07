@@ -42,7 +42,7 @@ export const SettingsView = ({isMobile}: PrivateSettingsProps) => (
       path: `/settings/${setting.url}`,
     })}
     renderItem={setting => (
-      <ListItem key={setting.url} caption={setting.name} />
+      <ListItem key={setting.url} caption={setting.name} button />
     )}
     renderActiveItem={setting => <setting.component />}
     listHeader={

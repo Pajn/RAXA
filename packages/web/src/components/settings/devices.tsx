@@ -192,7 +192,7 @@ export const DeviceSettingsView = ({
       }
       renderItem={(item, _, index) =>
         item.type === 'device' ? (
-          <ListItem key={index} caption={item.value.name} />
+          <ListItem key={index} caption={item.value.name} button />
         ) : (
           <div key={index}>
             <ListSubHeader isMobile={isMobile}>{item.value}</ListSubHeader>

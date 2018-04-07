@@ -62,8 +62,9 @@ export const DialogInputView = ({
   tmpValue,
   setTmpValue,
   children,
+  ...props
 }: PrivateDialogInputProps) => (
-  <ListItem onClick={showDialog} button>
+  <ListItem {...props} onClick={showDialog} button>
     <ListItemText
       primary={label}
       secondary={legend || (unit ? `${value} ${unit}` : `${value}`)}
