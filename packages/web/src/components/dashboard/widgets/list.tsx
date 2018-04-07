@@ -2,9 +2,15 @@ import glamorous from 'glamorous'
 import {shadow} from 'material-definitions'
 import {ListSubheader} from 'material-ui/List'
 import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
-import React from 'react'
+import React, {ReactElement, ReactNode, createContext} from 'react'
 import {gql, graphql} from 'react-apollo'
-import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
+import {
+  DragDropContext,
+  Draggable,
+  DraggableProvidedDragHandleProps,
+  DraggableProvidedDraggableProps,
+  Droppable,
+} from 'react-beautiful-dnd'
 import {compose, mapProps, withHandlers, withStateHandlers} from 'recompose'
 import {withInnerState} from '../../../with-lazy-reducer'
 import {WidgetComponent, WidgetProps} from '../widget'
@@ -12,6 +18,30 @@ import {ButtonWidget} from './button'
 import {DisplayWidget} from './display'
 import {LightWidget} from './light'
 import {ReceiverWidget} from './receiver'
+
+declare module 'react' {
+  type Provider<T> = React.ComponentType<{
+    value: T
+    children?: ReactNode
+  }>
+
+  type Consumer<T> = ComponentType<{
+    children: (value: T) => ReactNode
+    unstable_observedBits?: number
+  }>
+
+  interface Context<T> {
+    Provider: Provider<T>
+    Consumer: Consumer<T>
+  }
+
+  function createContext<T>(
+    defaultValue: T,
+    calculateChangedBits?: (prev: T, next: T) => number,
+  ): Context<T>
+}
+
+export const draggingContext = createContext({isDragging: false})
 
 function sortByOrder<K, T extends {id: K}>(
   sortOrder: Array<K>,
@@ -34,44 +64,74 @@ function sortByOrder<K, T extends {id: K}>(
   return [...out, ...data.values()]
 }
 
-const Container = SortableContainer(
-  glamorous.div<{row: boolean}>(({row}) => ({
-    display: 'flex',
-    flexDirection: row ? 'row' : 'column',
-    flexWrap: row ? 'wrap' : 'nowrap',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    marginTop: row ? -8 : 0,
-    marginLeft: row ? 8 : 16,
-    marginRight: row ? 8 : 16,
-    marginBottom: row ? 8 : 16,
+function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
+  console.log('reorder', startIndex, endIndex)
+  const result = Array.from(list)
+  const [removed] = result.splice(startIndex, 1)
+  result.splice(endIndex, 0, removed)
 
-    boxShadow: row ? 'none' : shadow[1].boxShadow,
-  })),
-)
+  return result
+}
 
-const DeviceWrapper = SortableElement(
-  glamorous.div<{row: boolean}>(({row}) => ({
-    position: 'relative',
-    flexGrow: row ? 1 : undefined,
-    flexBasis: row ? '25%' : undefined,
-    boxSizing: 'border-box',
-    margin: row ? 8 : 0,
-    padding: row ? 16 : 8,
-    width: row ? undefined : '100%',
-    height: row ? 48 : 56,
-    overflow: 'hidden',
+const Container = glamorous.div<{row: boolean}>(({row}) => ({
+  display: 'flex',
+  flexDirection: row ? 'row' : 'column',
+  flexWrap: row ? 'wrap' : 'nowrap',
+  alignItems: 'flex-start',
+  justifyContent: 'flex-start',
+  marginTop: row ? -8 : 0,
+  marginLeft: row ? 8 : 16,
+  marginRight: row ? 8 : 16,
+  marginBottom: row ? 8 : 16,
 
-    backgroundColor: 'white',
-    boxShadow: row ? shadow[1].boxShadow : 'none',
+  boxShadow: row ? 'none' : shadow[1].boxShadow,
+}))
 
-    '& + &': {
-      borderTop: row ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
-    },
-  })),
+const dragContainerStyles = (row: boolean) => ({
+  flexGrow: row ? 1 : undefined,
+  flexBasis: row ? '25%' : undefined,
+  width: row ? undefined : '100%',
+})
+
+const DeviceWrapper = ({
+  row,
+  border,
+  children,
+  innerRef,
+  style,
+  ...props
+}: {
+  row: boolean
+  border: boolean
+  children: ReactNode
+  innerRef(element?: HTMLElement | null): any
+} & Partial<DraggableProvidedDraggableProps> &
+  Partial<DraggableProvidedDragHandleProps>) => (
+  <div
+    {...props}
+    ref={innerRef}
+    style={{
+      position: 'relative',
+      boxSizing: 'border-box',
+      margin: row ? 8 : 0,
+      padding: row ? 16 : 8,
+      height: row ? 48 : 56,
+      overflow: 'hidden',
+
+      backgroundColor: 'white',
+      boxShadow: row ? shadow[1].boxShadow : 'none',
+
+      borderTop: !border || row ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
+
+      ...(style as any),
+    }}
+  >
+    {children}
+  </div>
 )
 
 export type ListWidgetConfiguration = {
+  types?: Array<DeviceType>
   interfaceIds?: Array<string>
 }
 export type ListWidgetProps = WidgetProps<ListWidgetConfiguration> & {
@@ -85,7 +145,7 @@ export type ListWidgetPrivateProps = ListWidgetProps & {
   row: boolean
   interfaceIds?: Array<string>
   data: {devices?: Array<GraphQlDevice>}
-  onSortEnd: (c: {oldIndex: number; newIndex: number}) => void
+  onSortEnd: (result: any) => void
   setData: (data: {devices?: Array<GraphQlDevice>}) => void
   canSort: boolean
   disabledSort: Array<string>
@@ -96,12 +156,13 @@ export type ListWidgetPrivateProps = ListWidgetProps & {
 export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
   mapProps((props: ListWidgetProps) => ({
     ...props,
+    types: props.config.types,
     interfaceIds: props.config.interfaceIds,
     row: props.row || !props.column,
   })),
   graphql(gql`
-    query($interfaceIds: [String!]) {
-      devices(interfaceIds: $interfaceIds) {
+    query($types: [String!], $interfaceIds: [String!]) {
+      devices(types: $types, interfaceIds: $interfaceIds) {
         id
         name
         types
@@ -140,12 +201,25 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
     },
   ),
   withHandlers({
-    onSortEnd: ({data, setData, setSortOrder}: ListWidgetPrivateProps) => ({
-      oldIndex,
-      newIndex,
-    }) => {
+    onSortEnd: ({
+      data,
+      setData,
+      setSortOrder,
+    }: ListWidgetPrivateProps) => result => {
       if (setSortOrder) {
-        const sorted = arrayMove(data.devices!, oldIndex, newIndex)
+        // dropped outside the list
+        if (!result.destination) {
+          return
+        }
+
+        console.log('result', result)
+        console.log('pre', data.devices!.map(d => d.name))
+        const sorted = reorder(
+          data.devices!,
+          result.source.index,
+          result.destination.index,
+        )
+        console.log('post', sorted.map(d => d.name))
         setData({...data, devices: sorted})
         setSortOrder(sorted.map(d => d.id))
       }
@@ -166,76 +240,134 @@ export const ListWidgetView = ({
 }: ListWidgetPrivateProps) =>
   data.devices && data.devices.length > 0 ? (
     <>
-      {header && <ListSubheader>{header}</ListSubheader>}
-      <Container
-        row={row}
-        pressDelay={300}
-        axis={row ? 'xy' : 'y'}
-        onSortEnd={onSortEnd}
-      >
-        {data.devices
-          .map(
-            device =>
-              device.interfaceIds ? (
-                device.types!.includes(DeviceType.Thermometer) &&
-                (!interfaceIds ||
-                  interfaceIds.includes(defaultInterfaces.Temperature.id)) ? (
-                  <DisplayWidget
-                    key={device.id}
-                    config={{
-                      deviceId: device.id,
-                      interfaceId: defaultInterfaces.Temperature.id,
-                      statusId: defaultInterfaces.Temperature.status.temp.id,
-                    }}
-                  />
-                ) : device.interfaceIds!.includes('Scenery') &&
-                (!interfaceIds || interfaceIds.includes('Scenery')) ? (
-                  <ButtonWidget
-                    key={device.id}
-                    config={{
-                      deviceId: device.id,
-                      interfaceId: 'Scenery',
-                      method: 'set',
-                    }}
-                  />
-                ) : device.interfaceIds!.includes('SonyReceiver') &&
-                (!interfaceIds || interfaceIds.includes('SonyReceiver')) ? (
-                  <ReceiverWidget
-                    key={device.id}
-                    config={{
-                      deviceId: device.id,
-                    }}
-                  />
-                ) : (device.types!.includes(DeviceType.Light) ||
-                  device.types!.includes(DeviceType.Outlet)) &&
-                (!interfaceIds ||
-                  interfaceIds.includes(defaultInterfaces.Power.id) ||
-                  interfaceIds.includes(defaultInterfaces.Dimmer.id)) ? (
-                  <LightWidget
-                    key={device.id}
-                    config={{deviceId: device.id}}
-                    enableSort={enableSort}
-                    disableSort={disableSort}
-                  />
-                ) : null
-              ) : null,
-          )
-          .map(
-            (innerWidget, i) =>
-              innerWidget && (
-                <DeviceWrapper
-                  key={innerWidget.key!}
-                  index={i}
-                  row={row}
-                  disabled={
-                    !canSort || disabledSort.includes(data.devices![i].id)
-                  }
-                >
-                  {innerWidget}
-                </DeviceWrapper>
-              ),
+      <DragDropContext onDragEnd={onSortEnd}>
+        {header && <ListSubheader>{header}</ListSubheader>}
+        <Droppable
+          droppableId={`droppable-${header}`}
+          direction={row ? 'horizontal' : 'vertical'}
+        >
+          {provided => (
+            <Container
+              {...provided.droppableProps}
+              innerRef={provided.innerRef}
+              row={row}
+            >
+              {data
+                .devices!.map(
+                  (device): null | [boolean, ReactElement<any>] =>
+                    device.interfaceIds
+                      ? device.types!.includes(DeviceType.Thermometer) &&
+                        (!interfaceIds ||
+                          interfaceIds.includes(
+                            defaultInterfaces.Temperature.id,
+                          ))
+                        ? [
+                            false,
+                            <DisplayWidget
+                              key={device.id}
+                              config={{
+                                deviceId: device.id,
+                                interfaceId: defaultInterfaces.Temperature.id,
+                                statusId:
+                                  defaultInterfaces.Temperature.status.temp.id,
+                              }}
+                            />,
+                          ]
+                        : device.interfaceIds!.includes('Scenery') &&
+                          (!interfaceIds || interfaceIds.includes('Scenery'))
+                          ? [
+                              true,
+                              <ButtonWidget
+                                key={device.id}
+                                config={{
+                                  deviceId: device.id,
+                                  interfaceId: 'Scenery',
+                                  method: 'set',
+                                }}
+                              />,
+                            ]
+                          : device.interfaceIds!.includes('SonyReceiver') &&
+                            (!interfaceIds ||
+                              interfaceIds.includes('SonyReceiver'))
+                            ? [
+                                false,
+                                <ReceiverWidget
+                                  key={device.id}
+                                  config={{
+                                    deviceId: device.id,
+                                  }}
+                                />,
+                              ]
+                            : (device.types!.includes(DeviceType.Light) ||
+                                device.types!.includes(DeviceType.Outlet)) &&
+                              (!interfaceIds ||
+                                interfaceIds.includes(
+                                  defaultInterfaces.Power.id,
+                                ) ||
+                                interfaceIds.includes(
+                                  defaultInterfaces.Dimmer.id,
+                                ))
+                              ? [
+                                  true,
+                                  <LightWidget
+                                    key={device.id}
+                                    config={{deviceId: device.id}}
+                                    enableSort={enableSort}
+                                    disableSort={disableSort}
+                                  />,
+                                ]
+                              : null
+                      : null,
+                )
+                .filter(innerWidget => innerWidget != null)
+                .map(
+                  (
+                    [disableInteractiveElementBlocking, innerWidget]: any,
+                    i,
+                  ) => (
+                    <Draggable
+                      key={innerWidget.key!}
+                      draggableId={innerWidget.key! as string}
+                      index={i}
+                      isDragDisabled={
+                        !canSort || disabledSort.includes(data.devices![i].id)
+                      }
+                      disableInteractiveElementBlocking={
+                        disableInteractiveElementBlocking
+                      }
+                    >
+                      {(provided, snapshot) => (
+                        <draggingContext.Provider
+                          value={{isDragging: snapshot.isDragging}}
+                        >
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={dragContainerStyles(row)}
+                          >
+                            <DeviceWrapper
+                              row={row}
+                              border={i > 0}
+                              innerRef={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={provided.draggableProps.style as any}
+                            >
+                              {innerWidget}
+                            </DeviceWrapper>
+                            {provided.placeholder}
+                          </div>
+                        </draggingContext.Provider>
+                      )}
+                    </Draggable>
+                  ),
+                )}
+              {provided.placeholder}
+            </Container>
           )}
-      </Container>
+        </Droppable>
+      </DragDropContext>
     </>
   ) : null
 

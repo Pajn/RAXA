@@ -10,7 +10,7 @@ import {
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
 import {Switch} from 'react-material-app'
-import {compose, mapProps, withStateHandlers} from 'recompose'
+import {compose, mapProps, pure, withStateHandlers} from 'recompose'
 import {updateIn} from 'redux-decorated'
 import {
   UpdateDeviceStatusInjectedProps,
@@ -19,8 +19,11 @@ import {
 import {withThrottledMutation} from '../../../with-throttled-mutation'
 import {ColorPicker} from '../../ui/color-picker'
 import {WidgetComponent, WidgetProps} from '../widget'
+import {draggingContext} from './list'
 
-const Container = glamorous(ButtonBase, {withProps: {component: 'div'}})({
+const Container = glamorous(ButtonBase, {
+  withProps: {component: 'div'},
+})({
   '&&': {
     position: 'absolute',
     padding: 8,
@@ -93,6 +96,7 @@ function asObject<T, K extends keyof T>(
 }
 
 export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
+  pure,
   mapProps<Partial<PrivateLightWidgetProps>, LightWidgetProps>(
     ({config, ...props}) => ({
       ...props,
@@ -208,62 +212,69 @@ export const LightWidgetView = ({
   setShowDetail,
   setDimmer,
   setColor,
-}: PrivateLightWidgetProps) => {
-  return (
-    <Container onClick={() => setShowDetail(!showDetail)}>
-      {device &&
-        (showDetail &&
-        status &&
-        device.interfaceIds!.includes(defaultInterfaces.Dimmer.id) ? (
-          <NameRow>
-            <DeviceName>{device.name}</DeviceName>
-            <DetailControl>
-              <Slider
-                style={{paddingRight: 16, height: 40}}
-                value={+status.Dimmer.value}
-                onChange={(_, value) => {
-                  setDimmer(value)
-                }}
-                onDragStop={() => setTimeout(() => setShowDetail(false))}
-                min={0}
-                max={100}
-              />
-            </DetailControl>
-          </NameRow>
-        ) : (
-          <NameRow>
-            <DeviceName>{device.name}</DeviceName>
-            {status ? (
-              <NameRow
-                onMouseDown={e => e.stopPropagation()}
-                onClick={e => e.stopPropagation()}
-              >
-                {device.interfaceIds!.includes(defaultInterfaces.Color.id) && (
-                  <ColorPicker
-                    value={+(status.Color || {}).value || 0}
-                    onChange={setColor}
-                  />
-                )}
-                <PowerSwitch
-                  value={status.Power.value || false}
-                  onChange={value => {
-                    setDeviceStatus(status.Power.id, {
-                      deviceId: device.id,
-                      interfaceId: status.Power.interfaceId,
-                      statusId: status.Power.statusId,
-                      value: value.toString(),
-                    })
+}: PrivateLightWidgetProps) => (
+  <draggingContext.Consumer>
+    {({isDragging}) => (
+      <Container
+        onClick={() => setShowDetail(!showDetail)}
+        disableRipple={isDragging}
+      >
+        {device &&
+          (showDetail &&
+          status &&
+          device.interfaceIds!.includes(defaultInterfaces.Dimmer.id) ? (
+            <NameRow>
+              <DeviceName>{device.name}</DeviceName>
+              <DetailControl>
+                <Slider
+                  style={{paddingRight: 16, height: 40}}
+                  value={+status.Dimmer.value}
+                  onChange={(_, value) => {
+                    setDimmer(value)
                   }}
+                  onDragStop={() => setTimeout(() => setShowDetail(false))}
+                  min={0}
+                  max={100}
                 />
-              </NameRow>
-            ) : (
-              <div />
-            )}
-          </NameRow>
-        ))}
-    </Container>
-  )
-}
+              </DetailControl>
+            </NameRow>
+          ) : (
+            <NameRow>
+              <DeviceName>{device.name}</DeviceName>
+              {status ? (
+                <NameRow
+                  onMouseDown={e => e.stopPropagation()}
+                  onClick={e => e.stopPropagation()}
+                >
+                  {device.interfaceIds!.includes(
+                    defaultInterfaces.Color.id,
+                  ) && (
+                    <ColorPicker
+                      value={+(status.Color || {}).value || 0}
+                      onChange={setColor}
+                    />
+                  )}
+                  <PowerSwitch
+                    value={status.Power.value || false}
+                    onChange={value => {
+                      setDeviceStatus(status.Power.id, {
+                        deviceId: device.id,
+                        interfaceId: status.Power.interfaceId,
+                        statusId: status.Power.statusId,
+                        value: value.toString(),
+                      })
+                    }}
+                  />
+                </NameRow>
+              ) : (
+                <div />
+              )}
+            </NameRow>
+          ))}
+      </Container>
+    )}
+  </draggingContext.Consumer>
+)
 
 export const LightWidget: WidgetComponent<
   LightWidgetConfiguration,

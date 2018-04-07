@@ -1,6 +1,6 @@
 import glamorous from 'glamorous'
 import {grey} from 'material-definitions'
-import {defaultInterfaces} from 'raxa-common'
+import {DeviceType, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {ContextActions} from 'react-material-app'
 import {connect} from 'react-redux'
@@ -44,6 +44,7 @@ export const Ui2View = ({sortOrders, dispatch}) => (
       header="Lighting"
       column
       config={{
+        types: [DeviceType.Light, DeviceType.Outlet],
         interfaceIds: [
           defaultInterfaces.Power.id,
           defaultInterfaces.Dimmer.id,

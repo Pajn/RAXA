@@ -22,5 +22,6 @@
     "@types/react-dom": "16.0.4",
     "@types/recompose": "0.24.6"
   },
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/common", "packages/raxa", "packages/web"],
+  "workspaces2": ["packages/*"]
 }

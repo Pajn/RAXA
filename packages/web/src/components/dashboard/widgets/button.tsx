@@ -13,6 +13,7 @@ import {compose, mapProps} from 'recompose'
 import styled from 'styled-components'
 import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
+import {draggingContext} from './list'
 
 const Container = glamorous(ButtonBase)({
   '&&': {
@@ -84,19 +85,24 @@ export const ButtonWidgetView = ({
   config,
   children,
 }: PrivateButtonWidgetProps) => (
-  <Container
-    onClick={() =>
-      callDevice({
-        deviceId: config.deviceId,
-        interfaceId: config.interfaceId,
-        method: config.method,
-        arguments: undefined,
-      })
-    }
-  >
-    <DeviceName>{device && device.name}</DeviceName>
-    {children}
-  </Container>
+  <draggingContext.Consumer>
+    {({isDragging}) => (
+      <Container
+        disableRipple={isDragging}
+        onClick={() =>
+          callDevice({
+            deviceId: config.deviceId,
+            interfaceId: config.interfaceId,
+            method: config.method,
+            arguments: undefined,
+          })
+        }
+      >
+        <DeviceName>{device && device.name}</DeviceName>
+        {children}
+      </Container>
+    )}
+  </draggingContext.Consumer>
 )
 
 export const ButtonWidget: WidgetComponent<
