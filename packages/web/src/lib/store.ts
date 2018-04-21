@@ -39,7 +39,7 @@ const reducer = combineReducers({
   snackbar: snackbarReducer,
 } as any)
 
-export const store = createStore(reducer, undefined, autoRehydrate())
+export const store = createStore(reducer, {}, autoRehydrate())
 
 persistStore(store)
 

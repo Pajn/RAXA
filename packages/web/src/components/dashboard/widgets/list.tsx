@@ -19,28 +19,6 @@ import {DisplayWidget} from './display'
 import {LightWidget} from './light'
 import {ReceiverWidget} from './receiver'
 
-declare module 'react' {
-  type Provider<T> = React.ComponentType<{
-    value: T
-    children?: ReactNode
-  }>
-
-  type Consumer<T> = ComponentType<{
-    children: (value: T) => ReactNode
-    unstable_observedBits?: number
-  }>
-
-  interface Context<T> {
-    Provider: Provider<T>
-    Consumer: Consumer<T>
-  }
-
-  function createContext<T>(
-    defaultValue: T,
-    calculateChangedBits?: (prev: T, next: T) => number,
-  ): Context<T>
-}
-
 export const draggingContext = createContext({isDragging: false})
 
 function sortByOrder<K, T extends {id: K}>(
@@ -356,14 +334,12 @@ export const ListWidgetView = ({
                             >
                               {innerWidget}
                             </DeviceWrapper>
-                            {provided.placeholder}
                           </div>
                         </draggingContext.Provider>
                       )}
                     </Draggable>
                   ),
                 )}
-              {provided.placeholder}
             </Container>
           )}
         </Droppable>

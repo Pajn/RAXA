@@ -29,7 +29,7 @@ export function withSize<
 
       ref = (element?: Element) => {
         if (element) {
-          this.observer.observe(findDOMNode(element))
+          this.observer.observe(findDOMNode(element)! as Element)
         } else {
           this.observer.disconnect()
         }

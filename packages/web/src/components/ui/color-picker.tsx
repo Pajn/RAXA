@@ -18,6 +18,12 @@ import {withThrottledMutation} from '../../with-throttled-mutation'
 import {ColorButton} from '../dashboard/widgets/ui/light-button'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
+declare module 'react' {
+  interface CSSProperties {
+    self?: string
+  }
+}
+
 const lerp = (a: number, b: number, alpha: number) =>
   a * (1 - alpha) + b * alpha
 const lerpRGB = (a: RGBColor, b: RGBColor, alpha: number) => ({
