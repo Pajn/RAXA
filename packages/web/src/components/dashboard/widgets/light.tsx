@@ -10,7 +10,12 @@ import {
 import React from 'react'
 import {QueryProps, gql, graphql} from 'react-apollo'
 import {Switch} from 'react-material-app'
-import {compose, mapProps, pure, withStateHandlers} from 'recompose'
+import {
+  compose,
+  mapProps,
+  onlyUpdateForKeys,
+  withStateHandlers,
+} from 'recompose'
 import {updateIn} from 'redux-decorated'
 import {
   UpdateDeviceStatusInjectedProps,
@@ -82,6 +87,7 @@ export type PrivateLightWidgetProps = LightWidgetProps &
     setShowDetail: (showDetail: boolean) => void
     setDimmer: (value: string) => void
     setColor: (value: number) => void
+    deviceId: string
   }
 
 function asObject<T, K extends keyof T>(
@@ -96,30 +102,14 @@ function asObject<T, K extends keyof T>(
 }
 
 export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
-  pure,
   mapProps<Partial<PrivateLightWidgetProps>, LightWidgetProps>(
     ({config, ...props}) => ({
       ...props,
-      config,
       deviceId: config.deviceId,
       interfaceIds,
-      data: !config.deviceId
-        ? ({
-            device: {
-              id: '',
-              name: 'Device',
-              interfaceIds: ['Power'],
-              status: [
-                {
-                  interfaceId: 'Power',
-                  value: true,
-                } as DeviceStatus,
-              ] as GraphQlDevice['status'],
-            } as GraphQlDevice,
-          } as PrivateLightWidgetProps['data'])
-        : undefined,
     }),
   ),
+  onlyUpdateForKeys(['deviceId']),
   graphql(
     gql`
       query($deviceId: String!, $interfaceIds: [String!]) {
@@ -149,13 +139,11 @@ export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
   withStateHandlers(
     {showDetail: false},
     {
-      setShowDetail: (_, props: LightWidgetProps) => showDetail => {
+      setShowDetail: (_, props: PrivateLightWidgetProps) => showDetail => {
         if (showDetail) {
-          if (props.disableSort !== undefined)
-            props.disableSort(props.config.deviceId)
+          if (props.disableSort !== undefined) props.disableSort(props.deviceId)
         } else {
-          if (props.enableSort !== undefined)
-            props.enableSort(props.config.deviceId)
+          if (props.enableSort !== undefined) props.enableSort(props.deviceId)
         }
 
         return {showDetail}
