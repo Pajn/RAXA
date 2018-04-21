@@ -1,4 +1,4 @@
-import bugsnag from 'bugsnag-js'
+import bugsnag from 'bugsnag-js/dist/bugsnag.min.js'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {App} from './app'
