@@ -84,6 +84,9 @@ export default class LedStripPlugin extends Plugin {
                 value: temp,
               })
             })
+            .catch(error => {
+              this.log.error('Failed to get temp', error)
+            })
         })
       })
   }
