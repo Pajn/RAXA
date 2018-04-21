@@ -3,7 +3,6 @@ import {mkdirp, pathExists, writeFile} from 'fs-extra'
 import fetch from 'node-fetch'
 import {join} from 'path'
 import {Plugin, PluginDefinition, Service, actions} from 'raxa-common/cjs'
-import {Omit} from 'react-router'
 import * as semver from 'semver'
 import {pluginDir} from '../config'
 import {StorageService} from './storage'
@@ -158,7 +157,11 @@ export class PluginManager extends Service {
     })
 
     this.storage.dispatch(actions.pluginUpdated, {
-      plugin: {id, version: pluginPackageJson.version},
+      plugin: {
+        ...pluginDefinition,
+        id,
+        version: pluginPackageJson.version,
+      },
     })
   }
 
@@ -172,7 +175,7 @@ export class PluginManager extends Service {
     }
     const packages = ((await response.json()) as {
       objects: Array<{
-        package: Omit<Package, 'id'>
+        package: Pick<Package, Exclude<keyof Package, 'id'>>
       }>
     }).objects
       .filter(hit => pluginPackageNamePattern.test(hit.package.name))
@@ -215,7 +218,9 @@ export class ProductionPluginManager extends PluginManager {
     this.log.debug(`Running yarn add raxa-plugin-${id} --prod`)
     await execa('yarn', ['add', `raxa-plugin-${id}`, '--prod'], {
       cwd: pluginDir,
+      stdio: ['ignore', process.stdout, process.stderr],
     })
+    this.log.debug(`yarn finished`)
 
     await super.installPlugin(id)
   }
@@ -225,15 +230,15 @@ export class ProductionPluginManager extends PluginManager {
     try {
       await execa('yarn', ['upgrade', '--latest', `raxa-plugin-${id}`], {
         cwd: pluginDir,
+        stdio: ['ignore', process.stdout, process.stderr],
       })
+      this.log.debug(`yarn finished`)
     } catch (e) {
       this.log.error(`Error upgrading plugin ${id}`, e)
       throw e
     }
     delete require.cache[require.resolve(this.pluginPath(id))]
-    delete require.cache[
-      require.resolve(require(`${this.pluginPath(id)}/package.json`))
-    ]
+    delete require.cache[require.resolve(`${this.pluginPath(id)}/package.json`)]
     await super.upgradePlugin(id)
   }
 }
