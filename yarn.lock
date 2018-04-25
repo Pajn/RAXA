@@ -10742,7 +10742,7 @@ sshpk@^1.7.0:
     jsbn "~0.1.0"
     tweetnacl "~0.14.0"
 
-"stack-generator@github:bengourley/stack-generator#190a6f500cfc4a9ef77db204b4f571964e39c3d8":
+stack-generator@2.0.2, "stack-generator@github:bengourley/stack-generator#190a6f500cfc4a9ef77db204b4f571964e39c3d8":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/stack-generator/-/stack-generator-2.0.2.tgz#3c13d952a596ab9318fec0669d0a1df8b87176c7"
   dependencies:
@@ -11501,9 +11501,9 @@ ts-loader@3.4.0:
     micromatch "^3.1.4"
     semver "^5.0.1"
 
-tscomp@^0.15.1:
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/tscomp/-/tscomp-0.15.2.tgz#366a792e318c36355220ba63e89864ef686b0c37"
+tscomp@^0.15.3:
+  version "0.15.3"
+  resolved "https://registry.yarnpkg.com/tscomp/-/tscomp-0.15.3.tgz#f1dc89649f4d1e46aebf34c150b2fcc4b78c4800"
   dependencies:
     autoprefixer "7.1.2"
     babel-core "6.25.0"

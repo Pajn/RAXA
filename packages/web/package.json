@@ -59,7 +59,7 @@
     "globby": "^8.0.1",
     "lerna": "^2.9.1",
     "prettier": "^1.11.1",
-    "tscomp": "^0.15.1",
+    "tscomp": "^0.15.3",
     "tslint": "^5.9.1",
     "typescript": "^2.8.1"
   },
