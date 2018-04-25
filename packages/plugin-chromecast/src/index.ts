@@ -206,6 +206,7 @@ export default class ChromecastPlugin extends Plugin {
                 plugin.interfaces.CurrentlyPlaying.status.currentMedia.id,
               value:
                 e.media &&
+                e.media.metadata &&
                 assert<MediaItem>({
                   title: e.media.metadata.title,
                   artwork:

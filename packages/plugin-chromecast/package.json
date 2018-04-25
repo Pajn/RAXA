@@ -1,7 +1,7 @@
 {
   "name": "raxa-plugin-chromecast",
-  "version": "0.1.2",
-  "description": "",
+  "version": "0.1.5",
+  "description": "Add support for Chromecasts to Raxa",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "keywords": [
@@ -10,7 +10,7 @@
   "dependencies": {
     "@types/node": "^8.5.2",
     "castv2-player": "^1.1.10",
-    "raxa-common": "^0.2.1"
+    "raxa-common": "^0.2.4"
   },
   "devDependencies": {
     "lerna": "^2.9.0",

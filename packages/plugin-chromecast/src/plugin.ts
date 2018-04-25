@@ -25,8 +25,8 @@ const mediaItem = {
 const plugin = {
   id: 'chromecast',
   name: 'Chromecast',
-  shortDescription: 'Chromecasts',
-  description: 'Chromecasts',
+  shortDescription: 'Support for Chromecasts',
+  description: 'Support for Chromecasts',
   deviceClasses: {
     Chromecast: {
       id: 'Chromecast',
