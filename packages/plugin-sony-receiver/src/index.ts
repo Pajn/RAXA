@@ -82,7 +82,7 @@ export default class SonyReceiverPlugin extends Plugin {
       ? `&repeat=${repeat}`
       : ''}`
     await this.executionQueue.add(
-      () => (this.log.debug('fetch', url), fetch(url)),
+      () => (this.log.debug('fetch', url), fetch(url).catch(e => this.log.error('Error sending code', e))),
     )
   }
 }
