@@ -62,7 +62,7 @@ export interface ClientStatusEvent {
 export interface PlayerStatusEvent {
   mediaSessionId: number
   playbackRate: number
-  playerState: 'IDLE' | 'PLAYING' | 'PAUSED' | 'BUFFERING'
+  playerState?: 'IDLE' | 'PLAYING' | 'PAUSED' | 'BUFFERING'
   currentTime: number
   supportedMediaCommands: number
   volume: {level: number; muted: boolean}
@@ -219,7 +219,7 @@ export default class ChromecastPlugin extends Plugin {
               interfaceId: plugin.interfaces.CurrentlyPlaying.id,
               statusId:
                 plugin.interfaces.CurrentlyPlaying.status.playerState.id,
-              value: e.playerState.toLowerCase(),
+              value: e.playerState && e.playerState.toLowerCase(),
             })
           }
         })
