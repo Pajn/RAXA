@@ -173,16 +173,18 @@ export class PluginManager extends Service {
       this.log.error(await response.text())
       throw Error('Could not fetch package list')
     }
-    const packages = ((await response.json()) as {
+    const packages = (await Promise.all(((await response.json()) as {
       objects: Array<{
         package: Pick<Package, Exclude<keyof Package, 'id'>>
       }>
     }).objects
       .filter(hit => pluginPackageNamePattern.test(hit.package.name))
+      .map(hit => fetch(`https://registry.npmjs.org/${hit.package.name}/latest`))
+      .map(response => response.then(response => response.json()))))
       .map(hit => {
-        const [, id] = pluginPackageNamePattern.exec(hit.package.name)!
+        const [, id] = pluginPackageNamePattern.exec(hit.name)!
 
-        return {...hit.package, id}
+        return {...hit, id}
       })
     return packages
   }
