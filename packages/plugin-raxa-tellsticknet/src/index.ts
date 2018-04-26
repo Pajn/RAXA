@@ -28,14 +28,19 @@ export default class RaxaTellstickNetPlugin extends Plugin {
       const pause = call.arguments.pause
 
       const activationCode = device.config.activationCode
-      const pulseString = iconv.decode(new Buffer(pulse), 'latin1')
-
-      return this.send(
-        `4:sendh1:S${pulse.length.toString(16).toUpperCase()}:${pulseString}` +
-          `1:Pi${pause.toString(16).toUpperCase()}s` +
-          `1:Ri${repeats.toString(16).toUpperCase()}ss`,
-        activationCode,
+      const header = iconv.encode(
+        `4:sendh1:S${pulse.length.toString(16).toUpperCase()}:`,
+        'latin1',
       )
+      const body = Buffer.from(pulse)
+      const footer = iconv.encode(
+        `1:Pi${pause.toString(16).toUpperCase()}s1:Ri${repeats
+          .toString(16)
+          .toUpperCase()}ss`,
+        'latin1',
+      )
+
+      return this.send(Buffer.concat([header, body, footer]), activationCode)
     }
   }
 
@@ -61,15 +66,14 @@ export default class RaxaTellstickNetPlugin extends Plugin {
     return this.sendBuffer(buffer, '255.255.255.255', BROADCAST_PORT)
   }
 
-  async send(message: string, activationCode: string) {
+  async send(message: Buffer, activationCode: string) {
     return this.executionQueue.add(async () => {
-      const buffer = iconv.encode(message, 'latin1')
       const ip = await this.getIp(activationCode)
       this.log.debug(
         `Sending ${message} to tellstick ${activationCode} with ip ${ip}`,
       )
 
-      await this.sendBuffer(buffer, ip, COMMUNICATION_PORT)
+      await this.sendBuffer(message, ip, COMMUNICATION_PORT)
     })
   }
 
