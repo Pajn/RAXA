@@ -114,9 +114,6 @@ export class PluginSupervisor extends Service {
       await this.stopPlugin(id)
     }
     await pluginManager.upgradePlugin(id)
-    if (isRunning) {
-      await this.startPlugin(id)
-    }
   }
 
   private async startPlugin(id: string) {
