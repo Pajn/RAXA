@@ -24,7 +24,6 @@ COPY .yarnrc /app
 COPY package.json /app
 COPY yarn.lock /app
 COPY packages/common/package.json /app/common/
-COPY packages/common/yarn.lock /app/common/
 
 ${setup}
 RUN yarn
@@ -37,7 +36,6 @@ RUN rm -rf node_modules
 FROM common as raxa
 WORKDIR /app/raxa
 COPY packages/raxa/package.json /app/raxa/
-COPY packages/raxa/yarn.lock /app/raxa/
 
 RUN yarn
 
@@ -49,7 +47,6 @@ RUN rm -rf node_modules
 FROM common as web
 WORKDIR /app/web
 COPY packages/web/package.json /app/web/
-COPY packages/web/yarn.lock /app/web/
 
 RUN yarn
 
