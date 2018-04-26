@@ -128,16 +128,16 @@ const plugin = {
         deviceCode: {
           id: 'deviceCode',
           type: 'integer' as 'integer',
-          modifiable: false,
+          modifiable: true,
           optional: true,
-          showInSettings: false,
+          showInSettings: true,
         },
         groupCode: {
           id: 'groupCode',
           type: 'integer' as 'integer',
-          modifiable: false,
+          modifiable: true,
           optional: true,
-          showInSettings: false,
+          showInSettings: true,
         },
       },
       interfaceIds: [

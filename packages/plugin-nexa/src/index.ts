@@ -368,7 +368,7 @@ function selfLearningPulse(
   const ONE = [T, T5, T, T]
   const DIM_BIT = [T, T, T, T]
 
-  let pulse = [1, 26, 255]
+  let pulse = [26, 250]
 
   for (let i = 25; i >= 0; i--) {
     if ((deviceCode & (1 << i)) === 0) {
@@ -413,6 +413,8 @@ function selfLearningPulse(
       }
     }
   }
+
+  pulse = pulse.concat([T, T5])
 
   return pulse
 }
