@@ -6,7 +6,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@types/jest": "22.2.3",
-    "@types/joi": "^13.0.7",
+    "@types/joi": "^13.0.8",
     "@types/ramda": "^0.25.24",
     "babel-runtime": "^6.26.0",
     "joi": "^13.1.2",

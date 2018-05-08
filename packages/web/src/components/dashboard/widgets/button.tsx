@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import gql from 'graphql-tag'
 import {subheading1} from 'material-definitions'
 import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
 import {
@@ -8,7 +9,7 @@ import {
   NumberProperty,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {QueryProps, gql, graphql} from 'react-apollo'
+import {DataProps, graphql} from 'react-apollo'
 import {compose, mapProps} from 'recompose'
 import styled from 'styled-components'
 import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
@@ -43,8 +44,8 @@ export type ButtonWidgetConfiguration = {
 }
 export type ButtonWidgetProps = WidgetProps<ButtonWidgetConfiguration>
 export type PrivateButtonWidgetProps = ButtonWidgetProps &
-  CallDeviceInjectedProps & {
-    data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
+  CallDeviceInjectedProps &
+  DataProps<{device?: GraphQlDevice; interface?: Interface}> & {
     status?: DeviceStatus
     statusDefinition?: NumberProperty
     children?: React.ReactChild

@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import {Call, Modification, Property} from 'raxa-common'
 import {
   Action,
@@ -7,8 +8,8 @@ import {
   Method,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {QueryProps} from 'react-apollo'
-import {gql, graphql} from 'react-apollo'
+import {DataProps} from 'react-apollo'
+import {graphql} from 'react-apollo'
 import {compose, mapProps, withStateHandlers} from 'recompose'
 import {SettingDropdown} from '../ui/setting-input'
 import {PropertyProps, PropertyView} from './property'
@@ -16,18 +17,18 @@ import {StatelessStatusView} from './status'
 
 export type ActionInputProps = PropertyProps<ActionProperty, Action>
 export type GraphQlResult = {devices: Array<GraphQlDevice>}
-export type PrivateActionInputProps = ActionInputProps & {
-  data: GraphQlResult & QueryProps
-  selectedDevice?: GraphQlDevice
-  selectedInterface?: Interface
-  selectedMethod?: Method
-  selectedStatus?: Property
-  interfaces?: Array<Interface>
-  actions: Array<Method | Property>
+export type PrivateActionInputProps = ActionInputProps &
+  DataProps<GraphQlResult> & {
+    selectedDevice?: GraphQlDevice
+    selectedInterface?: Interface
+    selectedMethod?: Method
+    selectedStatus?: Property
+    interfaces?: Array<Interface>
+    actions: Array<Method | Property>
 
-  divElement: HTMLDivElement | null
-  setDivElement: (divElement: HTMLDivElement | null) => void
-}
+    divElement: HTMLDivElement | null
+    setDivElement: (divElement: HTMLDivElement | null) => void
+  }
 
 const validInterface = (iface: Interface) =>
   (iface.methods && Object.keys(iface.methods).length >= 1) ||
@@ -61,7 +62,9 @@ const setInterface = (interfaceId: string, selectedDevice: GraphQlDevice) => {
     type:
       !method && statusId
         ? 'modification'
-        : method && !statusId ? 'call' : undefined,
+        : method && !statusId
+          ? 'call'
+          : undefined,
     arguments: method && !statusId ? {} : undefined,
     value,
   }
@@ -188,7 +191,7 @@ export const ActionInputView = ({
       }
       value={value && value.deviceId}
       onChange={deviceId => {
-        const action = {...value, ...setDevice(deviceId, data.devices)}
+        const action = {...value, ...setDevice(deviceId, data.devices!)}
         onChange(action)
         setTimeout(() => {
           if (divElement && !action.interfaceId) {

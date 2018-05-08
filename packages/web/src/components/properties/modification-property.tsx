@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import {
   GraphQlDevice,
   Interface,
@@ -6,8 +7,7 @@ import {
   Property,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {QueryProps} from 'react-apollo'
-import {gql, graphql} from 'react-apollo'
+import {DataProps, graphql} from 'react-apollo'
 import {compose, mapProps, withStateHandlers} from 'recompose'
 import {SettingDropdown} from '../ui/setting-input'
 import {PropertyProps} from './property'
@@ -18,17 +18,17 @@ export type ModificationInputProps = PropertyProps<
   Modification
 >
 export type GraphQlResult = {devices: Array<GraphQlDevice>}
-export type PrivateModificationInputProps = ModificationInputProps & {
-  data: GraphQlResult & QueryProps
-  selectedDevice?: GraphQlDevice
-  selectedInterface?: Interface
-  selectedStatus?: Property
-  interfaces?: Array<Interface>
-  statuses?: Array<Property>
+export type PrivateModificationInputProps = ModificationInputProps &
+  DataProps<GraphQlResult> & {
+    selectedDevice?: GraphQlDevice
+    selectedInterface?: Interface
+    selectedStatus?: Property
+    interfaces?: Array<Interface>
+    statuses?: Array<Property>
 
-  divElement: HTMLDivElement | null
-  setDivElement: (divElement: HTMLDivElement | null) => void
-}
+    divElement: HTMLDivElement | null
+    setDivElement: (divElement: HTMLDivElement | null) => void
+  }
 
 const validInterface = (iface: Interface) =>
   !!iface.status &&
@@ -69,7 +69,7 @@ export const enhanceModificationInput = compose<
     interfaceIds: props.property.interfaceIds,
     deviceClassIds: props.property.deviceClassIds,
   })),
-  graphql<GraphQlResult, PrivateModificationInputProps>(
+  graphql<PrivateModificationInputProps, GraphQlResult>(
     gql`
       query($interfaceIds: [String!], $deviceClassIds: [String!]) {
         devices(interfaceIds: $interfaceIds, deviceClassIds: $deviceClassIds) {
@@ -143,7 +143,7 @@ export const ModificationInputView = ({
       }
       value={value && value.deviceId}
       onChange={deviceId => {
-        const modification = {...value, ...setDevice(deviceId, data.devices)}
+        const modification = {...value, ...setDevice(deviceId, data.devices!)}
         onChange(modification)
         setTimeout(() => {
           if (divElement && !modification.interfaceId) {

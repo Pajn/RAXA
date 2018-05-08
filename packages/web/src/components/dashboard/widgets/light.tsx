@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import gql from 'graphql-tag'
 import Slider from 'material-ui-old/Slider'
 import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
 import {
@@ -8,7 +9,7 @@ import {
   defaultInterfaces,
 } from 'raxa-common'
 import React from 'react'
-import {QueryProps, gql, graphql} from 'react-apollo'
+import {DataProps, graphql} from 'react-apollo'
 import {Switch} from 'react-material-app'
 import {
   compose,
@@ -80,8 +81,8 @@ export type LightWidgetProps = WidgetProps<LightWidgetConfiguration> & {
   disableSort?: (deviceId: string) => void
 }
 export type PrivateLightWidgetProps = LightWidgetProps &
-  UpdateDeviceStatusInjectedProps & {
-    data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
+  UpdateDeviceStatusInjectedProps &
+  DataProps<{device?: GraphQlDevice; interface?: Interface}> & {
     status?: {[id: string]: DeviceStatus}
     showDetail: boolean
     setShowDetail: (showDetail: boolean) => void

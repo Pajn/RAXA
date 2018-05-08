@@ -1,5 +1,6 @@
+import gql from 'graphql-tag'
 import {Call, Modification} from 'raxa-common'
-import {gql, graphql} from 'react-apollo'
+import {graphql} from 'react-apollo'
 import {Dispatch, connect} from 'react-redux'
 import {compose} from 'recompose'
 import {action} from 'redux-decorated'
@@ -21,7 +22,12 @@ export const updateDeviceStatus = () =>
     connect(undefined, (dispatch): InjectedDispatch => ({
       __injectedDispatch: dispatch,
     })),
-    graphql<{}, UpdateDeviceStatusInjectedProps & InjectedDispatch>(
+    graphql<
+      UpdateDeviceStatusInjectedProps & InjectedDispatch,
+      {},
+      {deviceId: string; interfaceId: string; statusId: string; value: any},
+      UpdateDeviceStatusInjectedProps
+    >(
       gql`
         mutation(
           $deviceId: String!
@@ -86,7 +92,12 @@ export const callDevice = () =>
     connect(undefined, (dispatch): InjectedDispatch => ({
       __injectedDispatch: dispatch,
     })),
-    graphql<{}, CallDeviceInjectedProps & InjectedDispatch>(
+    graphql<
+      CallDeviceInjectedProps & InjectedDispatch,
+      {},
+      {deviceId: string; interfaceId: string; method: string},
+      Partial<CallDeviceInjectedProps>
+    >(
       gql`
         mutation($deviceId: String!, $interfaceId: String!, $method: String!) {
           callDevice(

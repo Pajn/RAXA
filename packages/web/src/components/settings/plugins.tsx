@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import AppBar from 'material-ui/AppBar'
 import List, {
   ListItem,
@@ -7,7 +8,7 @@ import List, {
 import Tabs, {Tab} from 'material-ui/Tabs'
 import {PluginConfiguration} from 'raxa-common'
 import React, {Component} from 'react'
-import {QueryProps, gql, graphql} from 'react-apollo'
+import {DataProps, graphql} from 'react-apollo'
 import {ProgressButton} from 'react-material-app'
 import {Switch, SwitchProps} from 'react-material-app/lib/inputs/Switch'
 import {Dispatch, connect} from 'react-redux'
@@ -17,11 +18,11 @@ import {column} from 'style-definitions'
 import {actions} from '../../redux-snackbar/actions'
 
 export type InstalledPluginsProps = {}
-export type InstalledPluginsPrivateProps = InstalledPluginsProps & {
-  dispatch: Dispatch
-  data: QueryProps & {plugins?: Array<PluginConfiguration>}
-  setPluginEnabled: (pluginId: string) => (enabled: boolean) => Promise<any>
-}
+export type InstalledPluginsPrivateProps = InstalledPluginsProps &
+  DataProps<{plugins?: Array<PluginConfiguration>}> & {
+    dispatch: Dispatch
+    setPluginEnabled: (pluginId: string) => (enabled: boolean) => Promise<any>
+  }
 
 export const installedPluginsEnhance = compose<
   InstalledPluginsPrivateProps,
@@ -41,7 +42,7 @@ export const installedPluginsEnhance = compose<
       }
     }
   `),
-  graphql<{}, InstalledPluginsPrivateProps>(
+  graphql<InstalledPluginsPrivateProps>(
     gql`
       mutation($pluginId: String!, $enabled: Boolean!) {
         setPluginEnabled(pluginId: $pluginId, enabled: $enabled) {
@@ -105,16 +106,16 @@ export const InstalledPluginsView = ({
 export const InstalledPlugins = installedPluginsEnhance(InstalledPluginsView)
 
 export type AvaliblePluginsProps = {}
-export type AvaliblePluginsPrivateProps = AvaliblePluginsProps & {
-  dispatch: Dispatch
-  data: QueryProps & {
+export type AvaliblePluginsPrivateProps = AvaliblePluginsProps &
+  DataProps<{
     avaliblePlugins?: Array<
       PluginConfiguration & {installed: boolean; upgradable: boolean}
     >
+  }> & {
+    dispatch: Dispatch
+    installPlugin: (pluginId: string) => Promise<any>
+    upgradePlugin: (pluginId: string) => Promise<any>
   }
-  installPlugin: (pluginId: string) => Promise<any>
-  upgradePlugin: (pluginId: string) => Promise<any>
-}
 
 export const AvaliblePluginsEnhance = compose<
   AvaliblePluginsPrivateProps,
@@ -136,7 +137,7 @@ export const AvaliblePluginsEnhance = compose<
       }
     }
   `),
-  graphql<{}, AvaliblePluginsPrivateProps>(
+  graphql<AvaliblePluginsPrivateProps>(
     gql`
       mutation($pluginId: String!) {
         installPlugin(pluginId: $pluginId) {
@@ -165,7 +166,7 @@ export const AvaliblePluginsEnhance = compose<
       }),
     },
   ),
-  graphql<{}, AvaliblePluginsPrivateProps>(
+  graphql<AvaliblePluginsPrivateProps>(
     gql`
       mutation($pluginId: String!) {
         upgradePlugin(pluginId: $pluginId) {

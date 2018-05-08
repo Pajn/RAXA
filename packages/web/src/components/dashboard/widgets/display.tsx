@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import gql from 'graphql-tag'
 import {
   DeviceStatus,
   GraphQlDevice,
@@ -7,7 +8,7 @@ import {
   Status,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {QueryProps, gql, graphql} from 'react-apollo'
+import {DataProps, graphql} from 'react-apollo'
 import {compose, mapProps, withState} from 'recompose'
 import styled from 'styled-components'
 import {WidgetComponent, WidgetProps} from '../widget'
@@ -33,73 +34,77 @@ export type DisplayWidgetConfiguration = {
   statusId: string
 }
 export type DisplayWidgetProps = WidgetProps<DisplayWidgetConfiguration>
-export type PrivateDisplayWidgetProps = DisplayWidgetProps & {
-  data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
-  status?: DeviceStatus
-  statusDefinition?: NumberProperty
-}
+export type PrivateDisplayWidgetProps = DisplayWidgetProps &
+  DataProps<{device?: GraphQlDevice; interface?: Interface}> & {
+    status?: DeviceStatus
+    statusDefinition?: NumberProperty
+  }
 
 export const enhance = compose<PrivateDisplayWidgetProps, DisplayWidgetProps>(
-  mapProps<
-    Partial<PrivateDisplayWidgetProps>,
-    DisplayWidgetProps
-  >(({config}) => ({
-    config,
-    deviceId: config.deviceId,
-    interfaceId: config.interfaceId,
-    interfaceIds: [config.interfaceId],
-    statusIds: [config.statusId],
-    data: !config.deviceId
-      ? {
-          device: {
-            id: '',
-            name: 'Device',
-            status: [
-              {interfaceId: 'Temperature', statusId: 'temp', value: '22'},
-            ],
-          } as GraphQlDevice,
-          interface: {
-            id: '',
-            status: {temp: {unit: '°C'} as Status},
-          } as Interface,
-        } as PrivateDisplayWidgetProps['data']
-      : undefined,
-  })),
+  mapProps<Partial<PrivateDisplayWidgetProps>, DisplayWidgetProps>(
+    ({config}) => ({
+      config,
+      deviceId: config.deviceId,
+      interfaceId: config.interfaceId,
+      interfaceIds: [config.interfaceId],
+      statusIds: [config.statusId],
+      data: !config.deviceId
+        ? ({
+            device: {
+              id: '',
+              name: 'Device',
+              status: [
+                {interfaceId: 'Temperature', statusId: 'temp', value: '22'},
+              ],
+            } as GraphQlDevice,
+            interface: {
+              id: '',
+              status: {temp: {unit: '°C'} as Status},
+            } as Interface,
+          } as PrivateDisplayWidgetProps['data'])
+        : undefined,
+    }),
+  ),
   graphql(
     gql`
-    query($deviceId: String!, $interfaceId: String!, $interfaceIds: [String!], $statusIds: [String!]) {
-      device(id: $deviceId) {
-        id
-        name
-        status(interfaceIds: $interfaceIds, statusIds: $statusIds) {
+      query(
+        $deviceId: String!
+        $interfaceId: String!
+        $interfaceIds: [String!]
+        $statusIds: [String!]
+      ) {
+        device(id: $deviceId) {
           id
-          interfaceId
-          statusId
-          value
+          name
+          status(interfaceIds: $interfaceIds, statusIds: $statusIds) {
+            id
+            interfaceId
+            statusId
+            value
+          }
+        }
+        interface(id: $interfaceId) {
+          status
         }
       }
-      interface(id: $interfaceId) {
-        status
-      }
-    }
-  `,
+    `,
     {skip: (props: PrivateDisplayWidgetProps) => !props.config.deviceId},
   ),
   mapProps<PrivateDisplayWidgetProps, PrivateDisplayWidgetProps>(props => ({
     ...props,
     status:
       props.data.device &&
-        (props.data.device.status &&
-          props.data.device.status.find(
-            status =>
-              status.interfaceId === props.config.interfaceId &&
-              status.statusId === props.config.statusId,
-          )),
+      (props.data.device.status &&
+        props.data.device.status.find(
+          status =>
+            status.interfaceId === props.config.interfaceId &&
+            status.statusId === props.config.statusId,
+        )),
     statusDefinition:
       props.data.interface &&
-        props.data.interface.status &&
-        props.data.interface.status[props.config.statusId] &&
-        (props.data.interface.status[props.config.statusId] as NumberProperty),
+      props.data.interface.status &&
+      props.data.interface.status[props.config.statusId] &&
+      (props.data.interface.status[props.config.statusId] as NumberProperty),
   })),
   withState('showDim', 'setShowDim', false),
 )
@@ -108,7 +113,7 @@ export const DisplayWidgetView = ({
   data: {device},
   status,
   statusDefinition,
-}: PrivateDisplayWidgetProps) =>
+}: PrivateDisplayWidgetProps) => (
   <Container>
     <StatusRow>
       <DeviceName>{device && device.name}</DeviceName>
@@ -123,6 +128,7 @@ export const DisplayWidgetView = ({
       <StatusName>{statusDefinition && statusDefinition.name}</StatusName>
     </div>
   </Container>
+)
 
 export const DisplayWidget: WidgetComponent<
   DisplayWidgetConfiguration

@@ -1,9 +1,10 @@
 import glamorous from 'glamorous'
+import gql from 'graphql-tag'
 import {shadow} from 'material-definitions'
 import {ListSubheader} from 'material-ui/List'
 import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
 import React, {ReactElement, ReactNode, createContext} from 'react'
-import {gql, graphql} from 'react-apollo'
+import {graphql} from 'react-apollo'
 import {
   DragDropContext,
   Draggable,

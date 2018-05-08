@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import gql from 'graphql-tag'
 import {filter, first, flatMap, map} from 'iterates/lib/sync'
 import {title} from 'material-definitions'
 import Icon from 'material-ui/Icon'
@@ -6,7 +7,7 @@ import IconButton from 'material-ui/IconButton'
 import MUIListSubheader from 'material-ui/List/ListSubheader'
 import {GraphQlDevice} from 'raxa-common'
 import React from 'react'
-import {QueryProps, gql, graphql} from 'react-apollo'
+import {DataProps, graphql} from 'react-apollo'
 import {ContextActions, Section} from 'react-material-app'
 import {Route, withRouter} from 'react-router'
 import {Link} from 'react-router-dom'
@@ -41,8 +42,8 @@ const ListSubHeader = glamorous(MUIListSubheader, {filterProps: ['isMobile']})(
 export type DeviceSettingsProps = {}
 export type ListGraphQlData = {devices: Array<GraphQlDevice>}
 export type PrivateDeviceSettingsProps = DeviceSettingsProps &
-  IsMobileProps & {
-    data: ListGraphQlData & QueryProps
+  IsMobileProps &
+  DataProps<ListGraphQlData> & {
     newDevice?: DeviceOrHeader
     createNewDevice: () => void
     clearNewDevice: () => void

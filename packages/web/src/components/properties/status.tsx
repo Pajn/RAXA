@@ -1,6 +1,7 @@
+import gql from 'graphql-tag'
 import {Interface, defaultInterfaces} from 'raxa-common'
 import React from 'react'
-import {gql, graphql} from 'react-apollo'
+import {graphql} from 'react-apollo'
 import {connect} from 'react-redux'
 import {compose} from 'recompose'
 import {row} from 'style-definitions'

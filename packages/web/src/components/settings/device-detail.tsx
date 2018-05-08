@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import gql from 'graphql-tag'
 import {title} from 'material-definitions'
 import List, {ListItem, ListItemText} from 'material-ui/List'
 import ListSubheader from 'material-ui/List/ListSubheader'
@@ -11,7 +12,7 @@ import {
 } from 'raxa-common/lib/entities'
 import {DeviceIsInUseError, isRaxaError} from 'raxa-common/lib/errors'
 import React from 'react'
-import {QueryProps, gql, graphql} from 'react-apollo'
+import {DataProps, MutateProps, graphql} from 'react-apollo'
 import {ProgressButton} from 'react-material-app'
 import {Dispatch, connect} from 'react-redux'
 import {RouteComponentProps, withRouter} from 'react-router'
@@ -37,12 +38,16 @@ export type GraphqlData = {
 export type PrivateDeviceDetailSettingsProps = DeviceDetailSettingsProps &
   IsMobileProps &
   CallDeviceInjectedProps &
-  RouteComponentProps<any> & {
+  RouteComponentProps<any> &
+  DataProps<{
+    device?: GraphQlDevice
+    deviceClasses?: Array<GraphQlDeviceClass>
+  }> &
+  MutateProps<{
+    device?: GraphQlDevice
+    deviceClasses?: Array<GraphQlDeviceClass>
+  }> & {
     dispatch: Dispatch
-    data: {
-      device?: GraphQlDevice
-      deviceClasses?: Array<GraphQlDeviceClass>
-    } & QueryProps
     saveDevice: (device: Device) => Promise<any>
     removeDevice: (device: Device) => Promise<any>
     deleteDevice: () => Promise<any>
@@ -60,7 +65,7 @@ const enhance = compose(
     deviceId: props.device.id,
   })),
   withState('tmpDevice', 'onChange', ({device}) => device),
-  graphql<{device: GraphQlDevice}, PrivateDeviceDetailSettingsProps>(
+  graphql<PrivateDeviceDetailSettingsProps, {device: GraphQlDevice}>(
     gql`
       query($deviceId: String!) {
         device(id: $deviceId) {
@@ -89,7 +94,12 @@ const enhance = compose(
     `,
     {skip: ({deviceId}) => !!deviceId},
   ),
-  graphql<{upsertDevice: GraphQlDevice}, PrivateDeviceDetailSettingsProps>(
+  graphql<
+    PrivateDeviceDetailSettingsProps,
+    {upsertDevice: GraphQlDevice},
+    {device: Device},
+    Partial<PrivateDeviceDetailSettingsProps>
+  >(
     gql`
       mutation($device: DeviceInput!) {
         upsertDevice(device: $device) {
@@ -140,7 +150,12 @@ const enhance = compose(
       }),
     },
   ),
-  graphql<{removeDevice: GraphQlDevice}, PrivateDeviceDetailSettingsProps>(
+  graphql<
+    PrivateDeviceDetailSettingsProps,
+    {removeDevice: GraphQlDevice},
+    {deviceId: string},
+    Partial<PrivateDeviceDetailSettingsProps>
+  >(
     gql`
       mutation($deviceId: String!) {
         removeDevice(id: $deviceId) {

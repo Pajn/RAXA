@@ -1,10 +1,14 @@
-import {ApolloClient, createNetworkInterface, gql} from 'react-apollo'
+import {InMemoryCache} from 'apollo-cache-inmemory'
+import {ApolloClient} from 'apollo-client'
+import {ApolloLink, split} from 'apollo-link'
+import {BatchHttpLink} from 'apollo-link-batch-http'
+import {onError} from 'apollo-link-error'
+import {WebSocketLink} from 'apollo-link-ws'
+import {getMainDefinition} from 'apollo-utilities'
+import {OperationDefinitionNode} from 'graphql'
+import gql from 'graphql-tag'
 import {combineReducers, createStore} from 'redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
-import {
-  SubscriptionClient,
-  addGraphQLSubscriptions,
-} from 'subscriptions-transport-ws'
 import {reducer as mainScreenReducer} from '../components/ui2/main'
 import {snackbarReducer} from '../redux-snackbar/reducer'
 
@@ -14,27 +18,50 @@ const port =
     ? location.port && `:${location.port}`
     : `:${ssl ? 9001 : 9000}`
 
-const wsClient = new SubscriptionClient(
-  `${ssl ? 'wss' : 'ws'}://${location.hostname}${port}/subscriptions`,
-  {
-    reconnect: true,
-  },
-)
-
-const networkInterface = createNetworkInterface({
+// Create an http link:
+const httpLink = new BatchHttpLink({
   uri: `${ssl ? 'https' : 'http'}://${location.hostname}${port}/graphql`,
 })
-const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
-  networkInterface,
-  wsClient,
+
+// Create a WebSocket link:
+const wsLink = new WebSocketLink({
+  uri: `${ssl ? 'wss' : 'ws'}://${location.hostname}${port}/subscriptions`,
+  options: {
+    reconnect: true,
+  },
+})
+
+// using the ability to split links, you can send data to each link
+// depending on what kind of operation is being sent
+const link = split(
+  // split based on operation type
+  ({query}) => {
+    const {kind, operation} = getMainDefinition(
+      query,
+    ) as OperationDefinitionNode
+    return kind === 'OperationDefinition' && operation === 'subscription'
+  },
+  wsLink,
+  httpLink,
 )
 
 export const client = new ApolloClient({
-  networkInterface: networkInterfaceWithSubscriptions,
+  link: ApolloLink.from([
+    onError(({graphQLErrors, networkError}) => {
+      if (graphQLErrors)
+        graphQLErrors.map(({message, locations, path}) =>
+          console.error(
+            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+          ),
+        )
+      if (networkError) console.error(`[Network error]: ${networkError}`)
+    }),
+    link,
+  ]),
+  cache: new InMemoryCache(),
 })
 
 const reducer = combineReducers({
-  apollo: client.reducer(),
   mainScreen: mainScreenReducer,
   snackbar: snackbarReducer,
 } as any)

@@ -5,6 +5,7 @@ import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
 import React from 'react'
 import {ApolloProvider} from 'react-apollo'
 import {Scaffold} from 'react-material-app'
+import {Provider} from 'react-redux'
 import {Route} from 'react-router'
 import {BrowserRouter} from 'react-router-dom'
 import {Settings} from './components/settings/settings'
@@ -41,17 +42,19 @@ const oldTheme = getMuiOldTheme({
 })
 
 export const App = () => (
-  <ApolloProvider client={client} store={store}>
-    <MuiOldThemeProvider theme={oldTheme}>
-      <MuiThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Scaffold appName="Raxa">
-            <Route exact path="/" component={Ui2} />
-            <Route path="/settings" component={Settings} />
-            <ReduxSnackbar />
-          </Scaffold>
-        </BrowserRouter>
-      </MuiThemeProvider>
-    </MuiOldThemeProvider>
+  <ApolloProvider client={client}>
+    <Provider store={store}>
+      <MuiOldThemeProvider theme={oldTheme}>
+        <MuiThemeProvider theme={theme}>
+          <BrowserRouter>
+            <Scaffold appName="Raxa">
+              <Route exact path="/" component={Ui2} />
+              <Route path="/settings" component={Settings} />
+              <ReduxSnackbar />
+            </Scaffold>
+          </BrowserRouter>
+        </MuiThemeProvider>
+      </MuiOldThemeProvider>
+    </Provider>
   </ApolloProvider>
 )

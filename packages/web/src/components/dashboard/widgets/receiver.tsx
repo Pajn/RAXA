@@ -1,4 +1,5 @@
 import glamorous from 'glamorous'
+import gql from 'graphql-tag'
 import {defaultInterfaces} from 'raxa-common'
 import {
   DeviceStatus,
@@ -7,7 +8,7 @@ import {
   NumberProperty,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {QueryProps, gql, graphql} from 'react-apollo'
+import {DataProps, graphql} from 'react-apollo'
 import {ProgressButton} from 'react-material-app'
 import {compose, mapProps, withHandlers} from 'recompose'
 import styled from 'styled-components'
@@ -43,8 +44,8 @@ export type ReceiverWidgetConfiguration = {
 export type ReceiverWidgetProps = WidgetProps<ReceiverWidgetConfiguration>
 export type PrivateReceiverWidgetProps = ReceiverWidgetProps &
   CallDeviceInjectedProps &
-  UpdateDeviceStatusInjectedProps & {
-    data: {device?: GraphQlDevice; interface?: Interface} & QueryProps
+  UpdateDeviceStatusInjectedProps &
+  DataProps<{device?: GraphQlDevice; interface?: Interface}> & {
     status?: DeviceStatus
     statusDefinition?: NumberProperty
     children?: React.ReactChild
