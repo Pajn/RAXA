@@ -59,11 +59,7 @@ const DeviceName = glamorous.span({
 const DetailControl = glamorous.div({
   flex: 10,
 })
-const PowerSwitch = glamorous(Switch, {
-  withProps: {
-    color: 'primary',
-  },
-})({
+const PowerSwitch = glamorous(Switch)({
   flexShrink: 0,
 })
 

@@ -1,5 +1,4 @@
 import glamorous from 'glamorous'
-import {grey} from 'material-definitions'
 import {DeviceType, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {ContextActions} from 'react-material-app'
@@ -7,12 +6,19 @@ import {connect} from 'react-redux'
 import {Action, action, createActions, createReducer} from 'redux-decorated'
 import {ListWidget} from '../dashboard/widgets/list'
 
-const Ui2Container = glamorous.div({
-  boxSizing: 'border-box',
-  paddingTop: 8,
-  height: '100%',
-  backgroundColor: grey[50],
-})
+const Ui2Container = glamorous.div(
+  {
+    boxSizing: 'border-box',
+    paddingTop: 8,
+    height: '100%',
+  },
+  ({theme}: any) => ({
+    color: theme.background.text,
+    backgroundColor: theme.dark
+      ? theme.background.main
+      : theme.background.light,
+  }),
+)
 
 export const actions = createActions({
   sortedWidgets: {} as Action<{section: string; sortOrder: Array<string>}>,

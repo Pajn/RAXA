@@ -86,8 +86,8 @@ export const ColorButton = ({
   <CircleButton type="button" {...props}>
     <div
       style={{
-        width: 64,
-        height: 64,
+        width: '100%',
+        height: '100%',
         backgroundColor: color,
       }}
     />

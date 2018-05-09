@@ -21,10 +21,15 @@ import {InjectedIdProps, withIds} from '../../with-id'
 import {DeviceName} from '../device-name'
 import {PropertyProps, PropertyView} from './property'
 
-const CardContainer = glamorous.div({
-  padding: 16,
-  backgroundColor: grey[100],
-})
+const CardContainer = glamorous.div(
+  {
+    padding: 16,
+  },
+  ({theme}: any) => ({
+    color: theme.background.text,
+    backgroundColor: theme.background.light,
+  }),
+)
 
 const ItemHeader = glamorous.div({...row({vertical: 'center'}), padding: 8})
 
@@ -121,7 +126,9 @@ export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
                   ...(value || []),
                   (property.items as NumberProperty).defaultValue !== undefined
                     ? (property.items as NumberProperty).defaultValue
-                    : property.items.type === 'modification' ? {} : undefined,
+                    : property.items.type === 'modification'
+                      ? {}
+                      : undefined,
                 ])
                 this.didAdd = true
               }}

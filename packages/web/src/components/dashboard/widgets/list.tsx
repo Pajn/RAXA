@@ -72,11 +72,26 @@ const dragContainerStyles = (row: boolean) => ({
   width: row ? undefined : '100%',
 })
 
+const DeviceWrapperContainer = glamorous.div<{
+  row: boolean
+  border: boolean
+  theme: any
+}>(({row, border, theme}) => ({
+  position: 'relative',
+  boxSizing: 'border-box',
+  margin: row ? 8 : 0,
+  padding: row ? 16 : 8,
+  height: row ? 48 : 56,
+  overflow: 'hidden',
+
+  backgroundColor: theme.dark ? theme.background.light : theme.background.main,
+  boxShadow: row ? shadow[1].boxShadow : 'none',
+
+  borderTop: !border || row ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
+}))
+
 const DeviceWrapper = ({
-  row,
-  border,
   children,
-  innerRef,
   style,
   ...props
 }: {
@@ -86,27 +101,14 @@ const DeviceWrapper = ({
   innerRef(element?: HTMLElement | null): any
 } & Partial<DraggableProvidedDraggableProps> &
   Partial<DraggableProvidedDragHandleProps>) => (
-  <div
+  <DeviceWrapperContainer
     {...props}
-    ref={innerRef}
     style={{
-      position: 'relative',
-      boxSizing: 'border-box',
-      margin: row ? 8 : 0,
-      padding: row ? 16 : 8,
-      height: row ? 48 : 56,
-      overflow: 'hidden',
-
-      backgroundColor: 'white',
-      boxShadow: row ? shadow[1].boxShadow : 'none',
-
-      borderTop: !border || row ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
-
       ...(style as any),
     }}
   >
     {children}
-  </div>
+  </DeviceWrapperContainer>
 )
 
 export type ListWidgetConfiguration = {
@@ -220,7 +222,7 @@ export const ListWidgetView = ({
   data.devices && data.devices.length > 0 ? (
     <>
       <DragDropContext onDragEnd={onSortEnd}>
-        {header && <ListSubheader>{header}</ListSubheader>}
+        {header && <ListSubheader color="default">{header}</ListSubheader>}
         <Droppable
           droppableId={`droppable-${header}`}
           direction={row ? 'horizontal' : 'vertical'}

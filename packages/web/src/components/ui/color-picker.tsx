@@ -2,6 +2,7 @@ import {colorTemperature2rgb, rgb2colorTemperature} from 'color-temperature'
 import glamorous from 'glamorous'
 import Dialog, {DialogContent} from 'material-ui/Dialog'
 import Tabs, {Tab} from 'material-ui/Tabs'
+import Typography from 'material-ui/Typography'
 import React from 'react'
 import {Color, ColorResult, CustomPicker, RGBColor} from 'react-color'
 import Hue from 'react-color/lib/components/common/Hue'
@@ -280,8 +281,14 @@ const LightningColorPicker = compose<
   <InputEventsContainer>
     <div style={{...column(), overflow: 'hidden'}}>
       <Tabs value={index} onChange={(_, index) => setIndex(index)} fullWidth>
-        <Tab label="Temperature" style={{maxWidth: 'none'}} />
-        <Tab label="Color" style={{maxWidth: 'none'}} />
+        <Tab
+          label={<Typography>Temperature</Typography>}
+          style={{maxWidth: 'none'}}
+        />
+        <Tab
+          label={<Typography>Color</Typography>}
+          style={{maxWidth: 'none'}}
+        />
       </Tabs>
 
       <div style={{padding: 16, width: '75vw', maxWidth: 600}}>

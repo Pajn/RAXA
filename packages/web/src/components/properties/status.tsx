@@ -1,4 +1,5 @@
 import gql from 'graphql-tag'
+import {ListItem} from 'material-ui/List'
 import {Interface, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {graphql} from 'react-apollo'
@@ -47,38 +48,16 @@ export const StatelessStatusView = ({
   value,
   label,
   setDeviceStatus,
-}: PrivateStatusProps) => (
-  <div>
-    {data &&
-      data.interface &&
-      data.interface.status &&
-      data.interface.status[statusId] &&
-      (interfaceId === defaultInterfaces.Color.id ? (
-        <div
-          style={{
-            ...(row({vertical: 'center'}) as React.CSSProperties),
-            padding: '0 16px',
-          }}
-        >
-          <span style={{paddingRight: 8}}>Color</span>
-          <ColorPicker
-            value={value}
-            onChange={value => {
-              setDeviceStatus(id, {
-                deviceId,
-                interfaceId,
-                statusId,
-                value,
-              })
-            }}
-          />
-        </div>
-      ) : (
-        <PropertyView
-          propertyId={data.interface.status[statusId].id}
-          property={data.interface.status[statusId]}
+}: PrivateStatusProps) =>
+  data &&
+  data.interface &&
+  data.interface.status &&
+  data.interface.status[statusId] ? (
+    interfaceId === defaultInterfaces.Color.id ? (
+      <ListItem style={row({vertical: 'center'})}>
+        <span style={{paddingRight: 8}}>Color</span>
+        <ColorPicker
           value={value}
-          label={label}
           onChange={value => {
             setDeviceStatus(id, {
               deviceId,
@@ -88,8 +67,23 @@ export const StatelessStatusView = ({
             })
           }}
         />
-      ))}
-  </div>
-)
+      </ListItem>
+    ) : (
+      <PropertyView
+        propertyId={data.interface.status[statusId].id}
+        property={data.interface.status[statusId]}
+        value={value}
+        label={label}
+        onChange={value => {
+          setDeviceStatus(id, {
+            deviceId,
+            interfaceId,
+            statusId,
+            value,
+          })
+        }}
+      />
+    )
+  ) : null
 
 export const StatusView = enhance(StatelessStatusView)

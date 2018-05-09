@@ -1,6 +1,5 @@
 import {isClick} from 'filter-key'
 import glamorous, {CSSProperties} from 'glamorous'
-import {grey} from 'material-definitions'
 import MUIList, {ListItem as MUIListItem, ListItemText} from 'material-ui/List'
 import React from 'react'
 import {compose} from 'recompose'
@@ -16,7 +15,15 @@ const DesktopList = glamorous.div(
 )
 
 const DesktopListItem = glamorous.div(
-  ({isMobile, selected}: {isMobile?: boolean; selected?: boolean}) => ({
+  ({
+    isMobile,
+    selected,
+    theme,
+  }: {
+    isMobile?: boolean
+    selected?: boolean
+    theme: any
+  }) => ({
     ...row({}),
     flexShrink: 0,
     boxSizing: 'border-box' as 'border-box',
@@ -25,10 +32,10 @@ const DesktopListItem = glamorous.div(
     outline: 'none',
 
     ...(selected
-      ? {backgroundColor: grey[200]}
+      ? {backgroundColor: theme.background.somewhatLight}
       : ({
-          ':hover': {backgroundColor: grey[100]},
-          ':focus': {backgroundColor: grey[100]},
+          ':hover': {backgroundColor: theme.background.light},
+          ':focus': {backgroundColor: theme.background.light},
         } as CSSProperties)),
   }),
 )
