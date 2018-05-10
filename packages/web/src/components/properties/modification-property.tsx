@@ -131,7 +131,6 @@ export const ModificationInputView = ({
   setDivElement,
 }: PrivateModificationInputProps) => (
   <div ref={setDivElement}>
-    {(!!divElement).toString()}
     <SettingDropdown
       label="Device"
       source={

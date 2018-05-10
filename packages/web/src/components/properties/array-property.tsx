@@ -1,5 +1,5 @@
 import glamorous from 'glamorous'
-import {grey, red} from 'material-definitions'
+import {red} from 'material-definitions'
 import Button from 'material-ui/Button'
 import Card from 'material-ui/Card'
 import Divider from 'material-ui/Divider'

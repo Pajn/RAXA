@@ -1,39 +1,10 @@
 import Slider from 'material-ui-old/Slider'
 import List, {ListItem, ListItemText} from 'material-ui/List'
-import React, {CSSProperties, ReactChild} from 'react'
+import React from 'react'
 import {Checkbox, Select, TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
 import {DialogInput} from './dialog-input'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
-
-const RTListItem = ({
-  style,
-  children,
-  onClick,
-}: {
-  style?: CSSProperties
-  children?: ReactChild | Array<ReactChild>
-  onClick?: () => void
-}) => (
-  <div style={{display: 'flex', padding: '0 16px', ...style}} onClick={onClick}>
-    {children}
-  </div>
-)
-
-export const RTListItemLayout = ({
-  caption,
-  legend,
-  onClick,
-}: {
-  caption: ReactChild
-  legend: ReactChild
-  onClick?: () => void
-}) => (
-  <RTListItem style={{flexDirection: 'column'}} onClick={onClick}>
-    <div style={{fontSize: 16, color: '#212121'}}>{caption}</div>
-    <div style={{paddingTop: 3, fontSize: 14, color: '#757575'}}>{legend}</div>
-  </RTListItem>
-)
 
 const round = (decimals: number, value: number) =>
   Math.round(value * 10 ** decimals) / 10 ** decimals
@@ -78,14 +49,14 @@ export const SettingInputView = ({
       )}
     />
   ) : (
-    <RTListItem>
+    <ListItem dense>
       <TextField
         label={label}
         type={type}
         value={value || ''}
         onChange={onChange}
       />
-    </RTListItem>
+    </ListItem>
   )
 
 export const SettingInput = enhance(SettingInputView) as React.ComponentClass<
@@ -109,14 +80,14 @@ export const SettingCheckboxView = ({
   onChange,
   disabled,
 }: PrivateSettingCheckboxProps) => (
-  <RTListItem>
+  <ListItem dense>
     <Checkbox
       value={value}
       onChange={onChange}
       label={label}
       disabled={disabled}
     />
-  </RTListItem>
+  </ListItem>
 )
 
 export const SettingCheckbox = enhance(
@@ -158,7 +129,7 @@ export const SettingDropdownView = ({
       data-select={label}
     />
   ) : (
-    <RTListItem>
+    <ListItem dense>
       <Select
         choices={source}
         label={label}
@@ -166,7 +137,7 @@ export const SettingDropdownView = ({
         onChange={onChange}
         data-select={label}
       />
-    </RTListItem>
+    </ListItem>
   )
 
 export const SettingDropdown = enhance(
@@ -231,22 +202,24 @@ export const SettingSliderView = ({
       )}
     />
   ) : (
-    <RTListItemLayout
-      caption={label}
-      legend={
-        <Slider
-          value={(tmpValue === undefined ? +value : tmpValue) || 0}
-          onChange={(_, value) => setTmpValue(value)}
-          onDragStop={() => {
-            setTmpValue(undefined)
-            onChange(tmpValue)
-          }}
-          max={max}
-          min={min}
-          step={step}
-        />
-      }
-    />
+    <ListItem dense>
+      <ListItemText
+        primary={label}
+        secondary={
+          <Slider
+            value={(tmpValue === undefined ? +value : tmpValue) || 0}
+            onChange={(_, value) => setTmpValue(value)}
+            onDragStop={() => {
+              setTmpValue(undefined)
+              onChange(tmpValue)
+            }}
+            max={max}
+            min={min}
+            step={step}
+          />
+        }
+      />
+    </ListItem>
   )
 
 export const SettingSlider = enhanceSlider(
@@ -270,20 +243,20 @@ export const SettingValueView = ({
   isMobile,
 }: PrivateSettingValueProps) =>
   isMobile ? (
-    <ListItem>
+    <ListItem dense>
       <ListItemText
         primary={label}
         secondary={unit ? `${value} ${unit}` : `${value}`}
       />
     </ListItem>
   ) : (
-    <RTListItem>
+    <ListItem dense>
       <TextField
         label={label}
         value={unit ? `${value} ${unit}` : `${value}`}
         disabled
       />
-    </RTListItem>
+    </ListItem>
   )
 
 export const SettingValue = enhance(SettingValueView) as React.ComponentClass<
