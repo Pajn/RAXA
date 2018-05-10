@@ -173,14 +173,19 @@ export class PluginManager extends Service {
       this.log.error(await response.text())
       throw Error('Could not fetch package list')
     }
-    const packages = (await Promise.all(((await response.json()) as {
-      objects: Array<{
-        package: Pick<Package, Exclude<keyof Package, 'id'>>
-      }>
-    }).objects
-      .filter(hit => pluginPackageNamePattern.test(hit.package.name))
-      .map(hit => fetch(`https://registry.npmjs.org/${hit.package.name}/latest`))
-      .map(response => response.then(response => response.json()))))
+    const packages = (await Promise.all(
+      ((await response.json()) as {
+        objects: Array<{
+          package: Pick<Package, Exclude<keyof Package, 'id'>>
+        }>
+      }).objects
+        .filter(hit => pluginPackageNamePattern.test(hit.package.name))
+        .map(hit =>
+          fetch(`https://registry.npmjs.org/${hit.package.name}/latest`),
+        )
+        .map(response => response.then(response => response.json())),
+    ))
+      .filter(hit => pluginPackageNamePattern.test(hit.name))
       .map(hit => {
         const [, id] = pluginPackageNamePattern.exec(hit.name)!
 
@@ -198,7 +203,7 @@ export class ProductionPluginManager extends PluginManager {
 
     await mkdirp(pluginDir)
     const packageJson = join(pluginDir, 'package.json')
-    if (!await pathExists(packageJson)) {
+    if (!(await pathExists(packageJson))) {
       this.log.info(`Plugin package.json missing, creating`)
       await writeFile(
         packageJson,
