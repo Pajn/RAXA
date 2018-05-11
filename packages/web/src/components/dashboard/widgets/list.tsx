@@ -222,7 +222,7 @@ export const ListWidgetView = ({
   data.devices && data.devices.length > 0 ? (
     <>
       <DragDropContext onDragEnd={onSortEnd}>
-        {header && <ListSubheader color="default">{header}</ListSubheader>}
+        {header && <ListSubheader color="default" style={{zIndex: 2}}>{header}</ListSubheader>}
         <Droppable
           droppableId={`droppable-${header}`}
           direction={row ? 'horizontal' : 'vertical'}
