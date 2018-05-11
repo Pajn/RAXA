@@ -238,6 +238,6 @@ export function validateAction(state: State, action: Call | Modification) {
       action.interfaceId,
     )
   ) {
-    throw Error('Device does not implement inteface')
+    throw Error('Device does not implement interface')
   }
 }

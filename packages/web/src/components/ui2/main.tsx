@@ -65,9 +65,10 @@ export const Ui2View = ({sortOrders, dispatch}) => (
       }
     />
     <ListWidget
-      header="Receiver"
+      header="Media"
       column
-      config={{interfaceIds: ['SonyReceiver']}}
+      big
+      config={{interfaceIds: ['CurrentlyPlaying', 'SonyReceiver']}}
     />
     <ListWidget
       header="Temperature"

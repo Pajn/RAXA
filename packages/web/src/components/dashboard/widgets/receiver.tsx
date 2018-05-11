@@ -1,5 +1,6 @@
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
+import Button from 'material-ui/Button'
 import {defaultInterfaces} from 'raxa-common'
 import {
   DeviceStatus,
@@ -11,7 +12,7 @@ import React from 'react'
 import {DataProps, graphql} from 'react-apollo'
 import {ProgressButton} from 'react-material-app'
 import {compose, mapProps, withHandlers} from 'recompose'
-import styled from 'styled-components'
+import {row} from 'style-definitions'
 import {
   CallDeviceInjectedProps,
   UpdateDeviceStatusInjectedProps,
@@ -34,9 +35,6 @@ const Container = glamorous.div({
   height: '100%',
   overflow: 'hidden',
 })
-const DeviceName = styled.span`
-  flex: 1;
-`
 
 export type ReceiverWidgetConfiguration = {
   deviceId: string
@@ -101,23 +99,46 @@ export const ReceiverWidgetView = ({
   ...props
 }: PrivateReceiverWidgetProps) => (
   <Container {...props}>
-    <DeviceName>{device && device.name}</DeviceName>
-    <ProgressButton onClick={() => call('volUp')}>+</ProgressButton>
-    <ProgressButton onClick={() => call('volDown')}>-</ProgressButton>
-    <ProgressButton onClick={() => call('tv')}>Tv</ProgressButton>
-    <ProgressButton onClick={() => call('speakers')}>Speakers</ProgressButton>
-    <ProgressButton
-      onClick={() =>
-        setDeviceStatus(undefined, {
-          deviceId: config.deviceId,
-          interfaceId: defaultInterfaces.Power.id,
-          statusId: defaultInterfaces.Power.status.on.id,
-          value: false,
-        })
-      }
-    >
-      Off
-    </ProgressButton>
+    <span>{device && device.name}</span>
+    <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+      <div style={row({horizontal: 'flex-end'})}>
+        <Button
+          size="small"
+          style={{minWidth: 48}}
+          onClick={() => call('volUp')}
+        >
+          +
+        </Button>
+        <Button
+          size="small"
+          style={{minWidth: 48}}
+          onClick={() => call('volDown')}
+        >
+          -
+        </Button>
+      </div>
+      <div style={row({horizontal: 'flex-end'})}>
+        <ProgressButton style={{minWidth: 48}} onClick={() => call('tv')}>
+          Tv
+        </ProgressButton>
+        <ProgressButton style={{minWidth: 48}} onClick={() => call('speakers')}>
+          Speakers
+        </ProgressButton>
+        <ProgressButton
+          style={{minWidth: 48}}
+          onClick={() =>
+            setDeviceStatus(undefined, {
+              deviceId: config.deviceId,
+              interfaceId: defaultInterfaces.Power.id,
+              statusId: defaultInterfaces.Power.status.on.id,
+              value: false,
+            })
+          }
+        >
+          Off
+        </ProgressButton>
+      </div>
+    </div>
   </Container>
 )
 
