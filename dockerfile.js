@@ -21,8 +21,7 @@ FROM ${baseImage} as common
 WORKDIR /app/common
 
 COPY .yarnrc /app
-COPY package.json /app
-COPY yarn.lock /app
+COPY packages/common/yarn.lock /app/common/
 COPY packages/common/package.json /app/common/
 
 ${setup}
@@ -35,6 +34,7 @@ RUN rm -rf node_modules
 
 FROM common as raxa
 WORKDIR /app/raxa
+COPY packages/raxa/yarn.lock /app/raxa/
 COPY packages/raxa/package.json /app/raxa/
 
 RUN yarn
@@ -46,6 +46,7 @@ RUN rm -rf node_modules
 
 FROM common as web
 WORKDIR /app/web
+COPY packages/web/yarn.lock /app/web/
 COPY packages/web/package.json /app/web/
 
 RUN yarn
@@ -64,8 +65,6 @@ EXPOSE 8000
 EXPOSE 9000
 
 COPY .yarnrc .
-COPY package.json .
-COPY yarn.lock .
 ${subprojectFiles('common', 'raxa', 'web')
   .map(path => `COPY ${path} /app/${path.replace('packages/', '')}`)
   .join('\n')}

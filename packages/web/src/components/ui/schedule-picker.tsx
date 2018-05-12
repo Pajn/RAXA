@@ -1,5 +1,5 @@
 import glamorous from 'glamorous'
-import TimePicker from 'material-ui-old/TimePicker'
+import TimeInput from 'material-ui-time-picker'
 import Button from 'material-ui/Button'
 import Dialog, {DialogContent} from 'material-ui/Dialog'
 import {ListItem} from 'material-ui/List'
@@ -98,24 +98,25 @@ const SchedulePickerDialog = compose<
     <div>
       {index === 0 && (
         <>
-          <TimePicker
-            name="time"
-            format="24hr"
-            style={{padding: '8px 16px'}}
-            value={timeFromWeekdayExpression(value)}
-            onChange={(_, date: Date) => {
-              const weekdays = daysFromWeekdayExpression(value)
-              const minutes = date.getUTCMinutes()
-              const hours = date.getUTCHours()
+          <div style={{padding: '8px 16px'}}>
+            <TimeInput
+              name="time"
+              mode="24h"
+              value={timeFromWeekdayExpression(value)}
+              onChange={(date: Date) => {
+                const weekdays = daysFromWeekdayExpression(value)
+                const minutes = date.getUTCMinutes()
+                const hours = date.getUTCHours()
 
-              onChange(
-                `${minutes} ${hours} * * ${weekdays
-                  .map(day => days.indexOf(day, 1))
-                  .sort()
-                  .join(',')}`,
-              )
-            }}
-          />
+                onChange(
+                  `${minutes} ${hours} * * ${weekdays
+                    .map(day => days.indexOf(day, 1))
+                    .sort()
+                    .join(',')}`,
+                )
+              }}
+            />
+          </div>
           <DayRow>
             {isActive(days.slice(1), daysFromWeekdayExpression(value)).map(
               ([day, active]) => (

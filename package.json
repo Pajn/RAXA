@@ -16,12 +16,6 @@
     "tslint-config-pajn": "^1.0.0",
     "typescript": "^2.8.0-dev.20180217"
   },
-  "resolutions": {
-    "@types/async": "2.0.31",
-    "@types/react": "16.3.12",
-    "@types/react-dom": "16.0.5",
-    "@types/recompose": "0.26.1"
-  },
-  "workspaces": ["packages/common", "packages/raxa", "packages/web"],
+  "workspaces1": ["packages/common", "packages/raxa", "packages/web"],
   "workspaces2": ["packages/*"]
 }
