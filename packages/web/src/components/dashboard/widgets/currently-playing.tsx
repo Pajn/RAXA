@@ -131,7 +131,6 @@ export const CurrentlyPlayingWidgetView = ({
   status,
   children: _,
   call,
-  setDeviceStatus,
   hideComponent,
   ...props
 }: PrivateCurrentlyPlayingWidgetProps) =>
@@ -139,6 +138,8 @@ export const CurrentlyPlayingWidgetView = ({
   status &&
   status.CurrentlyPlaying &&
   status.CurrentlyPlaying.playerState &&
+  status.CurrentlyPlaying.currentMedia &&
+  status.CurrentlyPlaying.currentMedia.value &&
   status.CurrentlyPlaying.playerState.value !== 'idle' ? (
     <Container {...props}>
       {hideComponent ? hideComponent(false) : null}
