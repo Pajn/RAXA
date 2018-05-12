@@ -5,6 +5,7 @@ import List, {
   ListItemSecondaryAction,
   ListItemText,
 } from 'material-ui/List'
+import {LinearProgress} from 'material-ui/Progress'
 import Tabs, {Tab} from 'material-ui/Tabs'
 import {PluginConfiguration} from 'raxa-common'
 import React, {Component} from 'react'
@@ -202,32 +203,35 @@ export const AvaliblePluginsView = ({
   installPlugin,
   upgradePlugin,
 }: AvaliblePluginsPrivateProps) => (
-  <List>
-    {data.avaliblePlugins &&
-      data.avaliblePlugins.map(plugin => (
-        <ListItem key={plugin.id}>
-          <ListItemText
-            primary={plugin.name}
-            secondary={plugin.description || ''}
-          />
-          <ListItemSecondaryAction>
-            {plugin.upgradable ? (
-              <ProgressButton onClick={() => upgradePlugin(plugin.id)}>
-                Upgrade
-              </ProgressButton>
-            ) : plugin.installed ? (
-              <ProgressButton disabled onClick={() => {}}>
-                Installed
-              </ProgressButton>
-            ) : (
-              <ProgressButton onClick={() => installPlugin(plugin.id)}>
-                Install
-              </ProgressButton>
-            )}
-          </ListItemSecondaryAction>
-        </ListItem>
-      ))}
-  </List>
+  <>
+    {!data.avaliblePlugins && <LinearProgress color="secondary" />}
+    <List>
+      {data.avaliblePlugins &&
+        data.avaliblePlugins.map(plugin => (
+          <ListItem key={plugin.id}>
+            <ListItemText
+              primary={plugin.name}
+              secondary={plugin.description || ''}
+            />
+            <ListItemSecondaryAction>
+              {plugin.upgradable ? (
+                <ProgressButton onClick={() => upgradePlugin(plugin.id)}>
+                  Upgrade
+                </ProgressButton>
+              ) : plugin.installed ? (
+                <ProgressButton disabled onClick={() => {}}>
+                  Installed
+                </ProgressButton>
+              ) : (
+                <ProgressButton onClick={() => installPlugin(plugin.id)}>
+                  Install
+                </ProgressButton>
+              )}
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))}
+    </List>
+  </>
 )
 
 export const AvaliblePlugins = AvaliblePluginsEnhance(AvaliblePluginsView)

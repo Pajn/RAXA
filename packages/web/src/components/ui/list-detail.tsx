@@ -1,6 +1,7 @@
 import glamorous from 'glamorous'
 import React from 'react'
 import {Section} from 'react-material-app'
+import {DelayedCircularProgress} from 'react-material-app/lib/ProgressButton'
 import {
   Route,
   RouteComponentProps,
@@ -118,7 +119,24 @@ export const ListDetailView = ({
         <List selectable>
           {listHeader}
           {!items ? (
-            <span>loading</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+                alignSelf: 'stretch',
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <DelayedCircularProgress
+                open
+                timeout={500}
+                size={48}
+                color="secondary"
+              />
+            </div>
           ) : (
             items.map((item, index) => {
               const activate = item.section
