@@ -244,8 +244,11 @@ export class ProductionPluginManager extends PluginManager {
       this.log.error(`Error upgrading plugin ${id}`, e)
       throw e
     }
-    delete require.cache[require.resolve(this.pluginPath(id))]
-    delete require.cache[require.resolve(`${this.pluginPath(id)}/package.json`)]
+    Object.keys(require.cache)
+      .filter(path => path.startsWith(require.resolve(this.pluginPath(id))))
+      .forEach(path => {
+        delete require.cache[path]
+      })
     await super.upgradePlugin(id)
   }
 }
