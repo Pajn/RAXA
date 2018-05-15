@@ -157,8 +157,6 @@ export default class ChromecastPlugin extends Plugin {
         this.mediaPlayers[device.id] = mp
 
         mp.on('clientStatus', e => {
-          console.log('clientStatus', e)
-
           this.dispatch(actions.statusUpdated, {
             deviceId: device.id,
             interfaceId: plugin.interfaces.Chromecast.id,
@@ -178,7 +176,7 @@ export default class ChromecastPlugin extends Plugin {
             value: e.volume.muted,
           })
 
-          if (!e.applications || e.applications['0'].isIdleScreen) {
+          if (!e.applications || e.applications[0].isIdleScreen) {
             this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
               interfaceId: plugin.interfaces.CurrentlyPlaying.id,
@@ -197,7 +195,6 @@ export default class ChromecastPlugin extends Plugin {
         })
 
         mp.on('playerStatus', e => {
-          console.log('playerStatus', e)
           if (e) {
             this.dispatch(actions.statusUpdated, {
               deviceId: device.id,

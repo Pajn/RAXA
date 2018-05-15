@@ -1,7 +1,7 @@
 {
   "name": "raxa-plugin-chromecast",
-  "version": "0.1.6",
-  "description": "Add support for Chromecasts to Raxa",
+  "version": "0.1.8",
+  "description": "Add support for controlling and monitoring Chromecasts to Raxa",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "keywords": [
