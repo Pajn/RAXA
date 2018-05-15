@@ -156,7 +156,6 @@ export type ListWidgetProps = WidgetProps<ListWidgetConfiguration> & {
 }
 export type ListWidgetPrivateProps = ListWidgetProps & {
   row: boolean
-  interfaceIds?: Array<string>
   data: {devices?: Array<GraphQlDevice>}
   onSortEnd: (result: any) => void
   setData: (data: {devices?: Array<GraphQlDevice>}) => void
@@ -169,8 +168,6 @@ export type ListWidgetPrivateProps = ListWidgetProps & {
 export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
   mapProps((props: ListWidgetProps) => ({
     ...props,
-    types: props.config.types,
-    interfaceIds: props.config.interfaceIds,
     row: props.row || !props.column,
   })),
   graphql(gql`
@@ -189,7 +186,17 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
         }
       }
     }
-  `),
+    `,
+    {
+      options: (props: ListWidgetProps) => ({
+        fetchPolicy: 'cache-and-network',
+        variables: {
+          types: props.config.types,
+          interfaceIds: props.config.interfaceIds,
+        },
+      }),
+    },
+  ),
   mapProps((props: ListWidgetPrivateProps) => ({
     ...props,
     data:
@@ -245,7 +252,7 @@ export const ListWidgetView = ({
   data,
   row,
   big,
-  interfaceIds,
+  config: {interfaceIds},
   onSortEnd,
   canSort,
   enableSort,

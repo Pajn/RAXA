@@ -18,6 +18,18 @@ import {action} from 'redux-decorated'
 import {column} from 'style-definitions'
 import {actions} from '../../redux-snackbar/actions'
 
+const listPluginsQuery = gql`
+  query getPlugins {
+    plugins {
+      id
+      name
+      shortDescription
+      version
+      enabled
+    }
+  }
+`
+
 export type InstalledPluginsProps = {}
 export type InstalledPluginsPrivateProps = InstalledPluginsProps &
   DataProps<{plugins?: Array<PluginConfiguration>}> & {
@@ -32,17 +44,7 @@ export const installedPluginsEnhance = compose<
   connect(undefined, (dispatch): Partial<InstalledPluginsPrivateProps> => ({
     dispatch,
   })),
-  graphql(gql`
-    query getPlugins {
-      plugins {
-        id
-        name
-        shortDescription
-        version
-        enabled
-      }
-    }
-  `),
+  graphql(listPluginsQuery),
   graphql<InstalledPluginsPrivateProps>(
     gql`
       mutation($pluginId: String!, $enabled: Boolean!) {
@@ -156,6 +158,7 @@ export const AvaliblePluginsEnhance = compose<
         installPlugin: (pluginId: string) =>
           mutate!({
             variables: {pluginId},
+            refetchQueries: [{query: listPluginsQuery}],
           }).catch(() => {
             dispatch(
               action(actions.showSnackbar, {
@@ -172,6 +175,8 @@ export const AvaliblePluginsEnhance = compose<
       mutation($pluginId: String!) {
         upgradePlugin(pluginId: $pluginId) {
           id
+          name
+          shortDescription
           version
           upgradable
         }

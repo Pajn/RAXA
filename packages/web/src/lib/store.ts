@@ -7,7 +7,7 @@ import {WebSocketLink} from 'apollo-link-ws'
 import {getMainDefinition} from 'apollo-utilities'
 import {OperationDefinitionNode} from 'graphql'
 import gql from 'graphql-tag'
-import {combineReducers, createStore} from 'redux'
+import {combineReducers, compose, createStore} from 'redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
 import {reducer as mainScreenReducer} from '../components/ui2/main'
 import {snackbarReducer} from '../redux-snackbar/reducer'
@@ -66,11 +66,26 @@ const reducer = combineReducers({
   snackbar: snackbarReducer,
 } as any)
 
-export const store = createStore(reducer, {}, autoRehydrate())
+const composeEnhancers =
+  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+export const store = createStore(reducer, {}, composeEnhancers(autoRehydrate()))
 
 persistStore(store)
 
 // Subscribe to all status updates, Apollo will automatically update the store using the id.
+client
+  .subscribe({
+    query: gql`
+      subscription deviceUpdated {
+        deviceUpdated {
+          id
+          name
+          config
+        }
+      }
+    `,
+  })
+  .subscribe({})
 client
   .subscribe({
     query: gql`
