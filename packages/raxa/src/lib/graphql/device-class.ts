@@ -32,11 +32,14 @@ export const deviceClassQueries = buildQueries({
       allowManualCreation: joi.boolean(),
     }),
     resolve(_, {allowManualCreation}, {storage}: Context) {
-      let deviceClasses = Object.values(storage.getState().deviceClasses)
+      const state = storage.getState()
+      let deviceClasses = Object.values(state.deviceClasses)
       if (allowManualCreation !== undefined) {
         deviceClasses = deviceClasses.filter(
           deviceClass =>
-            deviceClass.allowManualCreation === allowManualCreation,
+            deviceClass.allowManualCreation === allowManualCreation &&
+            state.plugins[deviceClass.pluginId] &&
+            state.plugins[deviceClass.pluginId].enabled,
         )
       }
       return deviceClasses

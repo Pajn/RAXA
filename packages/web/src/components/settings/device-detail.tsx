@@ -92,7 +92,10 @@ const enhance = compose(
         }
       }
     `,
-    {skip: ({deviceId}) => !!deviceId},
+    {
+      skip: ({deviceId}) => !!deviceId,
+      options: {fetchPolicy: 'cache-and-network'},
+    },
   ),
   graphql<
     PrivateDeviceDetailSettingsProps,

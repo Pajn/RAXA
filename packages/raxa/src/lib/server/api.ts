@@ -39,7 +39,6 @@ export class ApiService extends Service {
           graphqlOptions: {
             schema,
             context,
-            // logFunction: log => this.log.debug('GraphQL', log),
           },
           subscriptionsEndpoint: `ws://localhost:9000/subscriptions`,
         },
