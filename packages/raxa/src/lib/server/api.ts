@@ -1,7 +1,7 @@
 import {execute} from 'graphql'
 import {graphiqlHapi, graphqlHapi} from 'graphql-server-hapi'
 import {subscribe} from 'graphql/subscription'
-import {Server, ServerRegisterPluginObject} from 'hapi'
+import {ResponseObject, Server, ServerRegisterPluginObject} from 'hapi'
 import fetch from 'node-fetch'
 import {Awaitable, Service} from 'raxa-common/cjs'
 import {SubscriptionServer} from 'subscriptions-transport-ws'
@@ -36,7 +36,11 @@ export class ApiService extends Service {
         plugin: graphqlHapi,
         options: {
           path: '/graphql',
-          graphqlOptions: {schema, context},
+          graphqlOptions: {
+            schema,
+            context,
+            // logFunction: log => this.log.debug('GraphQL', log),
+          },
           subscriptionsEndpoint: `ws://localhost:9000/subscriptions`,
         },
       } as ServerRegisterPluginObject<any>)
@@ -52,6 +56,16 @@ export class ApiService extends Service {
         },
       } as ServerRegisterPluginObject<any>)
 
+      server.events.on('request', (_, event) => {
+        if (event.error) {
+          this.log.error('Request error', event.error)
+        }
+      })
+      server.events.on('log', event => {
+        if (event.error) {
+          this.log.error('Request error', event.error)
+        }
+      })
       server.events.on('response', request => {
         this.log.debug(
           request.info.remoteAddress +
@@ -60,7 +74,7 @@ export class ApiService extends Service {
             ' ' +
             request.url.path +
             ' --> ' +
-            request.response!.statusCode,
+            (request.response as ResponseObject)!.statusCode,
         )
       })
 

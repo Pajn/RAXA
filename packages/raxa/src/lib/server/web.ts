@@ -1,3 +1,4 @@
+import Boom from 'boom'
 import {Server} from 'hapi'
 import inert from 'inert'
 import {Service} from 'raxa-common/cjs'
@@ -25,8 +26,12 @@ export class WebService extends Service {
 
       // return index.html for everything else
       server.ext('onPreResponse', (request, h) => {
-        const response = request.response
-        if (response.isBoom && response.output!.statusCode === 404) {
+        const response = request.response as Boom
+        if (
+          response &&
+          response.isBoom &&
+          response.output!.statusCode === 404
+        ) {
           return h.file('/app/web/build/index.html')
         }
 

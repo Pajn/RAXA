@@ -122,7 +122,7 @@ export class StorageService extends Service {
   public getState: () => State
 
   async start() {
-    this.store = createStore<State>(
+    this.store = createStore(
       combineReducers<State>({
         devices: deviceReducer,
         deviceClasses: deviceClassReducer,
