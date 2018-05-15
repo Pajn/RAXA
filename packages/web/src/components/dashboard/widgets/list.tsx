@@ -1,6 +1,8 @@
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {shadow} from 'material-definitions'
+import Icon from 'material-ui/Icon'
+import IconButton from 'material-ui/IconButton'
 import {ListSubheader} from 'material-ui/List'
 import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
 import React, {
@@ -25,6 +27,11 @@ import {CurrentlyPlayingWidget} from './currently-playing'
 import {DisplayWidget} from './display'
 import {LightWidget} from './light'
 import {ReceiverWidget} from './receiver'
+
+export type WidgetConfiguration = {
+  hidden: Array<string>
+  sortOrder: Array<string>
+}
 
 export const draggingContext = createContext({isDragging: false})
 
@@ -73,7 +80,6 @@ function sortByOrder<K, T extends {id: K}>(
 }
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
-  console.log('reorder', startIndex, endIndex)
   const result = Array.from(list)
   const [removed] = result.splice(startIndex, 1)
   result.splice(endIndex, 0, removed)
@@ -123,11 +129,15 @@ const DeviceWrapperContainer = glamorous.div<{
 const DeviceWrapper = ({
   children,
   style,
+  inEditMode,
+  isHidden,
   ...props
 }: {
   row: boolean
   big?: boolean
   border: boolean
+  inEditMode: boolean
+  isHidden: boolean
   children: ReactNode
   innerRef(element?: HTMLElement | null): any
 } & Partial<DraggableProvidedDraggableProps> &
@@ -139,6 +149,24 @@ const DeviceWrapper = ({
     }}
   >
     {children}
+    {inEditMode && (
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: `rgba(${
+            isHidden ? '150, 150, 150' : '255, 255, 255'
+          }, 0.7)`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1,
+        }}
+      />
+    )}
   </DeviceWrapperContainer>
 )
 
@@ -150,42 +178,52 @@ export type ListWidgetProps = WidgetProps<ListWidgetConfiguration> & {
   row?: true
   column?: true
   big?: true
-  sortOrder?: Array<string>
-  setSortOrder?: (sortOrder: Array<string>) => void
+  configuration?: WidgetConfiguration
+  setConfiguration: (config: Partial<WidgetConfiguration>) => void
   header?: string
 }
-export type ListWidgetPrivateProps = ListWidgetProps & {
+export type ListWidgetPrivateProps = Pick<
+  ListWidgetProps,
+  Exclude<keyof ListWidgetProps, 'configuration'>
+> & {
+  configuration: WidgetConfiguration
   row: boolean
   data: {devices?: Array<GraphQlDevice>}
   onSortEnd: (result: any) => void
   setData: (data: {devices?: Array<GraphQlDevice>}) => void
-  canSort: boolean
   disabledSort: Array<string>
   enableSort: (deviceId: string) => void
   disableSort: (deviceId: string) => void
+  inEditMode: boolean
+  startEditMode: (e: React.MouseEvent<HTMLElement>) => void
+  stopEditMode: (e: React.MouseEvent<HTMLElement>) => void
 }
 
 export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
   mapProps((props: ListWidgetProps) => ({
     ...props,
     row: props.row || !props.column,
+    configuration: Array.isArray(props.configuration)
+      ? {sortOrder: props.configuration, hidden: []}
+      : props.configuration || {sortOrder: [], hidden: []},
   })),
-  graphql(gql`
-    query($types: [String!], $interfaceIds: [String!]) {
-      devices(types: $types, interfaceIds: $interfaceIds) {
-        id
-        name
-        types
-        config
-        interfaceIds
-        status {
+  graphql(
+    gql`
+      query($types: [String!], $interfaceIds: [String!]) {
+        devices(types: $types, interfaceIds: $interfaceIds) {
           id
-          interfaceId
-          statusId
-          value
+          name
+          types
+          config
+          interfaceIds
+          status {
+            id
+            interfaceId
+            statusId
+            value
+          }
         }
       }
-    }
     `,
     {
       options: (props: ListWidgetProps) => ({
@@ -200,18 +238,28 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
   mapProps((props: ListWidgetPrivateProps) => ({
     ...props,
     data:
-      props.data.devices && props.sortOrder
+      props.data.devices && props.configuration
         ? {
             ...props.data,
-            devices: sortByOrder(props.sortOrder, props.data.devices),
+            devices: sortByOrder(
+              props.configuration.sortOrder,
+              props.data.devices,
+            ),
           }
         : props.data,
-    canSort: !!props.setSortOrder,
   })),
   withInnerState('data', 'setData'),
   withStateHandlers(
-    {disabledSort: [] as Array<string>},
+    {disabledSort: [] as Array<string>, inEditMode: false},
     {
+      startEditMode: () => (e: React.MouseEvent<HTMLElement>) => {
+        e.preventDefault()
+        e.stopPropagation()
+        return {inEditMode: true}
+      },
+      stopEditMode: () => () => ({
+        inEditMode: false,
+      }),
       disableSort: state => deviceId => ({
         disabledSort: [...state.disabledSort, deviceId],
       }),
@@ -224,25 +272,20 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
     onSortEnd: ({
       data,
       setData,
-      setSortOrder,
+      setConfiguration,
     }: ListWidgetPrivateProps) => result => {
-      if (setSortOrder) {
-        // dropped outside the list
-        if (!result.destination) {
-          return
-        }
-
-        console.log('result', result)
-        console.log('pre', data.devices!.map(d => d.name))
-        const sorted = reorder(
-          data.devices!,
-          result.source.index,
-          result.destination.index,
-        )
-        console.log('post', sorted.map(d => d.name))
-        setData({...data, devices: sorted})
-        setSortOrder(sorted.map(d => d.id))
+      // dropped outside the list
+      if (!result.destination) {
+        return
       }
+
+      const sorted = reorder(
+        data.devices!,
+        result.source.index,
+        result.destination.index,
+      )
+      setData({...data, devices: sorted})
+      setConfiguration({sortOrder: sorted.map(d => d.id)})
     },
   }),
 )
@@ -254,17 +297,26 @@ export const ListWidgetView = ({
   big,
   config: {interfaceIds},
   onSortEnd,
-  canSort,
   enableSort,
   disableSort,
   disabledSort,
+  inEditMode,
+  startEditMode,
+  stopEditMode,
+  configuration,
+  setConfiguration,
 }: ListWidgetPrivateProps) =>
   data.devices && data.devices.length > 0 ? (
-    <>
+    <div onContextMenu={startEditMode}>
       <DragDropContext onDragEnd={onSortEnd}>
         {header && (
-          <ListSubheader color="default" style={{zIndex: 2}}>
-            {header}
+          <ListSubheader color="default" style={{display: 'flex', zIndex: 2}}>
+            <span style={{flex: 1}}>{header}</span>
+            {inEditMode && (
+              <IconButton onClick={stopEditMode}>
+                <Icon>done</Icon>
+              </IconButton>
+            )}
           </ListSubheader>
         )}
         <Droppable
@@ -278,8 +330,14 @@ export const ListWidgetView = ({
               row={row}
             >
               {data
-                .devices!.map(
-                  (device): null | [boolean, ReactElement<any>] =>
+                .devices!.filter(
+                  device =>
+                    inEditMode || !configuration.hidden.includes(device.id),
+                )
+                .map(
+                  (
+                    device,
+                  ): null | [boolean, GraphQlDevice, ReactElement<any>] =>
                     device.interfaceIds
                       ? device.types!.includes(DeviceType.Thermometer) &&
                         (!interfaceIds ||
@@ -288,8 +346,8 @@ export const ListWidgetView = ({
                           ))
                         ? [
                             false,
+                            device,
                             <DisplayWidget
-                              key={device.id}
                               config={{
                                 deviceId: device.id,
                                 interfaceId: defaultInterfaces.Temperature.id,
@@ -302,8 +360,8 @@ export const ListWidgetView = ({
                           (!interfaceIds || interfaceIds.includes('Scenery'))
                           ? [
                               true,
+                              device,
                               <ButtonWidget
-                                key={device.id}
                                 config={{
                                   deviceId: device.id,
                                   interfaceId: 'Scenery',
@@ -316,8 +374,8 @@ export const ListWidgetView = ({
                               interfaceIds.includes('CurrentlyPlaying'))
                             ? [
                                 false,
+                                device,
                                 <CurrentlyPlayingWidget
-                                  key={device.id}
                                   config={{
                                     deviceId: device.id,
                                   }}
@@ -328,8 +386,8 @@ export const ListWidgetView = ({
                                 interfaceIds.includes('SonyReceiver'))
                               ? [
                                   false,
+                                  device,
                                   <ReceiverWidget
-                                    key={device.id}
                                     config={{
                                       deviceId: device.id,
                                     }}
@@ -346,8 +404,8 @@ export const ListWidgetView = ({
                                   ))
                                 ? [
                                     true,
+                                    device,
                                     <LightWidget
-                                      key={device.id}
                                       config={{deviceId: device.id}}
                                       enableSort={enableSort}
                                       disableSort={disableSort}
@@ -359,10 +417,14 @@ export const ListWidgetView = ({
                 .filter(innerWidget => innerWidget != null)
                 .map(
                   (
-                    [disableInteractiveElementBlocking, innerWidget]: any,
+                    [
+                      disableInteractiveElementBlocking,
+                      device,
+                      innerWidget,
+                    ]: any,
                     i,
                   ) => (
-                    <Hideable key={innerWidget.key!}>
+                    <Hideable key={device.id!}>
                       {(hideComponent, isHidden) =>
                         isHidden ? (
                           cloneElement(innerWidget, {
@@ -370,10 +432,10 @@ export const ListWidgetView = ({
                           })
                         ) : (
                           <Draggable
-                            draggableId={innerWidget.key! as string}
+                            draggableId={device.id}
                             index={i}
                             isDragDisabled={
-                              !canSort ||
+                              !inEditMode ||
                               disabledSort.includes(data.devices![i].id)
                             }
                             disableInteractiveElementBlocking={
@@ -389,6 +451,25 @@ export const ListWidgetView = ({
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                   style={dragContainerStyles(row)}
+                                  onClick={
+                                    inEditMode
+                                      ? e => {
+                                          e.stopPropagation()
+                                          setConfiguration({
+                                            hidden: configuration.hidden.includes(
+                                              device.id,
+                                            )
+                                              ? configuration.hidden.filter(
+                                                  d => d !== device.id,
+                                                )
+                                              : [
+                                                  ...configuration.hidden,
+                                                  device.id,
+                                                ],
+                                          })
+                                        }
+                                      : undefined
+                                  }
                                 >
                                   <DeviceWrapper
                                     row={row}
@@ -398,6 +479,11 @@ export const ListWidgetView = ({
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                     style={provided.draggableProps.style as any}
+                                    inEditMode={inEditMode}
+                                    isHidden={
+                                      inEditMode &&
+                                      configuration.hidden.includes(device.id)
+                                    }
                                   >
                                     {cloneElement(innerWidget, {hideComponent})}
                                   </DeviceWrapper>
@@ -414,7 +500,7 @@ export const ListWidgetView = ({
           )}
         </Droppable>
       </DragDropContext>
-    </>
+    </div>
   ) : null
 
 export const ListWidget: WidgetComponent<

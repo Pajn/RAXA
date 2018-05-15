@@ -4,7 +4,7 @@ import React from 'react'
 import {ContextActions} from 'react-material-app'
 import {connect} from 'react-redux'
 import {Action, action, createActions, createReducer} from 'redux-decorated'
-import {ListWidget} from '../dashboard/widgets/list'
+import {ListWidget, WidgetConfiguration} from '../dashboard/widgets/list'
 
 const Ui2Container = glamorous.div(
   {
@@ -21,29 +21,34 @@ const Ui2Container = glamorous.div(
 )
 
 export const actions = createActions({
-  sortedWidgets: {} as Action<{section: string; sortOrder: Array<string>}>,
+  configuredWidgets: {} as Action<{
+    section: string
+    configuration: Partial<WidgetConfiguration>
+  }>,
 })
 
 export const reducer = createReducer<{
   [section: string]: Array<string>
 }>({})
-  .when(actions.sortedWidgets, (state, {section, sortOrder}) => ({
+  .when(actions.configuredWidgets, (state, {section, configuration}) => ({
     ...state,
-    [section]: sortOrder,
+    [section]: {hidden: [], sortOrder: [], ...state[section], ...configuration},
   }))
   .build()
 
-const enhance = connect(state => ({sortOrders: state.mainScreen}))
+const enhance = connect(state => ({configurations: state.mainScreen}))
 
-export const Ui2View = ({sortOrders, dispatch}) => (
+export const Ui2View = ({configurations, dispatch}) => (
   <Ui2Container>
     <ContextActions contextActions={[{to: '/settings', icon: 'settings'}]} />
     <ListWidget
       header="Scenes"
       config={{interfaceIds: ['Scenery']}}
-      sortOrder={sortOrders.Scenes}
-      setSortOrder={sortOrder =>
-        dispatch(action(actions.sortedWidgets, {section: 'Scenes', sortOrder}))
+      configuration={configurations.Scenes}
+      setConfiguration={configuration =>
+        dispatch(
+          action(actions.configuredWidgets, {section: 'Scenes', configuration}),
+        )
       }
     />
     <ListWidget
@@ -57,10 +62,13 @@ export const Ui2View = ({sortOrders, dispatch}) => (
           defaultInterfaces.Color.id,
         ],
       }}
-      sortOrder={sortOrders.Lighting}
-      setSortOrder={sortOrder =>
+      configuration={configurations.Lighting}
+      setConfiguration={configuration =>
         dispatch(
-          action(actions.sortedWidgets, {section: 'Lighting', sortOrder}),
+          action(actions.configuredWidgets, {
+            section: 'Lighting',
+            configuration,
+          }),
         )
       }
     />
@@ -69,11 +77,26 @@ export const Ui2View = ({sortOrders, dispatch}) => (
       column
       big
       config={{interfaceIds: ['CurrentlyPlaying', 'SonyReceiver']}}
+      configuration={configurations.Media}
+      setConfiguration={configuration =>
+        dispatch(
+          action(actions.configuredWidgets, {section: 'Media', configuration}),
+        )
+      }
     />
     <ListWidget
       header="Temperature"
       column
       config={{interfaceIds: ['Temperature']}}
+      configuration={configurations.Temperature}
+      setConfiguration={configuration =>
+        dispatch(
+          action(actions.configuredWidgets, {
+            section: 'Temperature',
+            configuration,
+          }),
+        )
+      }
     />
   </Ui2Container>
 )
