@@ -101,6 +101,16 @@ const Container = glamorous.div<{row: boolean}>(({row}) => ({
   boxShadow: row ? 'none' : shadow[1].boxShadow,
 }))
 
+const ListHeader = glamorous(ListSubheader)(({theme}) => ({
+  '&&': {
+    display: 'flex',
+    zIndex: 2,
+    backgroundColor: theme.dark
+      ? theme.background.main
+      : theme.background.light,
+  },
+}))
+
 const dragContainerStyles = (row: boolean) => ({
   flexGrow: row ? 1 : undefined,
   flexBasis: row ? '25%' : undefined,
@@ -310,14 +320,14 @@ export const ListWidgetView = ({
     <div onContextMenu={startEditMode}>
       <DragDropContext onDragEnd={onSortEnd}>
         {header && (
-          <ListSubheader color="default" style={{display: 'flex', zIndex: 2}}>
+          <ListHeader color="default">
             <span style={{flex: 1}}>{header}</span>
             {inEditMode && (
               <IconButton onClick={stopEditMode}>
                 <Icon>done</Icon>
               </IconButton>
             )}
-          </ListSubheader>
+          </ListHeader>
         )}
         <Droppable
           droppableId={`droppable-${header}`}
