@@ -1,7 +1,13 @@
 import {execute} from 'graphql'
 import {graphiqlHapi, graphqlHapi} from 'graphql-server-hapi'
 import {subscribe} from 'graphql/subscription'
-import {ResponseObject, Server, ServerRegisterPluginObject} from 'hapi'
+import {
+  Request,
+  ResponseObject,
+  ResponseToolkit,
+  Server,
+  ServerRegisterPluginObject,
+} from 'hapi'
 import fetch from 'node-fetch'
 import {Awaitable, Service} from 'raxa-common/cjs'
 import {SubscriptionServer} from 'subscriptions-transport-ws'
@@ -77,44 +83,66 @@ export class ApiService extends Service {
         )
       })
 
+      async function pluginForwardHandler(
+        request: Request,
+        h: ResponseToolkit,
+      ) {
+        const {pluginId, path = ''} = request.params
+        const pluginDefinition = storage.getState().plugins[pluginId]
+        if (
+          pluginSupervisor.isRunning(pluginId) &&
+          pluginDefinition.httpForwarding !== undefined
+        ) {
+          const {port, basePath = ''} = pluginDefinition.httpForwarding
+          const response = await fetch(
+            `http://127.0.0.1:${port}${basePath}/${path}${request.url.search}`,
+            {
+              method: request.method.toUpperCase(),
+              headers: request.headers,
+              body: request.payload as any,
+              redirect: 'manual',
+            },
+          )
+          const responseObj = h
+            .response(await response.buffer())
+            .code(response.status)
+          response.headers.forEach((value, key) => {
+            if (
+              !['content-length', 'content-encoding', 'accept-ranges'].includes(
+                key,
+              )
+            ) {
+              responseObj.header(key, value)
+            }
+          })
+          return responseObj
+        } else {
+          return h
+            .response({
+              statusCode: 404,
+              error: 'Not Found',
+              message: 'Not Found',
+            })
+            .code(404)
+        }
+      }
+
       server.route({
         method: '*',
         path: '/plugin/{pluginId}/{path*}',
-        handler: async (request, reply) => {
-          const {pluginId, path} = request.params
-          const pluginDefinition = storage.getState().plugins[pluginId]
-          if (
-            pluginSupervisor.isRunning(pluginId) &&
-            pluginDefinition.httpForwarding !== undefined
-          ) {
-            const {port, basePath = ''} = pluginDefinition.httpForwarding
-            const response = await fetch(
-              `http://127.0.0.1:${port}${basePath}/${path}${
-                request.url.search
-              }`,
-              {
-                method: request.method.toUpperCase(),
-                headers: request.headers,
-                redirect: 'manual',
-              },
-            )
-            const responseObj = reply
-              .response(response.buffer())
-              .code(response.status)
-            response.headers.forEach((value, key) => {
-              responseObj.header(key, value)
-            })
-            return responseObj
-          } else {
-            return reply
-              .response({
-                statusCode: 404,
-                error: 'Not Found',
-                message: 'Not Found',
-              })
-              .code(404)
-          }
+        handler: pluginForwardHandler,
+        options: {
+          payload: {
+            output: 'data',
+            parse: false,
+          },
         },
+      })
+
+      server.route({
+        method: 'GET',
+        path: '/plugin/{pluginId}/{path*}',
+        handler: pluginForwardHandler,
       })
 
       await server.start()
