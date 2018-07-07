@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
-import Icon from 'material-ui/Icon'
-import IconButton from 'material-ui/IconButton'
+import Icon from '@material-ui/core/Icon'
+import IconButton from '@material-ui/core/IconButton'
 import {
   DeviceStatus,
   GraphQlDevice,

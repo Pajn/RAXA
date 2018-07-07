@@ -1,12 +1,12 @@
+import AppBar from '@material-ui/core/AppBar'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
+import Tab from '@material-ui/core/Tab'
+import Tabs from '@material-ui/core/Tabs'
 import gql from 'graphql-tag'
-import AppBar from 'material-ui/AppBar'
-import List, {
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from 'material-ui/List'
-import {LinearProgress} from 'material-ui/Progress'
-import Tabs, {Tab} from 'material-ui/Tabs'
 import {PluginConfiguration} from 'raxa-common'
 import React, {Component} from 'react'
 import {DataProps, graphql} from 'react-apollo'
@@ -41,9 +41,12 @@ export const installedPluginsEnhance = compose<
   InstalledPluginsPrivateProps,
   InstalledPluginsProps
 >(
-  connect(undefined, (dispatch): Partial<InstalledPluginsPrivateProps> => ({
-    dispatch,
-  })),
+  connect(
+    undefined,
+    (dispatch): Partial<InstalledPluginsPrivateProps> => ({
+      dispatch,
+    }),
+  ),
   graphql(listPluginsQuery),
   graphql<InstalledPluginsPrivateProps>(
     gql`
@@ -124,9 +127,12 @@ export const AvaliblePluginsEnhance = compose<
   AvaliblePluginsPrivateProps,
   AvaliblePluginsProps
 >(
-  connect(undefined, (dispatch): Partial<AvaliblePluginsPrivateProps> => ({
-    dispatch,
-  })),
+  connect(
+    undefined,
+    (dispatch): Partial<AvaliblePluginsPrivateProps> => ({
+      dispatch,
+    }),
+  ),
   graphql(gql`
     query getPlugins {
       avaliblePlugins {

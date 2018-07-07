@@ -1,7 +1,7 @@
+import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
+import Slider from '@material-ui/lab/Slider'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
-import Slider from 'material-ui-old/Slider'
-import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
 import {
   DeviceStatus,
   GraphQlDevice,
@@ -18,6 +18,7 @@ import {
   withStateHandlers,
 } from 'recompose'
 import {updateIn} from 'redux-decorated'
+import {row} from 'style-definitions'
 import {
   UpdateDeviceStatusInjectedProps,
   updateDeviceStatus,
@@ -211,16 +212,23 @@ export const LightWidgetView = ({
             <NameRow>
               <DeviceName>{device.name}</DeviceName>
               <DetailControl>
-                <Slider
-                  style={{paddingRight: 16, height: 40}}
-                  value={+status.Dimmer.value}
-                  onChange={(_, value) => {
-                    setDimmer(value)
+                <div
+                  style={{
+                    ...row({vertical: 'center'}),
+                    paddingRight: 16,
+                    height: 40,
                   }}
-                  onDragStop={() => setTimeout(() => setShowDetail(false))}
-                  min={0}
-                  max={100}
-                />
+                >
+                  <Slider
+                    value={+status.Dimmer.value}
+                    onChange={(_, value) => {
+                      setDimmer(value)
+                    }}
+                    onDragEnd={() => setTimeout(() => setShowDetail(false))}
+                    min={0}
+                    max={100}
+                  />
+                </div>
               </DetailControl>
             </NameRow>
           ) : (

@@ -1,4 +1,4 @@
-import Card from 'material-ui/Card'
+import Card from '@material-ui/core/Card'
 import {Property} from 'raxa-common'
 import React from 'react'
 import {compose, withHandlers, withState} from 'recompose'

@@ -1,5 +1,5 @@
+import ListItem from '@material-ui/core/ListItem'
 import gql from 'graphql-tag'
-import {ListItem} from 'material-ui/List'
 import {Interface, defaultInterfaces} from 'raxa-common'
 import React from 'react'
 import {graphql} from 'react-apollo'

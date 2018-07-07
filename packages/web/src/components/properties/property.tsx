@@ -1,4 +1,4 @@
-import {ListSubheader} from 'material-ui/List'
+import ListSubheader from '@material-ui/core/ListSubheader'
 import {
   ActionProperty,
   ArrayProperty,

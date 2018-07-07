@@ -1,8 +1,10 @@
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import ListSubheader from '@material-ui/core/ListSubheader'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {title} from 'material-definitions'
-import List, {ListItem, ListItemText} from 'material-ui/List'
-import ListSubheader from 'material-ui/List/ListSubheader'
 import {flatten} from 'ramda'
 import {
   Device,

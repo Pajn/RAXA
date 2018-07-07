@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {subheading1} from 'material-definitions'
-import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
+import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
 import {
   DeviceStatus,
   GraphQlDevice,

@@ -1,9 +1,9 @@
+import Icon from '@material-ui/core/Icon'
+import IconButton from '@material-ui/core/IconButton'
+import ListSubheader from '@material-ui/core/ListSubheader'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {shadow} from 'material-definitions'
-import Icon from 'material-ui/Icon'
-import IconButton from 'material-ui/IconButton'
-import {ListSubheader} from 'material-ui/List'
 import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
 import React, {
   ReactElement,

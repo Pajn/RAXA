@@ -1,6 +1,6 @@
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
-import Button from 'material-ui/Button'
+import Button from '@material-ui/core/Button'
 import {defaultInterfaces} from 'raxa-common'
 import {
   DeviceStatus,

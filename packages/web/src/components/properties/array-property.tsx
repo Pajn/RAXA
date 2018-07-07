@@ -1,10 +1,10 @@
+import Button from '@material-ui/core/Button'
+import Card from '@material-ui/core/Card'
+import Divider from '@material-ui/core/Divider'
+import Icon from '@material-ui/core/Icon'
+import IconButton from '@material-ui/core/IconButton'
 import glamorous from 'glamorous'
 import {red} from 'material-definitions'
-import Button from 'material-ui/Button'
-import Card from 'material-ui/Card'
-import Divider from 'material-ui/Divider'
-import Icon from 'material-ui/Icon'
-import IconButton from 'material-ui/IconButton'
 import {insert, remove} from 'ramda'
 import {
   ArrayProperty,
@@ -66,7 +66,7 @@ const UndoContainer = glamorous.div({
   ...fadeIn(),
 })
 
-const UndoDelete = ({item: _, onUndo}) => (
+const UndoDelete = ({onUndo}) => (
   <UndoContainer>
     <Button onClick={onUndo} style={{color: 'white'}}>
       Undo
@@ -206,7 +206,6 @@ export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
                       {undoItem &&
                         undoItem.index === i && (
                           <UndoDelete
-                            item={undoItem}
                             onUndo={() => {
                               onChange(
                                 insert(undoItem.index, undoItem.item, value),

@@ -1,6 +1,6 @@
 import glamorous from 'glamorous'
 import {title} from 'material-definitions'
-import Card from 'material-ui/Card'
+import Card from '@material-ui/core/Card'
 import React from 'react'
 import {compose} from 'recompose'
 import {connectState} from '../../../with-lazy-reducer'

@@ -1,10 +1,10 @@
+import Icon from '@material-ui/core/Icon'
+import IconButton from '@material-ui/core/IconButton'
+import MUIListSubheader from '@material-ui/core/ListSubheader'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {filter, first, flatMap, map} from 'iterates/lib/sync'
 import {title} from 'material-definitions'
-import Icon from 'material-ui/Icon'
-import IconButton from 'material-ui/IconButton'
-import MUIListSubheader from 'material-ui/List/ListSubheader'
 import {GraphQlDevice} from 'raxa-common'
 import React from 'react'
 import {DataProps, graphql} from 'react-apollo'
@@ -19,7 +19,7 @@ import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
 import {DeviceDetailSettings} from './device-detail'
 
-declare module 'material-ui/IconButton/IconButton' {
+declare module '@material-ui/core/IconButton/IconButton' {
   interface IconButtonProps {
     to?: string
   }

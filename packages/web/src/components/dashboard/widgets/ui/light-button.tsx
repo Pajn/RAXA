@@ -1,8 +1,8 @@
 import glamorous from 'glamorous'
 import {purple} from 'material-definitions'
-import {ButtonProps} from 'material-ui/Button'
-import ButtonBase from 'material-ui/ButtonBase/ButtonBase'
-import Paper, {PaperProps} from 'material-ui/Paper/Paper'
+import {ButtonProps} from '@material-ui/core/Button'
+import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
+import Paper, {PaperProps} from '@material-ui/core/Paper/Paper'
 import React from 'react'
 
 export const CircleButton = glamorous(

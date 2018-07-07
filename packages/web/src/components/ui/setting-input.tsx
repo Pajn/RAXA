@@ -1,5 +1,7 @@
-import Slider from 'material-ui-old/Slider'
-import List, {ListItem, ListItemText} from 'material-ui/List'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import Slider from '@material-ui/lab/Slider'
 import React from 'react'
 import {Checkbox, Select, TextField} from 'react-material-app'
 import {compose, withState} from 'recompose'
@@ -13,7 +15,7 @@ const autoRound = (min: number, max: number, value: number) =>
   round(Math.max(2 - Math.log10(max - min), 0), value)
 
 const asPercent = (min: number, max: number, value: number) =>
-  Math.round(100 * (+value - min) / (max - min))
+  Math.round((100 * (+value - min)) / (max - min))
 
 export type SettingInputProps = SettingValueProps & {
   type?: 'number'

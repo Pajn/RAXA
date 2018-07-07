@@ -46,7 +46,7 @@ const enhance = compose<FullCellProps, FullCellProps>(
         width * state.gridSettings.cellWidth + (width - 1) * state.gridSize.gap,
       height:
         height * state.gridSettings.cellHeight +
-          (height - 1) * state.gridSize.gap,
+        (height - 1) * state.gridSize.gap,
     }
   }),
 )
@@ -56,8 +56,8 @@ export const CellView = ({
   y,
   width,
   height,
-  ...htmlProps,
-}: CellProps & React.HTMLProps<HTMLDivElement>) =>
+  ...htmlProps
+}: CellProps & React.HTMLProps<HTMLDivElement>) => (
   <div
     {...htmlProps}
     style={{
@@ -69,5 +69,6 @@ export const CellView = ({
       height,
     }}
   />
+)
 
 export const Cell = enhance(CellView)

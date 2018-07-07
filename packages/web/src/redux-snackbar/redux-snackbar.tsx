@@ -1,4 +1,4 @@
-import Snackbar from 'material-ui/Snackbar'
+import Snackbar from '@material-ui/core/Snackbar'
 import React from 'react'
 import {connect} from 'react-redux'
 import {action} from 'redux-decorated'

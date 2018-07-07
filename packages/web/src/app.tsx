@@ -1,10 +1,7 @@
+import {purple, teal} from '@material-ui/core/colors'
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles'
 import glamorous, {ThemeProvider} from 'glamorous'
 import {grey} from 'material-definitions'
-import MuiOldThemeProvider from 'material-ui-old/styles/MuiThemeProvider'
-import darkBaseTheme from 'material-ui-old/styles/baseThemes/darkBaseTheme'
-import getMuiOldTheme from 'material-ui-old/styles/getMuiTheme'
-import {purple, teal} from 'material-ui/colors'
-import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
 import React from 'react'
 import {ApolloProvider} from 'react-apollo'
 import {Scaffold} from 'react-material-app'
@@ -48,16 +45,6 @@ function createTheme(theme: 'white' | 'dark') {
           },
         },
       }),
-      oldMuiTheme: getMuiOldTheme({
-        palette: {
-          primary3Color: purple[100],
-          primary1Color: purple[500],
-          primary2Color: purple[700],
-          accent1Color: teal[100],
-          accent2Color: teal[500],
-          accent3Color: teal[700],
-        },
-      }),
     }
   } else {
     return {
@@ -91,19 +78,6 @@ function createTheme(theme: 'white' | 'dark') {
           },
         },
       }),
-
-      oldMuiTheme: getMuiOldTheme({
-        ...darkBaseTheme,
-        palette: {
-          ...darkBaseTheme.palette,
-          primary3Color: '#B2DFDB',
-          primary1Color: '#00796B',
-          primary2Color: '#004D40',
-          accent1Color: '#F8BBD0',
-          accent2Color: '#D81B60',
-          accent3Color: '#880E4F',
-        },
-      }),
     }
   }
 }
@@ -120,24 +94,22 @@ export const App = () => (
     <Provider store={store}>
       <LocalSettingsProvider store={localSettingsStore}>
         {({theme: themeName}) => {
-          const {oldMuiTheme, muiTheme, theme} = createTheme(themeName)
+          const {muiTheme, theme} = createTheme(themeName)
 
           return (
-            <MuiOldThemeProvider theme={oldMuiTheme}>
-              <MuiThemeProvider theme={muiTheme}>
-                <ThemeProvider theme={theme}>
-                  <BrowserRouter>
-                    <Container>
-                      <Scaffold appName="Raxa">
-                        <Route exact path="/" component={Ui2} />
-                        <Route path="/settings" component={Settings} />
-                        <ReduxSnackbar />
-                      </Scaffold>
-                    </Container>
-                  </BrowserRouter>
-                </ThemeProvider>
-              </MuiThemeProvider>
-            </MuiOldThemeProvider>
+            <MuiThemeProvider theme={muiTheme}>
+              <ThemeProvider theme={theme}>
+                <BrowserRouter>
+                  <Container>
+                    <Scaffold appName="Raxa">
+                      <Route exact path="/" component={Ui2} />
+                      <Route path="/settings" component={Settings} />
+                      <ReduxSnackbar />
+                    </Scaffold>
+                  </Container>
+                </BrowserRouter>
+              </ThemeProvider>
+            </MuiThemeProvider>
           )
         }}
       </LocalSettingsProvider>
