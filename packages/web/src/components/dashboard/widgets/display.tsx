@@ -10,7 +10,6 @@ import {
 import React from 'react'
 import {DataProps, graphql} from 'react-apollo'
 import {compose, mapProps, withState} from 'recompose'
-import styled from 'styled-components'
 import {WidgetComponent, WidgetProps} from '../widget'
 
 const Container = glamorous.div({
@@ -21,12 +20,6 @@ const StatusRow = glamorous.div({
   alignItems: 'center',
   height: 40,
 })
-const DeviceName = styled.span`
-  flex: 1;
-`
-const StatusName = styled.span``
-const Value = styled.span``
-const Unit = styled.span``
 
 export type DisplayWidgetConfiguration = {
   deviceId: string
@@ -116,16 +109,16 @@ export const DisplayWidgetView = ({
 }: PrivateDisplayWidgetProps) => (
   <Container>
     <StatusRow>
-      <DeviceName>{device && device.name}</DeviceName>
-      <Value>{status && status.value}</Value>
-      <Unit>
+      <span style={{flex: 1}}>{device && device.name}</span>
+      <span>{status && status.value}</span>
+      <span>
         {statusDefinition &&
           statusDefinition.unit &&
           ` ${statusDefinition.unit}`}
-      </Unit>
+      </span>
     </StatusRow>
     <div>
-      <StatusName>{statusDefinition && statusDefinition.name}</StatusName>
+      <span>{statusDefinition && statusDefinition.name}</span>
     </div>
   </Container>
 )

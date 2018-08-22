@@ -1,7 +1,7 @@
+import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {subheading1} from 'material-definitions'
-import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
 import {
   DeviceStatus,
   GraphQlDevice,
@@ -11,7 +11,6 @@ import {
 import React from 'react'
 import {DataProps, graphql} from 'react-apollo'
 import {compose, mapProps} from 'recompose'
-import styled from 'styled-components'
 import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
 import {draggingContext} from './list'
@@ -33,9 +32,6 @@ const Container = glamorous(ButtonBase)({
     ...subheading1,
   },
 })
-const DeviceName = styled.span`
-  flex: 1;
-`
 
 export type ButtonWidgetConfiguration = {
   deviceId: string
@@ -99,7 +95,7 @@ export const ButtonWidgetView = ({
           })
         }
       >
-        <DeviceName>{device && device.name}</DeviceName>
+        <span style={{flex: 1}}>{device && device.name}</span>
         {children}
       </Container>
     )}
