@@ -1,6 +1,6 @@
+import Button from '@material-ui/core/Button'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
-import Button from '@material-ui/core/Button'
 import {defaultInterfaces} from 'raxa-common'
 import {
   DeviceStatus,
@@ -10,7 +10,7 @@ import {
 } from 'raxa-common/lib/entities'
 import React from 'react'
 import {DataProps, graphql} from 'react-apollo'
-import {ProgressButton} from 'react-material-app'
+import {ProgressButton} from 'react-material-app/lib/ProgressButton'
 import {compose, mapProps, withHandlers} from 'recompose'
 import {row} from 'style-definitions'
 import {

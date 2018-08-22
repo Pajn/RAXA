@@ -4,15 +4,21 @@ import glamorous, {ThemeProvider} from 'glamorous'
 import {grey} from 'material-definitions'
 import React from 'react'
 import {ApolloProvider} from 'react-apollo'
-import {Scaffold} from 'react-material-app'
+import Loadable from 'react-loadable'
+import {Scaffold} from 'react-material-app/lib/scaffold/Scaffold'
 import {Provider} from 'react-redux'
 import {Route} from 'react-router'
 import {BrowserRouter} from 'react-router-dom'
-import {Settings} from './components/settings/settings'
 import {Ui2} from './components/ui2/main'
 import {LocalSettingsProvider, localSettingsStore} from './lib/local-settings'
 import {client, store} from './lib/store'
 import {ReduxSnackbar} from './redux-snackbar/redux-snackbar'
+
+export const LazySettings = Loadable({
+  loader: () =>
+    import('./components/settings/settings').then(({Settings}) => Settings),
+  loading: () => null,
+})
 
 function createTheme(theme: 'white' | 'dark') {
   if (theme === 'white') {
@@ -103,7 +109,7 @@ export const App = () => (
                   <Container>
                     <Scaffold appName="Raxa">
                       <Route exact path="/" component={Ui2} />
-                      <Route path="/settings" component={Settings} />
+                      <Route path="/settings" component={LazySettings} />
                       <ReduxSnackbar />
                     </Scaffold>
                   </Container>

@@ -10,7 +10,7 @@ import {
 } from 'raxa-common'
 import React from 'react'
 import {DataProps, graphql} from 'react-apollo'
-import {Switch} from 'react-material-app'
+import {Switch, SwitchProps} from 'react-material-app/lib/inputs/Switch'
 import {
   compose,
   mapProps,
@@ -60,7 +60,7 @@ const DeviceName = glamorous.span({
 const DetailControl = glamorous.div({
   flex: 10,
 })
-const PowerSwitch = glamorous(Switch)({
+const PowerSwitch = glamorous<SwitchProps, {}>(Switch as any)({
   flexShrink: 0,
 })
 
@@ -83,7 +83,7 @@ export type PrivateLightWidgetProps = LightWidgetProps &
     status?: {[id: string]: DeviceStatus}
     showDetail: boolean
     setShowDetail: (showDetail: boolean) => void
-    setDimmer: (value: string) => void
+    setDimmer: (value: number) => void
     setColor: (value: number) => void
     deviceId: string
   }

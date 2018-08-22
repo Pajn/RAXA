@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import {DeviceType, defaultInterfaces} from 'raxa-common'
 import React from 'react'
-import {ContextActions} from 'react-material-app'
+import {ContextActions} from 'react-material-app/lib/scaffold/ContextActions'
 import {connect} from 'react-redux'
 import {Action, action, createActions, createReducer} from 'redux-decorated'
 import {ListWidget, WidgetConfiguration} from '../dashboard/widgets/list'

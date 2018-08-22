@@ -4,16 +4,20 @@ import {ComponentEnhancer, wrapDisplayName} from 'recompose'
 import ResizeObserverLite from 'resize-observer-lite'
 
 export type Size = {width: number; height: number}
+export type SizeProps = {size: Size; ref: (element?: Element) => void}
 export const defaultMapSizeToProps = (
   size: Size | undefined,
   ref: (element?: Element) => void,
-): {size?: Size; ref: (element?: Element) => void} => ({size, ref})
+): {size: Size; ref: (element?: Element) => void} => ({
+  size: size || {width: 0, height: 0},
+  ref,
+})
 
 export function withSize<
   TOutter,
   TSize = {size: Size; ref: (element?: Element) => void}
 >({
-  mapSizeToProps = defaultMapSizeToProps,
+  mapSizeToProps = defaultMapSizeToProps as any,
 }: {
   mapSizeToProps?: (
     size: Size | undefined,

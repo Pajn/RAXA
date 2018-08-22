@@ -211,7 +211,7 @@ export const SettingSliderView = ({
           <Slider
             value={(tmpValue === undefined ? +value : tmpValue) || 0}
             onChange={(_, value) => setTmpValue(value)}
-            onDragStop={() => {
+            onDragEnd={() => {
               setTmpValue(undefined)
               onChange(tmpValue)
             }}
@@ -220,6 +220,7 @@ export const SettingSliderView = ({
             step={step}
           />
         }
+        disableTypography
       />
     </ListItem>
   )
