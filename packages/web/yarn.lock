@@ -603,7 +603,7 @@
   dependencies:
     regenerator-runtime "^0.12.0"
 
-"@babel/runtime@^7.0.0-rc.2":
+"@babel/runtime@^7.0.0-rc.1", "@babel/runtime@^7.0.0-rc.2":
   version "7.0.0-rc.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0-rc.2.tgz#63082909bd27c39f92c27c641f278389ad30a478"
   dependencies:
@@ -657,7 +657,7 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
-"@material-ui/core@1.5.1", "@material-ui/core@^1.5.0", "@material-ui/core@^1.5.1":
+"@material-ui/core@1.5.1", "@material-ui/core@^1.5.1":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-1.5.1.tgz#cb00cb934447ae688e08129f1dab55f54d29d87a"
   dependencies:
@@ -689,7 +689,7 @@
     recompose "^0.28.0"
     warning "^4.0.1"
 
-"@material-ui/icons@2.0.3", "@material-ui/icons@^2.0.2", "@material-ui/icons@^2.0.3":
+"@material-ui/icons@2.0.3", "@material-ui/icons@^2.0.3":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@material-ui/icons/-/icons-2.0.3.tgz#d3da9d6e31b1adfbc48efe33c7cb75b32b784096"
   dependencies:
@@ -791,10 +791,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/prop-types@^15.5.2":
-  version "15.5.2"
-  resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.2.tgz#3c6b8dceb2906cc87fe4358e809f9d20c8d59be1"
-
 "@types/ramda@^0.25.19":
   version "0.25.28"
   resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.25.28.tgz#a8c021852e3fabae23c84b80bb65516f2352279d"
@@ -815,7 +811,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@16.0.7", "@types/react-dom@^16.0.4", "@types/react-dom@^16.0.7":
+"@types/react-dom@16.0.7", "@types/react-dom@^16.0.7":
   version "16.0.7"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.7.tgz#54d0f867a76b90597e8432030d297982f25c20ba"
   dependencies:
@@ -857,14 +853,14 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@16.4.11", "@types/react@^16.0.16", "@types/react@^16.3.14", "@types/react@^16.4.11":
+"@types/react@*", "@types/react@16.4.11", "@types/react@^16.0.16", "@types/react@^16.4.11":
   version "16.4.11"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.11.tgz#330f3d864300f71150dc2d125e48644c098f8770"
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/recompose@0.26.4", "@types/recompose@^0.26.0", "@types/recompose@^0.26.1":
+"@types/recompose@0.26.4", "@types/recompose@^0.26.0", "@types/recompose@^0.26.4":
   version "0.26.4"
   resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.26.4.tgz#93dd6c4e28857cd799e9a807a470f66a40c49c3f"
   dependencies:
@@ -8426,16 +8422,17 @@ react-loadable@^5.5.0:
   dependencies:
     prop-types "^15.5.0"
 
-react-material-app@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/react-material-app/-/react-material-app-0.2.3.tgz#e62ff7cfe779da2ab0064cf4ad4d3938e8e6f968"
+react-material-app@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/react-material-app/-/react-material-app-0.2.4.tgz#53c799713b62f0fdbe7c1e5b83f7e687302a0f2c"
   dependencies:
-    "@material-ui/core" "^1.5.0"
-    "@material-ui/icons" "^2.0.2"
-    "@types/prop-types" "^15.5.2"
-    "@types/react" "^16.3.14"
-    "@types/react-dom" "^16.0.4"
-    "@types/recompose" "^0.26.1"
+    "@babel/runtime" "^7.0.0-rc.1"
+    "@material-ui/core" "^1.5.1"
+    "@material-ui/icons" "^2.0.3"
+    "@types/prop-types" "^15.5.5"
+    "@types/react" "^16.4.11"
+    "@types/react-dom" "^16.0.7"
+    "@types/recompose" "^0.26.4"
     "@types/webpack-env" "^1.13.6"
     deep-equal "^1.0.1"
     glamorous "^4.11.4"
@@ -8443,7 +8440,7 @@ react-material-app@^0.2.3:
     material-definitions "^0.3.3"
     react-router "^4.2.0"
     react-with-media "^0.4.2"
-    recompose "^0.27.0"
+    recompose "^0.28.2"
     style-definitions "^0.1.7"
 
 react-motion@^0.5.2:
@@ -8640,17 +8637,6 @@ recompose@^0.26.0:
     change-emitter "^0.1.2"
     fbjs "^0.8.1"
     hoist-non-react-statics "^2.3.1"
-    symbol-observable "^1.0.4"
-
-recompose@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.27.0.tgz#8230ebd651bf1159097006f79083fe224b1501cf"
-  dependencies:
-    babel-runtime "^6.26.0"
-    change-emitter "^0.1.2"
-    fbjs "^0.8.1"
-    hoist-non-react-statics "^2.3.1"
-    react-lifecycles-compat "^3.0.2"
     symbol-observable "^1.0.4"
 
 recompose@^0.28.0, recompose@^0.28.2:
