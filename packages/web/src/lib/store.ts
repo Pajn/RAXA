@@ -5,6 +5,7 @@ import {BatchHttpLink} from 'apollo-link-batch-http'
 import {onError} from 'apollo-link-error'
 import {WebSocketLink} from 'apollo-link-ws'
 import {getMainDefinition} from 'apollo-utilities'
+import {toIdValue} from 'apollo-utilities'
 import {OperationDefinitionNode} from 'graphql'
 import gql from 'graphql-tag'
 import {combineReducers, compose, createStore} from 'redux'
@@ -47,6 +48,17 @@ const link = split(
   httpLink,
 )
 
+const cache = new InMemoryCache({
+  cacheRedirects: {
+    Query: {
+      device: (_, args) =>
+        toIdValue(
+          cache.config.dataIdFromObject({__typename: 'Device', id: args.id}),
+        ),
+    },
+  },
+})
+
 export const client = new ApolloClient({
   link: ApolloLink.from([
     onError(({graphQLErrors, networkError}) => {
@@ -60,7 +72,7 @@ export const client = new ApolloClient({
     }),
     link,
   ]),
-  cache: new InMemoryCache(),
+  cache,
 })
 
 const reducer = combineReducers({
