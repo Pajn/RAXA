@@ -3,6 +3,7 @@ import IconButton from '@material-ui/core/IconButton'
 import ListSubheader from '@material-ui/core/ListSubheader'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
+import loadable from 'loadable-components'
 import {shadow} from 'material-definitions'
 import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
 import React, {
@@ -11,13 +12,10 @@ import React, {
   cloneElement,
   createContext,
 } from 'react'
-import {graphql} from 'react-apollo'
+import {graphql} from 'react-apollo/graphql'
 import {
-  DragDropContext,
-  Draggable,
   DraggableProvidedDragHandleProps,
   DraggableProvidedDraggableProps,
-  Droppable,
 } from 'react-beautiful-dnd'
 import {compose, mapProps, withHandlers, withStateHandlers} from 'recompose'
 import {withInnerState} from '../../../with-lazy-reducer'
@@ -27,6 +25,47 @@ import {CurrentlyPlayingWidget} from './currently-playing'
 import {DisplayWidget} from './display'
 import {LightWidget} from './light'
 import {ReceiverWidget} from './receiver'
+
+const LazyDragDropContext = loadable(
+  () => import('react-beautiful-dnd').then(module => module.DragDropContext),
+  {
+    render: ({Component, loading, ownProps}) => {
+      if (loading) return (ownProps as any).children
+      return <Component {...ownProps} />
+    },
+  },
+)
+const LazyDraggable = loadable(
+  () => import('react-beautiful-dnd').then(module => module.Draggable),
+  {
+    render: ({Component, loading, ownProps}) => {
+      if (loading)
+        return ownProps.children(
+          {
+            draggableProps: {},
+            dragHandleProps: {},
+          } as any,
+          {isDragging: false},
+        )
+      return <Component {...ownProps} />
+    },
+  },
+)
+const LazyDroppable = loadable(
+  () => import('react-beautiful-dnd').then(module => module.Droppable),
+  {
+    render: ({Component, loading, ownProps}) => {
+      if (loading)
+        return ownProps.children(
+          {
+            droppableProps: {},
+          } as any,
+          {isDraggingOver: false},
+        )
+      return <Component {...ownProps} />
+    },
+  },
+)
 
 export type WidgetConfiguration = {
   hidden: Array<string>
@@ -318,7 +357,7 @@ export const ListWidgetView = ({
 }: ListWidgetPrivateProps) =>
   data.devices && data.devices.length > 0 ? (
     <div onContextMenu={startEditMode}>
-      <DragDropContext onDragEnd={onSortEnd}>
+      <LazyDragDropContext onDragEnd={onSortEnd}>
         {header && (
           <ListHeader color="default">
             <span style={{flex: 1}}>{header}</span>
@@ -329,7 +368,7 @@ export const ListWidgetView = ({
             )}
           </ListHeader>
         )}
-        <Droppable
+        <LazyDroppable
           droppableId={`droppable-${header}`}
           direction={row ? 'horizontal' : 'vertical'}
         >
@@ -441,7 +480,7 @@ export const ListWidgetView = ({
                             hideComponent,
                           })
                         ) : (
-                          <Draggable
+                          <LazyDraggable
                             draggableId={device.id}
                             index={i}
                             isDragDisabled={
@@ -500,7 +539,7 @@ export const ListWidgetView = ({
                                 </div>
                               </draggingContext.Provider>
                             )}
-                          </Draggable>
+                          </LazyDraggable>
                         )
                       }
                     </Hideable>
@@ -508,8 +547,8 @@ export const ListWidgetView = ({
                 )}
             </Container>
           )}
-        </Droppable>
-      </DragDropContext>
+        </LazyDroppable>
+      </LazyDragDropContext>
     </div>
   ) : null
 

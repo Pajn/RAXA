@@ -8,7 +8,8 @@ import {
   Status,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {DataProps, graphql} from 'react-apollo'
+import {graphql} from 'react-apollo/graphql'
+import {DataProps} from 'react-apollo/types'
 import {compose, mapProps, withState} from 'recompose'
 import {WidgetComponent, WidgetProps} from '../widget'
 

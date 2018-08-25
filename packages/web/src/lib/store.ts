@@ -10,7 +10,7 @@ import gql from 'graphql-tag'
 import {combineReducers, compose, createStore} from 'redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
 import {reducer as mainScreenReducer} from '../components/ui2/main'
-import {snackbarReducer} from '../redux-snackbar/reducer'
+import {snackbarReducer} from '../redux-snackbar'
 
 const ssl = location.protocol === 'https:'
 const port =
@@ -18,14 +18,16 @@ const port =
     ? location.port && `:${location.port}`
     : `:${ssl ? 9001 : 9000}`
 
+const host = localStorage.getItem('debug:host') || `${location.hostname}${port}`
+
 // Create an http link:
 const httpLink = new BatchHttpLink({
-  uri: `${ssl ? 'https' : 'http'}://${location.hostname}${port}/graphql`,
+  uri: `${ssl ? 'https' : 'http'}://${host}/graphql`,
 })
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `${ssl ? 'wss' : 'ws'}://${location.hostname}${port}/subscriptions`,
+  uri: `${ssl ? 'wss' : 'ws'}://${host}/subscriptions`,
   options: {
     reconnect: true,
   },
@@ -70,7 +72,9 @@ const composeEnhancers =
   (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 export const store = createStore(reducer, {}, composeEnhancers(autoRehydrate()))
 
-persistStore(store)
+persistStore(store, {
+  whitelist: ['mainScreen'],
+})
 
 // Subscribe to all status updates, Apollo will automatically update the store using the id.
 client

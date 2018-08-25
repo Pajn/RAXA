@@ -1,7 +1,7 @@
 import glamorous from 'glamorous'
 import React from 'react'
-import {Section} from 'react-material-app'
 import {DelayedCircularProgress} from 'react-material-app/lib/ProgressButton'
+import {Section} from 'react-material-app/lib/scaffold/Section'
 import {
   Route,
   RouteComponentProps,

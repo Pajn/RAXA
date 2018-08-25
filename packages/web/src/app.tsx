@@ -1,10 +1,10 @@
 import {purple, teal} from '@material-ui/core/colors'
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles'
 import glamorous, {ThemeProvider} from 'glamorous'
+import loadable from 'loadable-components'
 import {grey} from 'material-definitions'
 import React from 'react'
-import {ApolloProvider} from 'react-apollo'
-import Loadable from 'react-loadable'
+import ApolloProvider from 'react-apollo/ApolloProvider'
 import {Scaffold} from 'react-material-app/lib/scaffold/Scaffold'
 import {Provider} from 'react-redux'
 import {Route} from 'react-router'
@@ -12,13 +12,11 @@ import {BrowserRouter} from 'react-router-dom'
 import {Ui2} from './components/ui2/main'
 import {LocalSettingsProvider, localSettingsStore} from './lib/local-settings'
 import {client, store} from './lib/store'
-import {ReduxSnackbar} from './redux-snackbar/redux-snackbar'
+import {ReduxSnackbar} from './redux-snackbar'
 
-export const LazySettings = Loadable({
-  loader: () =>
-    import('./components/settings/settings').then(({Settings}) => Settings),
-  loading: () => null,
-})
+export const LazySettings = loadable(() =>
+  import('./components/settings/settings').then(module => module.Settings),
+)
 
 function createTheme(theme: 'white' | 'dark') {
   if (theme === 'white') {

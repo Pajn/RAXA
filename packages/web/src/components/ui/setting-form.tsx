@@ -1,6 +1,6 @@
 import React from 'react'
 import {FormHelper, Properties as FormHelperProperties} from 'react-form-helper'
-import {ContextActions} from 'react-material-app'
+import {ContextActions} from 'react-material-app/lib/scaffold/ContextActions'
 import {Action} from 'react-material-app/lib/Actions'
 import {compose, withState} from 'recompose'
 import {SettingInput} from './setting-input'

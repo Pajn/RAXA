@@ -8,8 +8,8 @@ import {
   Method,
 } from 'raxa-common/lib/entities'
 import React from 'react'
-import {DataProps} from 'react-apollo'
-import {graphql} from 'react-apollo'
+import {graphql} from 'react-apollo/graphql'
+import {DataProps} from 'react-apollo/types'
 import {compose, mapProps, withStateHandlers} from 'recompose'
 import {SettingDropdown} from '../ui/setting-input'
 import {PropertyProps, PropertyView} from './property'
@@ -106,60 +106,62 @@ export const enhanceActionInput = compose<
       }
     `,
   ),
-  mapProps((props: PrivateActionInputProps): PrivateActionInputProps => {
-    const {data, value} = props
-    const selectedDevice =
-      data &&
-      data.devices &&
-      value &&
-      data.devices.find(device => device.id === value.deviceId)
-    const interfaces =
-      selectedDevice && selectedDevice.interfaces.filter(validInterface)
-    const selectedInterface =
-      interfaces && interfaces.find(iface => iface.id === value.interfaceId)
-    const selectedMethod =
-      selectedInterface && selectedInterface.methods && value.type === 'call'
-        ? Object.values(selectedInterface.methods).find(
-            method => method.id === value.method,
+  mapProps(
+    (props: PrivateActionInputProps): PrivateActionInputProps => {
+      const {data, value} = props
+      const selectedDevice =
+        data &&
+        data.devices &&
+        value &&
+        data.devices.find(device => device.id === value.deviceId)
+      const interfaces =
+        selectedDevice && selectedDevice.interfaces.filter(validInterface)
+      const selectedInterface =
+        interfaces && interfaces.find(iface => iface.id === value.interfaceId)
+      const selectedMethod =
+        selectedInterface && selectedInterface.methods && value.type === 'call'
+          ? Object.values(selectedInterface.methods).find(
+              method => method.id === value.method,
+            )
+          : undefined
+      const selectedStatus =
+        selectedInterface &&
+        selectedInterface.status &&
+        value.type === 'modification'
+          ? Object.values(selectedInterface.status).find(
+              status => status.id === value.statusId,
+            )
+          : undefined
+      let actions: Array<Method | Property> = []
+      if (selectedInterface) {
+        if (selectedInterface.methods) {
+          actions = actions.concat(
+            Object.values(selectedInterface.methods).map(a => ({
+              ...a,
+              id: `m${a.id}`,
+            })),
           )
-        : undefined
-    const selectedStatus =
-      selectedInterface &&
-      selectedInterface.status &&
-      value.type === 'modification'
-        ? Object.values(selectedInterface.status).find(
-            status => status.id === value.statusId,
+        }
+        if (selectedInterface.status) {
+          actions = actions.concat(
+            Object.values(selectedInterface.status).map(a => ({
+              ...a,
+              id: `s${a.id}`,
+            })),
           )
-        : undefined
-    let actions: Array<Method | Property> = []
-    if (selectedInterface) {
-      if (selectedInterface.methods) {
-        actions = actions.concat(
-          Object.values(selectedInterface.methods).map(a => ({
-            ...a,
-            id: `m${a.id}`,
-          })),
-        )
+        }
       }
-      if (selectedInterface.status) {
-        actions = actions.concat(
-          Object.values(selectedInterface.status).map(a => ({
-            ...a,
-            id: `s${a.id}`,
-          })),
-        )
+      return {
+        ...props,
+        selectedDevice,
+        selectedInterface,
+        selectedMethod,
+        selectedStatus,
+        interfaces,
+        actions,
       }
-    }
-    return {
-      ...props,
-      selectedDevice,
-      selectedInterface,
-      selectedMethod,
-      selectedStatus,
-      interfaces,
-      actions,
-    }
-  }),
+    },
+  ),
   withStateHandlers(
     {divElement: null},
     {setDivElement: () => divElement => ({divElement})},

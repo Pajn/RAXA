@@ -1,12 +1,13 @@
-import glamorous from 'glamorous'
 import React from 'react'
-import {Section} from 'react-material-app'
+import {Section} from 'react-material-app/lib/scaffold/Section'
 import {Section as SectionType} from 'react-material-app/lib/scaffold/context'
 import {compose} from 'recompose'
 import {row} from 'style-definitions'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
-const Container = glamorous.div(row({}))
+const Container = (props: React.HTMLProps<HTMLDivElement>) => (
+  <div {...props} style={row({})} />
+)
 
 export type TwoPaneProps = {
   open?: SectionType

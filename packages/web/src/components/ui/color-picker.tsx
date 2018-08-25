@@ -1,16 +1,14 @@
+import loadable from 'loadable-components'
 import React from 'react'
 import {ColorResult} from 'react-color'
-import Loadable from 'react-loadable'
 import {compose} from 'recompose'
 import {withThrottledMutation} from '../../with-throttled-mutation'
 import {ColorButton} from '../dashboard/widgets/ui/light-button'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
-export const LazyColorPickerDialog = Loadable({
-  loader: () =>
-    import('./color-picker-dialog').then(module => module.ColorPickerDialog),
-  loading: () => null,
-})
+export const LazyColorPickerDialog = loadable(() =>
+  import('./color-picker-dialog').then(module => module.ColorPickerDialog),
+)
 
 export type ColorPickerProps = {
   value: number

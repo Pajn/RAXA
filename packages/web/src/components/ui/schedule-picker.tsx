@@ -5,18 +5,15 @@ import ListItem from '@material-ui/core/ListItem'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import glamorous from 'glamorous'
+import loadable from 'loadable-components'
 import {fromPairs} from 'ramda'
 import React from 'react'
-import Loadable from 'react-loadable'
-import {TextField} from 'react-material-app'
+import {TextField} from 'react-material-app/lib/inputs/TextField'
 import {compose, withState} from 'recompose'
 import {column, row} from 'style-definitions'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
-const TimeInput = Loadable<any, any>({
-  loader: () => import('material-ui-time-picker'),
-  loading: () => null,
-})
+const TimeInput = loadable<any>(() => import('material-ui-time-picker'))
 
 type Days = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sun' | 'sat'
 const days = ['sat', 'mon', 'tue', 'wed', 'thu', 'fri', 'sun', 'sat']

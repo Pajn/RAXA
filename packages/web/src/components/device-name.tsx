@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import {Device} from 'raxa-common'
 import React from 'react'
-import {graphql} from 'react-apollo'
+import {graphql} from 'react-apollo/graphql'
 import {compose} from 'recompose'
 
 export type DeviceNameProps = {id: string}

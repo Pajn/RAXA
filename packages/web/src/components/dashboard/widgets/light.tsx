@@ -1,7 +1,9 @@
-import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
-import Slider from '@material-ui/lab/Slider'
+import ButtonBase, {
+  ButtonBaseProps,
+} from '@material-ui/core/ButtonBase/ButtonBase'
 import glamorous from 'glamorous'
 import gql from 'graphql-tag'
+import loadable from 'loadable-components'
 import {
   DeviceStatus,
   GraphQlDevice,
@@ -9,10 +11,12 @@ import {
   defaultInterfaces,
 } from 'raxa-common'
 import React from 'react'
-import {DataProps, graphql} from 'react-apollo'
+import {graphql} from 'react-apollo/graphql'
+import {DataProps} from 'react-apollo/types'
 import {Switch, SwitchProps} from 'react-material-app/lib/inputs/Switch'
 import {
   compose,
+  lifecycle,
   mapProps,
   onlyUpdateForKeys,
   withStateHandlers,
@@ -27,6 +31,8 @@ import {withThrottledMutation} from '../../../with-throttled-mutation'
 import {ColorPicker} from '../../ui/color-picker'
 import {WidgetComponent, WidgetProps} from '../widget'
 import {draggingContext} from './list'
+
+const LazySlider = loadable(() => import('@material-ui/lab/Slider'))
 
 const Container = glamorous(ButtonBase, {
   withProps: {component: 'div'},
@@ -188,6 +194,11 @@ export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
         updateIn(['Color', 'value'], value, status!),
     },
   ),
+  lifecycle({
+    componentWillMount() {
+      LazySlider.load()
+    },
+  }),
 )
 
 export const LightWidgetView = ({
@@ -219,7 +230,7 @@ export const LightWidgetView = ({
                     height: 40,
                   }}
                 >
-                  <Slider
+                  <LazySlider
                     value={+status.Dimmer.value}
                     onChange={(_, value) => {
                       setDimmer(value)

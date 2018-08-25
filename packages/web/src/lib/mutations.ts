@@ -1,10 +1,10 @@
 import gql from 'graphql-tag'
 import {Call, Modification} from 'raxa-common'
-import {graphql} from 'react-apollo'
+import {graphql} from 'react-apollo/graphql'
 import {Dispatch, connect} from 'react-redux'
 import {compose} from 'recompose'
 import {action} from 'redux-decorated'
-import {actions} from '../redux-snackbar/actions'
+import {actions} from '../redux-snackbar'
 
 type InjectedDispatch = {
   __injectedDispatch: Dispatch
@@ -19,9 +19,12 @@ export type UpdateDeviceStatusInjectedProps = {
 
 export const updateDeviceStatus = () =>
   compose(
-    connect(undefined, (dispatch): InjectedDispatch => ({
-      __injectedDispatch: dispatch,
-    })),
+    connect(
+      undefined,
+      (dispatch): InjectedDispatch => ({
+        __injectedDispatch: dispatch,
+      }),
+    ),
     graphql<
       UpdateDeviceStatusInjectedProps & InjectedDispatch,
       {},
@@ -89,9 +92,12 @@ export type CallDeviceInjectedProps = {
 
 export const callDevice = () =>
   compose(
-    connect(undefined, (dispatch): InjectedDispatch => ({
-      __injectedDispatch: dispatch,
-    })),
+    connect(
+      undefined,
+      (dispatch): InjectedDispatch => ({
+        __injectedDispatch: dispatch,
+      }),
+    ),
     graphql<
       CallDeviceInjectedProps & InjectedDispatch,
       {},

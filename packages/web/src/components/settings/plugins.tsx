@@ -9,14 +9,15 @@ import Tabs from '@material-ui/core/Tabs'
 import gql from 'graphql-tag'
 import {PluginConfiguration} from 'raxa-common'
 import React, {Component} from 'react'
-import {DataProps, graphql} from 'react-apollo'
-import {ProgressButton} from 'react-material-app'
+import {graphql} from 'react-apollo/graphql'
+import {DataProps} from 'react-apollo/types'
+import {ProgressButton} from 'react-material-app/lib/ProgressButton'
 import {Switch, SwitchProps} from 'react-material-app/lib/inputs/Switch'
 import {Dispatch, connect} from 'react-redux'
 import {compose, withStateHandlers} from 'recompose'
 import {action} from 'redux-decorated'
 import {column} from 'style-definitions'
-import {actions} from '../../redux-snackbar/actions'
+import {actions} from '../../redux-snackbar'
 
 const listPluginsQuery = gql`
   query getPlugins {
