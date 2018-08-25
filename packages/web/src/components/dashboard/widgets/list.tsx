@@ -1,11 +1,11 @@
-import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
 import ListSubheader from '@material-ui/core/ListSubheader'
-import glamorous from 'glamorous'
+import DoneIcon from '@material-ui/icons/Done'
 import gql from 'graphql-tag'
 import loadable from 'loadable-components'
 import {shadow} from 'material-definitions'
-import {DeviceType, GraphQlDevice, defaultInterfaces} from 'raxa-common'
+import {defaultInterfaces} from 'raxa-common/lib/default-interfaces'
+import {DeviceType, GraphQlDevice} from 'raxa-common/lib/entities'
 import React, {
   ReactElement,
   ReactNode,
@@ -17,7 +17,9 @@ import {
   DraggableProvidedDragHandleProps,
   DraggableProvidedDraggableProps,
 } from 'react-beautiful-dnd'
+import styled from 'react-emotion'
 import {compose, mapProps, withHandlers, withStateHandlers} from 'recompose'
+import {Theme} from '../../../theme'
 import {withInnerState} from '../../../with-lazy-reducer'
 import {WidgetComponent, WidgetProps} from '../widget'
 import {ButtonWidget} from './button'
@@ -126,7 +128,7 @@ function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   return result
 }
 
-const Container = glamorous.div<{row: boolean}>(({row}) => ({
+const Container = styled('div')<{row: boolean}>(({row}) => ({
   display: 'flex',
   flexDirection: row ? 'row' : 'column',
   flexWrap: row ? 'wrap' : 'nowrap',
@@ -140,7 +142,7 @@ const Container = glamorous.div<{row: boolean}>(({row}) => ({
   boxShadow: row ? 'none' : shadow[1].boxShadow,
 }))
 
-const ListHeader = glamorous(ListSubheader)(({theme}) => ({
+const ListHeader = styled(ListSubheader)<{}, Theme>(({theme}) => ({
   '&&': {
     display: 'flex',
     zIndex: 2,
@@ -156,12 +158,14 @@ const dragContainerStyles = (row: boolean) => ({
   width: row ? undefined : '100%',
 })
 
-const DeviceWrapperContainer = glamorous.div<{
-  row: boolean
-  big?: boolean
-  border: boolean
-  theme: any
-}>(({row, big = false, border, theme}) => ({
+const DeviceWrapperContainer = styled('div')<
+  {
+    row: boolean
+    big?: boolean
+    border: boolean
+  },
+  Theme
+>(({row, big = false, border, theme}) => ({
   position: 'relative',
   boxSizing: 'border-box',
   margin: row ? 8 : 0,
@@ -363,7 +367,7 @@ export const ListWidgetView = ({
             <span style={{flex: 1}}>{header}</span>
             {inEditMode && (
               <IconButton onClick={stopEditMode}>
-                <Icon>done</Icon>
+                <DoneIcon />
               </IconButton>
             )}
           </ListHeader>

@@ -1,37 +1,37 @@
-import glamorous from 'glamorous'
-import {purple} from 'material-definitions'
 import {ButtonProps} from '@material-ui/core/Button'
 import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
 import Paper, {PaperProps} from '@material-ui/core/Paper/Paper'
+import {purple} from 'material-definitions'
 import React from 'react'
+import styled from 'react-emotion'
 
-export const CircleButton = glamorous(
-  Paper as React.ComponentType<PaperProps & ButtonProps>,
-  {
-    withProps: {
-      component: ButtonBase,
-      onMouseUp: e => {
-        const target: HTMLElement = e.currentTarget
-        target.blur()
-      },
-    },
-  },
-)(({big}: {big?: boolean}) => ({
+type ButtonPaperProps = PaperProps & ButtonProps
+const ButtonPaper = (props: ButtonPaperProps) => (
+  <Paper
+    {...props}
+    component={ButtonBase}
+    onMouseUp={e => {
+      const target: HTMLElement = e.currentTarget
+      target.blur()
+    }}
+  />
+)
+export const CircleButton = styled(ButtonPaper)(({big}: {big?: boolean}) => ({
   width: big ? 64 : 40,
   height: big ? 64 : 40,
-  overflow: 'hidden' as 'hidden',
+  overflow: 'hidden',
 
   backgroundColor: '#eee',
 
   '&&': {
-    display: 'flex' as 'flex',
+    display: 'flex',
     marginLeft: 4,
     marginRight: 4,
     border: '4px solid white',
     borderRadius: '50%',
   },
 
-  ':focus': {
+  '&:focus': {
     borderColor: '#eee',
     outline: 'none',
   },

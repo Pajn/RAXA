@@ -1,7 +1,6 @@
 import Button from '@material-ui/core/Button'
-import glamorous from 'glamorous'
 import gql from 'graphql-tag'
-import {defaultInterfaces} from 'raxa-common'
+import {defaultInterfaces} from 'raxa-common/lib/default-interfaces'
 import {
   DeviceStatus,
   GraphQlDevice,
@@ -11,6 +10,7 @@ import {
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'
+import styled from 'react-emotion'
 import {ProgressButton} from 'react-material-app/lib/ProgressButton'
 import {compose, mapProps, withHandlers} from 'recompose'
 import {row} from 'style-definitions'
@@ -22,7 +22,7 @@ import {
 } from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
 
-const Container = glamorous.div({
+const Container = styled('div')({
   position: 'absolute',
   top: 0,
   left: 0,

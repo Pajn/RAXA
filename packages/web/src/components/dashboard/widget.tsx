@@ -1,4 +1,4 @@
-import {Property} from 'raxa-common'
+import {Property} from 'raxa-common/lib/entities'
 import React from 'react'
 
 export type WidgetProps<T = any> = {

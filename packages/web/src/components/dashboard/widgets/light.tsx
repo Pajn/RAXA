@@ -1,18 +1,14 @@
 import ButtonBase, {
   ButtonBaseProps,
 } from '@material-ui/core/ButtonBase/ButtonBase'
-import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import loadable from 'loadable-components'
-import {
-  DeviceStatus,
-  GraphQlDevice,
-  Interface,
-  defaultInterfaces,
-} from 'raxa-common'
+import {defaultInterfaces} from 'raxa-common/lib/default-interfaces'
+import {DeviceStatus, GraphQlDevice, Interface} from 'raxa-common/lib/entities'
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'
+import styled from 'react-emotion'
 import {Switch, SwitchProps} from 'react-material-app/lib/inputs/Switch'
 import {
   compose,
@@ -34,9 +30,10 @@ import {draggingContext} from './list'
 
 const LazySlider = loadable(() => import('@material-ui/lab/Slider'))
 
-const Container = glamorous(ButtonBase, {
-  withProps: {component: 'div'},
-})({
+const ButtonBaseDiv = (props: ButtonBaseProps) => (
+  <ButtonBase component="div" {...props} />
+)
+const Container = styled(ButtonBaseDiv)({
   '&&': {
     position: 'absolute',
     padding: 8,
@@ -51,22 +48,22 @@ const Container = glamorous(ButtonBase, {
   width: '100%',
   height: '100%',
 
-  '> div': {
+  '& > div': {
     width: '100%',
   },
 })
-const NameRow = glamorous.div({
+const NameRow = styled('div')({
   display: 'flex',
   alignItems: 'center',
   height: 40,
 })
-const DeviceName = glamorous.span({
+const DeviceName = styled('span')({
   flexGrow: 1,
 })
-const DetailControl = glamorous.div({
+const DetailControl = styled('div')({
   flex: 10,
 })
-const PowerSwitch = glamorous<SwitchProps, {}>(Switch as any)({
+const PowerSwitch = styled<SwitchProps>(Switch as any)({
   flexShrink: 0,
 })
 

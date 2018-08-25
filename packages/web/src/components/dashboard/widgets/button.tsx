@@ -1,5 +1,4 @@
 import ButtonBase from '@material-ui/core/ButtonBase/ButtonBase'
-import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {subheading1} from 'material-definitions'
 import {
@@ -11,27 +10,28 @@ import {
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'
+import styled from 'react-emotion'
 import {compose, mapProps} from 'recompose'
 import {CallDeviceInjectedProps, callDevice} from '../../../lib/mutations'
 import {WidgetComponent, WidgetProps} from '../widget'
 import {draggingContext} from './list'
 
-const Container = glamorous(ButtonBase)({
+const Container = styled(ButtonBase)({
   '&&': {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     display: 'flex',
-
-    boxSizing: 'border-box',
     padding: 8,
-    height: '100%',
-    width: '100%',
-
-    ...subheading1,
   },
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+
+  boxSizing: 'border-box',
+  height: '100%',
+  width: '100%',
+
+  ...subheading1,
 })
 
 export type ButtonWidgetConfiguration = {

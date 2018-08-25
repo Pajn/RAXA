@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {Device} from 'raxa-common'
+import {Device} from 'raxa-common/lib/entities'
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {compose} from 'recompose'

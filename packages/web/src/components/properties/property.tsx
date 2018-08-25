@@ -11,7 +11,7 @@ import {
   Property,
   PropertyBase,
   StringProperty,
-} from 'raxa-common'
+} from 'raxa-common/lib/entities'
 import React from 'react'
 import {ScheduleInput} from '../ui/schedule-picker'
 import {

@@ -1,6 +1,6 @@
-import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
-import glamorous from 'glamorous'
+import PauseIcon from '@material-ui/icons/Pause'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import gql from 'graphql-tag'
 import {
   DeviceStatus,
@@ -11,6 +11,7 @@ import {
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'
+import styled from 'react-emotion'
 import {compose, mapProps, withHandlers} from 'recompose'
 import {column, row} from 'style-definitions'
 import {
@@ -34,7 +35,7 @@ function asObject(
   return object
 }
 
-const Container = glamorous.div({
+const Container = styled('div')({
   position: 'absolute',
   top: 0,
   left: 0,
@@ -164,11 +165,11 @@ export const CurrentlyPlayingWidgetView = ({
             )
           }
         >
-          <Icon>
-            {status.CurrentlyPlaying.playerState.value === 'playing'
-              ? 'pause'
-              : 'play_arrow'}
-          </Icon>
+          {status.CurrentlyPlaying.playerState.value === 'playing' ? (
+            <PauseIcon />
+          ) : (
+            <PlayArrowIcon />
+          )}
         </IconButton>
       </div>
     </Container>

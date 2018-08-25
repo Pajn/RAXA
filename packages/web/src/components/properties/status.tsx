@@ -1,6 +1,7 @@
 import ListItem from '@material-ui/core/ListItem'
 import gql from 'graphql-tag'
-import {Interface, defaultInterfaces} from 'raxa-common'
+import {defaultInterfaces} from 'raxa-common/lib/default-interfaces'
+import {Interface} from 'raxa-common/lib/entities'
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {connect} from 'react-redux'

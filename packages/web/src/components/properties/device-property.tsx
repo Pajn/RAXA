@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {Device, DeviceProperty} from 'raxa-common'
+import {Device, DeviceProperty} from 'raxa-common/lib/entities'
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'

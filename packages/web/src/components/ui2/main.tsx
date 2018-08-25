@@ -1,24 +1,21 @@
-import glamorous from 'glamorous'
-import {DeviceType, defaultInterfaces} from 'raxa-common'
+import SettingsIcon from '@material-ui/icons/Settings'
+import {defaultInterfaces} from 'raxa-common/lib/default-interfaces'
+import {DeviceType} from 'raxa-common/lib/entities'
 import React from 'react'
+import styled from 'react-emotion'
 import {ContextActions} from 'react-material-app/lib/scaffold/ContextActions'
 import {connect} from 'react-redux'
 import {Action, action, createActions, createReducer} from 'redux-decorated'
+import {Theme} from '../../theme'
 import {ListWidget, WidgetConfiguration} from '../dashboard/widgets/list'
 
-const Ui2Container = glamorous.div(
-  {
-    boxSizing: 'border-box',
-    paddingTop: 8,
-    height: '100%',
-  },
-  ({theme}: any) => ({
-    color: theme.background.text,
-    backgroundColor: theme.dark
-      ? theme.background.main
-      : theme.background.light,
-  }),
-)
+const Ui2Container = styled('div')<{}, Theme>(({theme}) => ({
+  boxSizing: 'border-box',
+  paddingTop: 8,
+  height: '100%',
+  color: theme.background.text,
+  backgroundColor: theme.dark ? theme.background.main : theme.background.light,
+}))
 
 export const actions = createActions({
   configuredWidgets: {} as Action<{
@@ -40,7 +37,9 @@ const enhance = connect(state => ({configurations: state.mainScreen}))
 
 export const Ui2View = ({configurations, dispatch}) => (
   <Ui2Container>
-    <ContextActions contextActions={[{to: '/settings', icon: 'settings'}]} />
+    <ContextActions
+      contextActions={[{to: '/settings', icon: <SettingsIcon />}]}
+    />
     <ListWidget
       header="Scenes"
       config={{interfaceIds: ['Scenery']}}

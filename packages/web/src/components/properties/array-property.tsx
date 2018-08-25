@@ -1,9 +1,9 @@
 import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import Divider from '@material-ui/core/Divider'
-import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
-import glamorous from 'glamorous'
+import AddIcon from '@material-ui/icons/Add'
+import DeleteIcon from '@material-ui/icons/Delete'
 import {red} from 'material-definitions'
 import {insert, remove} from 'ramda'
 import {
@@ -12,45 +12,43 @@ import {
   NumberProperty,
 } from 'raxa-common/lib/entities'
 import React, {Component} from 'react'
+import styled from 'react-emotion'
 import FlipMove from 'react-flip-move'
 import {compose, mapProps, withState} from 'recompose'
 import {updateIn} from 'redux-decorated'
 import {row} from 'style-definitions'
 import {fadeIn} from '../../lib/styles'
+import {Theme} from '../../theme'
 import {InjectedIdProps, withIds} from '../../with-id'
 import {DeviceName} from '../device-name'
 import {PropertyProps, PropertyView} from './property'
 
-const CardContainer = glamorous.div(
-  {
-    padding: 16,
-  },
-  ({theme}: any) => ({
-    color: theme.background.text,
-    backgroundColor: theme.background.light,
-  }),
-)
+const CardContainer = styled('div')<{}, Theme>(({theme}) => ({
+  padding: 16,
+  color: theme.background.text,
+  backgroundColor: theme.background.light,
+}))
 
-const ItemHeader = glamorous.div({...row({vertical: 'center'}), padding: 8})
+const ItemHeader = styled('div')({...row({vertical: 'center'}), padding: 8})
 
-const TitleBar = glamorous.span({
+const TitleBar = styled('span')({
   display: 'flex',
   alignItems: 'center',
 
   padding: '4px 8px',
 })
 
-const Title = glamorous.span({
+const Title = styled('span')({
   flex: 1,
   fontSize: 18,
 })
 
-const SubTitle = glamorous.span({
+const SubTitle = styled('span')({
   flex: 1,
   fontSize: 16,
 })
 
-const UndoContainer = glamorous.div({
+const UndoContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -133,7 +131,7 @@ export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
                 this.didAdd = true
               }}
             >
-              <Icon>add</Icon>
+              <AddIcon />
             </IconButton>
           )}
         </TitleBar>
@@ -185,7 +183,7 @@ export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
                                 }
                               }}
                             >
-                              <Icon>delete</Icon>
+                              <DeleteIcon />
                             </IconButton>
                           </ItemHeader>
                           <Divider />

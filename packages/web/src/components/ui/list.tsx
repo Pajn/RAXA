@@ -2,45 +2,42 @@ import MUIList from '@material-ui/core/List'
 import MUIListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import {isClick} from 'filter-key'
-import glamorous, {CSSProperties} from 'glamorous'
 import React from 'react'
+import styled from 'react-emotion'
 import {compose} from 'recompose'
 import {column, row} from 'style-definitions'
+import {Theme} from '../../theme'
 import {IsTouchProps, withIsTouch} from './mediaQueries'
 
-const DesktopList = glamorous.div(
-  {
-    ...column({}),
-    padding: 8,
-  },
-  {displayName: 'DesktopList'},
-)
+const DesktopList = styled('div')({
+  ...column({}),
+  padding: 8,
+})
 
-const DesktopListItem = glamorous.div(
-  ({
-    isMobile,
-    selected,
-    theme,
-  }: {
+const DesktopListItem = styled('div')<
+  {
     isMobile?: boolean
     selected?: boolean
-    theme: any
-  }) => ({
-    ...row({}),
-    flexShrink: 0,
-    boxSizing: 'border-box' as 'border-box',
-    padding: '8px 4px',
-    height: isMobile ? 48 : 32,
-    outline: 'none',
+  },
+  Theme
+>(({isMobile, selected, theme}) => ({
+  ...row({}),
+  flexShrink: 0,
+  boxSizing: 'border-box',
+  padding: '8px 4px',
+  height: isMobile ? 48 : 32,
+  outline: 'none',
 
-    ...(selected
-      ? {backgroundColor: theme.background.somewhatLight}
-      : ({
-          ':hover': {backgroundColor: theme.background.light},
-          ':focus': {backgroundColor: theme.background.light},
-        } as CSSProperties)),
-  }),
-)
+  ...(selected
+    ? {backgroundColor: theme.background.somewhatLight}
+    : {
+        // TODO: Report bug to styled-jss,
+        // backgroundColor should not be required here
+        backgroundColor: 'transparent',
+        ':hover': {backgroundColor: theme.background.light},
+        ':focus': {backgroundColor: theme.background.light},
+      }),
+}))
 
 const Container = ({
   isMobile,

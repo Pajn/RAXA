@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {Call, Modification, Property} from 'raxa-common'
+import {Call, Modification, Property} from 'raxa-common/lib/entities'
 import {
   Action,
   ActionProperty,

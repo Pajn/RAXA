@@ -1,5 +1,5 @@
-import glamorous from 'glamorous'
 import React from 'react'
+import styled from 'react-emotion'
 import {DelayedCircularProgress} from 'react-material-app/lib/ProgressButton'
 import {Section} from 'react-material-app/lib/scaffold/Section'
 import {
@@ -11,18 +11,16 @@ import {
 } from 'react-router'
 import {compose, lifecycle, mapProps, withState} from 'recompose'
 import {column, row} from 'style-definitions'
+import {Theme} from '../../theme'
 import {List, ListItem} from './list'
 import {IsMobileProps, withIsMobile} from './mediaQueries'
 
-const Container = glamorous.div(
-  row({}),
-  {displayName: 'Container'},
-  ({theme}: any) => ({
-    color: theme.background.text,
-    backgroundColor: theme.background.main,
-  }),
-)
-const Detail = glamorous.div(column({flex: {grow: 1}}), {displayName: 'Detail'})
+const Container = styled('div')<{}, Theme>(({theme}) => ({
+  ...row({}),
+  color: theme.background.text,
+  backgroundColor: theme.background.main,
+}))
+const Detail = styled('div')(column({flex: {grow: 1}}))
 
 export type ListDetailProps<E, T> = {
   path: string

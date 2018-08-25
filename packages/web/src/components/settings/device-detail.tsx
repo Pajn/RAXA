@@ -2,7 +2,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListSubheader from '@material-ui/core/ListSubheader'
-import glamorous from 'glamorous'
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import gql from 'graphql-tag'
 import {title} from 'material-definitions'
 import {flatten} from 'ramda'
@@ -16,6 +16,7 @@ import {DeviceIsInUseError, isRaxaError} from 'raxa-common/lib/errors'
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps, MutateProps} from 'react-apollo/types'
+import styled from 'react-emotion'
 import {ProgressButton} from 'react-material-app/lib/ProgressButton'
 import {Dispatch, connect} from 'react-redux'
 import {RouteComponentProps, withRouter} from 'react-router'
@@ -30,7 +31,7 @@ import {SettingForm} from '../ui/setting-form'
 import {SettingDropdown} from '../ui/setting-input'
 import {deviceListQuery} from './devices'
 
-const Title = glamorous.h3(title)
+const Title = styled('h3')(title)
 
 export type DeviceDetailSettingsProps = {
   device: GraphQlDevice
@@ -296,7 +297,7 @@ export const DeviceDetailSettingsView = ({
           ? [
               {
                 label: 'Delete',
-                icon: 'delete_forever',
+                icon: <DeleteForeverIcon />,
                 onClick: deleteDevice,
                 placement: 'menu',
               },

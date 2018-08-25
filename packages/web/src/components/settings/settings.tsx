@@ -1,6 +1,6 @@
-import glamorous from 'glamorous'
 import {title} from 'material-definitions'
 import React from 'react'
+import styled from 'react-emotion'
 import {Section} from 'react-material-app/lib/scaffold/Section'
 import {compose} from 'recompose'
 import {row} from 'style-definitions'
@@ -12,8 +12,8 @@ import {DeviceSettings} from './devices'
 import {PluginSettings} from './plugins'
 import {SystemSettings} from './system'
 
-const Title = glamorous.h3(title)
-const ListHeader = glamorous.div(row({vertical: 'center'}))
+const Title = styled('h3')(title)
+const ListHeader = styled('div')(row({vertical: 'center'}))
 
 export type SettingsProps = {}
 export type PrivateSettingsProps = SettingsProps & IsMobileProps & {}

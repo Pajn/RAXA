@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import {Call, Modification} from 'raxa-common'
+import {Call, Modification} from 'raxa-common/lib/entities'
 import {graphql} from 'react-apollo/graphql'
 import {Dispatch, connect} from 'react-redux'
 import {compose} from 'recompose'

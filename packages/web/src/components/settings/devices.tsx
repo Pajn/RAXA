@@ -1,14 +1,16 @@
-import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
-import MUIListSubheader from '@material-ui/core/ListSubheader'
-import glamorous from 'glamorous'
+import MUIListSubheader, {
+  ListSubheaderProps as MUIListSubheaderProps,
+} from '@material-ui/core/ListSubheader'
+import AddIcon from '@material-ui/icons/Add'
 import gql from 'graphql-tag'
 import {filter, first, flatMap, map} from 'iterates/lib/sync'
 import {title} from 'material-definitions'
-import {GraphQlDevice} from 'raxa-common'
+import {GraphQlDevice} from 'raxa-common/lib/entities'
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'
+import styled from 'react-emotion'
 import {ContextActions} from 'react-material-app/lib/scaffold/ContextActions'
 import {Section} from 'react-material-app/lib/scaffold/Section'
 import {Route, withRouter} from 'react-router'
@@ -29,13 +31,19 @@ declare module '@material-ui/core/IconButton/IconButton' {
 
 const deviceTypeOther = 'Other'
 
-const Title = glamorous.h3(title)
-const ListHeader = glamorous.div({...row({vertical: 'center'}), flexShrink: 0})
-const ListSubHeader = glamorous(MUIListSubheader, {filterProps: ['isMobile']})(
+const Title = styled('h3')(title)
+const ListHeader = styled('div')({...row({vertical: 'center'}), flexShrink: 0})
+const FilteredMUIListSubheader = ({
+  isMobile: _,
+  ...props
+}: MUIListSubheaderProps & {isMobile?: boolean}) => (
+  <MUIListSubheader {...props} />
+)
+const ListSubHeader = styled(FilteredMUIListSubheader)(
   ({isMobile}: {isMobile: boolean}) => ({
-    paddingLeft: isMobile ? '' : '0 !important',
+    paddingLeft: isMobile ? '' : [0, '!important'],
     'div + div>&': {
-      margin: '0 !important',
+      margin: [0, '!important'],
       borderTop: isMobile ? `1px solid rgba(0, 0, 0, 0.12)` : '',
     },
   }),
@@ -222,7 +230,7 @@ export const DeviceSettingsView = ({
           <ContextActions
             contextActions={[
               {
-                icon: 'add',
+                icon: <AddIcon />,
                 onClick: createNewDevice,
                 to: '/settings/devices/new',
               },
@@ -236,7 +244,7 @@ export const DeviceSettingsView = ({
               component={Link as any}
               to="/settings/devices/new"
             >
-              <Icon>add</Icon>
+              <AddIcon />
             </IconButton>
           </ListHeader>
         )

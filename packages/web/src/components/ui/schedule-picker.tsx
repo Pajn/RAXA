@@ -4,10 +4,10 @@ import DialogContent from '@material-ui/core/DialogContent'
 import ListItem from '@material-ui/core/ListItem'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
-import glamorous from 'glamorous'
 import loadable from 'loadable-components'
 import {fromPairs} from 'ramda'
 import React from 'react'
+import styled from 'react-emotion'
 import {TextField} from 'react-material-app/lib/inputs/TextField'
 import {compose, withState} from 'recompose'
 import {column, row} from 'style-definitions'
@@ -27,7 +27,7 @@ const dayNames = {
   sat: 'Sat',
 }
 
-const DayRow = glamorous.div(row({horizontal: 'center', vertical: 'center'}))
+const DayRow = styled('div')(row({horizontal: 'center', vertical: 'center'}))
 const weekdayCronPattern = /^(\d\d?) (\d\d?) \* \* (\d(?:-\d)?(?:,\d(?:-\d)?)*)$/
 
 const isWeekdayExpression = (cronExpression: string) =>
@@ -169,7 +169,7 @@ const SchedulePickerDialog = compose<
   </div>
 ))
 
-const StyledDialog = glamorous(Dialog)({
+const StyledDialog = styled(Dialog)({
   '& section': {outline: 'none'},
 })
 

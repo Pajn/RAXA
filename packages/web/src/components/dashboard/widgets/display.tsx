@@ -1,4 +1,3 @@
-import glamorous from 'glamorous'
 import gql from 'graphql-tag'
 import {
   DeviceStatus,
@@ -10,13 +9,14 @@ import {
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'
+import styled from 'react-emotion'
 import {compose, mapProps, withState} from 'recompose'
 import {WidgetComponent, WidgetProps} from '../widget'
 
-const Container = glamorous.div({
+const Container = styled('div')({
   height: '100%',
 })
-const StatusRow = glamorous.div({
+const StatusRow = styled('div')({
   display: 'flex',
   alignItems: 'center',
   height: 40,

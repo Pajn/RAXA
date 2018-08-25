@@ -4,11 +4,11 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Typography from '@material-ui/core/Typography'
 import {colorTemperature2rgb, rgb2colorTemperature} from 'color-temperature'
-import glamorous from 'glamorous'
 import React from 'react'
 import {Color, ColorResult, CustomPicker, RGBColor} from 'react-color'
 import Hue from 'react-color/lib/components/common/Hue'
 import HuePointer from 'react-color/lib/components/hue/HuePointer'
+import styled from 'react-emotion'
 import {compose, withState} from 'recompose'
 import {compose as fnCompose} from 'redux'
 import {column, row} from 'style-definitions'
@@ -251,7 +251,7 @@ const LightnessSlider = colorSlider({
   valueToCSS: (l, {hsl}) => `hsl(${hsl.h}, ${hsl.s * 100}%, ${l * 100}%)`,
 })
 
-const PresetRow = glamorous.div(row({horizontal: 'center', vertical: 'center'}))
+const PresetRow = styled('div')(row({horizontal: 'center', vertical: 'center'}))
 
 type LightningColorPickerProps = {
   color: Color
@@ -325,7 +325,7 @@ const LightningColorPicker = compose<
   </InputEventsContainer>
 ))
 
-const StyledDialog = glamorous(Dialog)({
+const StyledDialog = styled(Dialog)({
   '& section': {outline: 'none'},
 })
 
