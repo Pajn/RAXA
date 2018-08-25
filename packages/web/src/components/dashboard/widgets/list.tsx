@@ -269,7 +269,7 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
           types
           config
           interfaceIds
-          status {
+          status(interfaceIds: $interfaceIds) {
             id
             interfaceId
             statusId
