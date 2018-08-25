@@ -137,4 +137,4 @@ export const DashboardView = ({
   </Container>
 )
 
-export const Dashboard = enhance(DashboardView)
+export const _Dashboard = enhance(DashboardView)
