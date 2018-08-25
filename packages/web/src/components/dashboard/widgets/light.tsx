@@ -192,7 +192,7 @@ export const enhance = compose<PrivateLightWidgetProps, LightWidgetProps>(
     },
   ),
   lifecycle({
-    componentWillMount() {
+    componentDidMount() {
       LazySlider.load()
     },
   }),
