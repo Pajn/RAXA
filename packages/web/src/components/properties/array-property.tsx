@@ -31,12 +31,17 @@ const CardContainer = styled('div')<{}, Theme>(({theme}) => ({
 
 const ItemHeader = styled('div')({...row({vertical: 'center'}), padding: 8})
 
-const TitleBar = styled('span')({
+const TitleBar = styled('div')<{}, Theme>(({theme}) => ({
+  position: 'sticky',
+  top: 0,
+  zIndex: 1,
+
   display: 'flex',
   alignItems: 'center',
 
   padding: '4px 8px',
-})
+  backgroundColor: theme.background.main,
+}))
 
 const Title = styled('span')({
   flex: 1,
