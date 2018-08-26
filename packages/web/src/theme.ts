@@ -4,6 +4,8 @@ import {grey} from 'material-definitions'
 
 export type Theme = {
   dark: boolean
+  primary: string
+  accent: string
   background: {
     light: string
     somewhatLight: string
@@ -22,6 +24,8 @@ export function createTheme(
     return {
       theme: {
         dark: false,
+        primary: purple[500],
+        accent: teal[500],
         background: {
           light: grey[100],
           somewhatLight: grey[200],
@@ -53,6 +57,8 @@ export function createTheme(
     return {
       theme: {
         dark: true,
+        primary: '#00796B',
+        accent: '#D81B60',
         background: {
           light: '#607D8B',
           somewhatLight: 'hsl(200, 18%, 43%)',

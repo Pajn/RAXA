@@ -18,6 +18,7 @@ import {Link} from 'react-router-dom'
 import {compose, withStateHandlers} from 'recompose'
 import {compose as fnCompose} from 'redux'
 import {row} from 'style-definitions'
+import {Theme} from '../../theme'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
 import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
@@ -33,17 +34,12 @@ const deviceTypeOther = 'Other'
 
 const Title = styled('h3')(title)
 const ListHeader = styled('div')({...row({vertical: 'center'}), flexShrink: 0})
-const FilteredMUIListSubheader = ({
-  isMobile: _,
-  ...props
-}: MUIListSubheaderProps & {isMobile?: boolean}) => (
-  <MUIListSubheader {...props} />
-)
-const ListSubHeader = styled(FilteredMUIListSubheader)(
-  ({isMobile}: {isMobile: boolean}) => ({
-    paddingLeft: isMobile ? '' : [0, '!important'],
+const ListSubHeader = styled(MUIListSubheader)<{isMobile: boolean}, Theme>(
+  ({isMobile}) => ({
+    paddingLeft: isMobile ? '' : '0 !important',
+
     'div + div>&': {
-      margin: [0, '!important'],
+      margin: 0,
       borderTop: isMobile ? `1px solid rgba(0, 0, 0, 0.12)` : '',
     },
   }),
