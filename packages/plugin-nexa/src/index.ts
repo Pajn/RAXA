@@ -164,8 +164,8 @@ export default class NexaPlugin extends Plugin {
       method: defaultInterfaces['433MHzPulse'].methods.send.id,
       arguments: {
         pulse,
-        repeats: learning ? 8 : selfLearning ? 5 : 8,
-        pause: selfLearning ? 10 : 30,
+        repeats: 8,
+        pause: selfLearning ? 15 : 30,
       },
     })
   }

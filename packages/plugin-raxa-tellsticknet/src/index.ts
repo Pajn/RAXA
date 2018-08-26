@@ -21,7 +21,7 @@ export default class RaxaTellstickNetPlugin extends Plugin {
   private tellsticks = {}
   private executionQueue = new Queue()
 
-  onDeviceCalled(call: Call, device: Tellstick) {
+  async onDeviceCalled(call: Call, device: Tellstick) {
     if (call.interfaceId === '433MHzPulse' && call.method === 'send') {
       const pulse = call.arguments.pulse
       const repeats = call.arguments.repeats
@@ -40,7 +40,7 @@ export default class RaxaTellstickNetPlugin extends Plugin {
         'latin1',
       )
 
-      return this.send(Buffer.concat([header, body, footer]), activationCode)
+      this.send(Buffer.concat([header, body, footer]), activationCode)
     }
   }
 
@@ -74,6 +74,7 @@ export default class RaxaTellstickNetPlugin extends Plugin {
       )
 
       await this.sendBuffer(message, ip, COMMUNICATION_PORT)
+      await new Promise(resolve => setTimeout(resolve, 200))
     })
   }
 
