@@ -73,7 +73,7 @@ export const DialogInputView = ({
     <ListItemSecondaryAction>
       <Dialog key={1} open={dialogActive} onClose={hideDialog}>
         <DialogTitle>{label}</DialogTitle>
-        <DialogContent style={{width: '75vw', maxWidth: 'calc(100vw - 112px)'}}>
+        <DialogContent style={{width: '75vw', maxWidth: 'calc(100vw - 144px)'}}>
           {children(tmpValue, setTmpValue)}
         </DialogContent>
         {actions && (

@@ -1,4 +1,5 @@
 import Button from '@material-ui/core/Button'
+import List from '@material-ui/core/List'
 import ListSubheader from '@material-ui/core/ListSubheader'
 import React from 'react'
 import {LocalSettings, localSettingsStore} from '../../lib/local-settings'
@@ -53,65 +54,67 @@ const saveAppSettings = ({
 }
 
 export const AppSettings = () => (
-  <SettingForm
-    value={getAppSettings()}
-    fields={[
-      {
-        path: ['theme'],
-        label: 'Theme',
-        component: SettingDropdown,
-        source: [
-          {value: 'white', label: 'White'},
-          {value: 'dark', label: 'Dark'},
-        ],
-      },
-      ...(isInApp
-        ? [
-            {
-              path: ['host'],
-              label: 'Host',
-              required: true,
-            },
-            <div style={{marginTop: 16}}>
-              <Button onClick={() => window.wrapperApp!.reload()}>
-                Reload
-              </Button>
-            </div>,
-            ...(window.wrapperApp!.setGeofenceDeviceId
-              ? [
-                  <ListSubheader disableSticky>
-                    Location tracking
-                  </ListSubheader>,
-                  true ? (
-                    <div>
+  <List>
+    <SettingForm
+      value={getAppSettings()}
+      fields={[
+        {
+          path: ['theme'],
+          label: 'Theme',
+          component: SettingDropdown,
+          source: [
+            {value: 'white', label: 'White'},
+            {value: 'dark', label: 'Dark'},
+          ],
+        },
+        ...(isInApp
+          ? [
+              {
+                path: ['host'],
+                label: 'Host',
+                required: true,
+              },
+              <div style={{marginTop: 16}}>
+                <Button onClick={() => window.wrapperApp!.reload()}>
+                  Reload
+                </Button>
+              </div>,
+              ...(window.wrapperApp!.setGeofenceDeviceId
+                ? [
+                    <ListSubheader disableSticky>
+                      Location tracking
+                    </ListSubheader>,
+                    true ? (
                       <div>
-                        <Button
-                          onClick={() =>
-                            window.wrapperApp!.setGeofenceDeviceId!(null)
-                          }
-                        >
-                          Stop location tracking
-                        </Button>
-                        <Button
-                          onClick={() => window.wrapperApp!.updateGeofence!()}
-                        >
-                          Change home location
+                        <div>
+                          <Button
+                            onClick={() =>
+                              window.wrapperApp!.setGeofenceDeviceId!(null)
+                            }
+                          >
+                            Stop location tracking
+                          </Button>
+                          <Button
+                            onClick={() => window.wrapperApp!.updateGeofence!()}
+                          >
+                            Change home location
+                          </Button>
+                        </div>
+                        <SettingValue label="Is Home" value={'no'} />
+                      </div>
+                    ) : (
+                      <div>
+                        <Button onClick={() => window.wrapperApp!.reload()}>
+                          Set home location
                         </Button>
                       </div>
-                      <SettingValue label="Is Home" value={'no'} />
-                    </div>
-                  ) : (
-                    <div>
-                      <Button onClick={() => window.wrapperApp!.reload()}>
-                        Set home location
-                      </Button>
-                    </div>
-                  ),
-                ]
-              : []),
-          ]
-        : []),
-    ]}
-    onSave={saveAppSettings}
-  />
+                    ),
+                  ]
+                : []),
+            ]
+          : []),
+      ]}
+      onSave={saveAppSettings}
+    />
+  </List>
 )
