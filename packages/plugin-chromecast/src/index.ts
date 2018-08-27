@@ -1,5 +1,13 @@
 import * as castv2 from 'castv2-player'
-import {Call, Device, Modification, Plugin, actions, assert} from 'raxa-common'
+import {
+  Call,
+  Device,
+  Modification,
+  Plugin,
+  actions,
+  assert,
+  defaultInterfaces,
+} from 'raxa-common'
 import plugin from './plugin'
 
 export interface Chromecast extends Device {
@@ -165,30 +173,30 @@ export default class ChromecastPlugin extends Plugin {
           })
           this.dispatch(actions.statusUpdated, {
             deviceId: device.id,
-            interfaceId: plugin.interfaces.Volume.id,
-            statusId: plugin.interfaces.Volume.status.volume.id,
+            interfaceId: defaultInterfaces.Volume.id,
+            statusId: defaultInterfaces.Volume.status.volume.id,
             value: e.volume.level,
           })
           this.dispatch(actions.statusUpdated, {
             deviceId: device.id,
-            interfaceId: plugin.interfaces.Volume.id,
-            statusId: plugin.interfaces.Volume.status.muted.id,
+            interfaceId: defaultInterfaces.Mute.id,
+            statusId: defaultInterfaces.Mute.status.muted.id,
             value: e.volume.muted,
           })
 
           if (!e.applications || e.applications[0].isIdleScreen) {
             this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
-              interfaceId: plugin.interfaces.CurrentlyPlaying.id,
+              interfaceId: defaultInterfaces.CurrentlyPlaying.id,
               statusId:
-                plugin.interfaces.CurrentlyPlaying.status.currentMedia.id,
+                defaultInterfaces.CurrentlyPlaying.status.currentMedia.id,
               value: null,
             })
             this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
-              interfaceId: plugin.interfaces.CurrentlyPlaying.id,
+              interfaceId: defaultInterfaces.CurrentlyPlaying.id,
               statusId:
-                plugin.interfaces.CurrentlyPlaying.status.playerState.id,
+                defaultInterfaces.CurrentlyPlaying.status.playerState.id,
               value: 'idle',
             })
           }
@@ -198,9 +206,9 @@ export default class ChromecastPlugin extends Plugin {
           if (e) {
             this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
-              interfaceId: plugin.interfaces.CurrentlyPlaying.id,
+              interfaceId: defaultInterfaces.CurrentlyPlaying.id,
               statusId:
-                plugin.interfaces.CurrentlyPlaying.status.currentMedia.id,
+                defaultInterfaces.CurrentlyPlaying.status.currentMedia.id,
               value:
                 e.media &&
                 e.media.metadata &&
@@ -213,9 +221,9 @@ export default class ChromecastPlugin extends Plugin {
             })
             this.dispatch(actions.statusUpdated, {
               deviceId: device.id,
-              interfaceId: plugin.interfaces.CurrentlyPlaying.id,
+              interfaceId: defaultInterfaces.CurrentlyPlaying.id,
               statusId:
-                plugin.interfaces.CurrentlyPlaying.status.playerState.id,
+                defaultInterfaces.CurrentlyPlaying.status.playerState.id,
               value: e.playerState && e.playerState.toLowerCase(),
             })
           }
@@ -226,15 +234,15 @@ export default class ChromecastPlugin extends Plugin {
   }
 
   async onDeviceStatusModified(modification: Modification, device: Chromecast) {
-    if (modification.interfaceId === plugin.interfaces.Volume.id) {
+    if (modification.interfaceId === defaultInterfaces.Volume.id) {
       const mp = this.mediaPlayers[device.id]
       if (!mp) throw 'Can not connect to device'
 
       switch (modification.statusId) {
-        case plugin.interfaces.Volume.status.volume.id:
+        case defaultInterfaces.Volume.status.volume.id:
           await mp.setVolumePromise(+modification.value * 100)
           break
-        case plugin.interfaces.Volume.status.muted.id:
+        case defaultInterfaces.Mute.status.muted.id:
           if (modification.value === 'true') {
             await mp.mutePromise()
           } else {
@@ -246,18 +254,18 @@ export default class ChromecastPlugin extends Plugin {
   }
 
   async onDeviceCalled(call: Call, device: Chromecast) {
-    if (call.interfaceId === plugin.interfaces.CurrentlyPlaying.id) {
+    if (call.interfaceId === defaultInterfaces.CurrentlyPlaying.id) {
       const mp = this.mediaPlayers[device.id]
       if (!mp) throw 'Can not connect to device'
 
       switch (call.method) {
-        case plugin.interfaces.CurrentlyPlaying.methods.play.id:
+        case defaultInterfaces.CurrentlyPlaying.methods.play.id:
           await mp.playPromise()
           break
-        case plugin.interfaces.CurrentlyPlaying.methods.pause.id:
+        case defaultInterfaces.CurrentlyPlaying.methods.pause.id:
           await mp.pausePromise()
           break
-        case plugin.interfaces.CurrentlyPlaying.methods.stop.id:
+        case defaultInterfaces.CurrentlyPlaying.methods.stop.id:
           await mp.stopPromise()
           break
       }
