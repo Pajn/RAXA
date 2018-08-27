@@ -173,7 +173,7 @@ export class PluginManager extends Service {
       this.log.error(await response.text())
       throw Error('Could not fetch package list')
     }
-    const packages = (await Promise.all(
+    const packages: Array<Package> = (await Promise.all(
       ((await response.json()) as {
         objects: Array<{
           package: Pick<Package, Exclude<keyof Package, 'id'>>

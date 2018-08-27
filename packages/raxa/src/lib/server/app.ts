@@ -10,8 +10,18 @@ import {WebService} from './web'
 export async function main() {
   const serviceManager = new ServiceManager()
 
+  await serviceManager.startService(StorageService)
+
+  // Upgrade default interfaces
+  {
+    const storage = serviceManager.runningServices
+      .StorageService as StorageService
+    Object.values(defaultInterfaces).forEach(iface => {
+      storage.installInterface(iface)
+    })
+  }
+
   await serviceManager.startServices(
-    StorageService,
     production ? ProductionPluginManager : PluginManager,
     PluginSupervisor,
     HttpService,
