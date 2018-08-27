@@ -56,7 +56,7 @@ export async function installDefaults() {
     storage.installInterface(iface)
   })
 
-  for (const pluginId of ['mqtt', 'scenery', 'timer', 'trigger']) {
+  for (const pluginId of ['scenery', 'timer', 'trigger']) {
     await pluginManager.installPlugin(pluginId)
   }
 
