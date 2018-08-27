@@ -57,7 +57,8 @@ export const pluginQueries = buildQueries({
           upgradable:
             installedPlugins[plugin.id] &&
             installedPlugins[plugin.id].version &&
-            semver.gt(plugin.version, installedPlugins[plugin.id].version),
+            (semver.gt(plugin.version, installedPlugins[plugin.id].version) ||
+              process.env.NODE_ENV === 'development'),
         }))
         .sort((a, b) => a.name.localeCompare(b.name))
       return plugins
