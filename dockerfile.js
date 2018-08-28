@@ -1,5 +1,7 @@
 const fs = require('fs')
-const globby = require('globby')
+
+const flatMap = (array, fn) =>
+  array.reduce((acc, elm) => [...acc, ...fn(elm)], [])
 
 const isArm = process.argv.includes('--arm')
 
@@ -14,7 +16,9 @@ const baseImage = isArm ? 'arm32v7/node:8.9-slim' : 'node:8.9-alpine'
 const setup = isArm ? 'COPY qemu-arm-static /usr/bin/qemu-arm-static' : ''
 
 const subprojectFiles = (...projects) =>
-  globby.sync([`packages/{${projects.join(',')}}/{package.json,yarn.lock}`])
+  flatMap(projects, project =>
+    ['package.json', 'yarn.lock'].map(file => `packages/${project}/${file}`),
+  )
 
 console.log(`
 FROM ${baseImage} as common
