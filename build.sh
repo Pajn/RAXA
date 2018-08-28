@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 export GIT_HASH=`git show HEAD --pretty=format:"%h" --no-patch`
 export BUILD_DATE=`date +'%C%y-%m-%d'`
