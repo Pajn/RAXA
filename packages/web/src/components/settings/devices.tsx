@@ -1,7 +1,5 @@
 import IconButton from '@material-ui/core/IconButton'
-import MUIListSubheader, {
-  ListSubheaderProps as MUIListSubheaderProps,
-} from '@material-ui/core/ListSubheader'
+import MUIListSubheader from '@material-ui/core/ListSubheader'
 import AddIcon from '@material-ui/icons/Add'
 import gql from 'graphql-tag'
 import {filter, first, flatMap, map} from 'iterates/lib/sync'

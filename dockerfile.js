@@ -13,7 +13,9 @@ if (isArm) {
 
 const baseImage = isArm ? 'arm32v7/node:8.9-slim' : 'node:8.9-alpine'
 
-const setup = isArm ? 'COPY qemu-arm-static /usr/bin/qemu-arm-static' : ''
+const setup = isArm
+  ? 'COPY qemu-arm-static /usr/bin/qemu-arm-static'
+  : 'RUN apk add --no-cache git'
 
 const subprojectFiles = (...projects) =>
   flatMap(projects, project =>
