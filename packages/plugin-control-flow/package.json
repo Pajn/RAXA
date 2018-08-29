@@ -1,6 +1,6 @@
 {
   "name": "raxa-plugin-control-flow",
-  "version": "0.2.1",
+  "version": "0.2.20",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
@@ -8,11 +8,30 @@
     "raxa-plugin"
   ],
   "dependencies": {
+    "@pajn/control-flow": "^0.0.5",
+    "@types/graphql-type-json": "^0.1.2",
+    "@types/hapi": "^17.0.12",
+    "@types/inert": "^5.1.0",
+    "@types/isomorphic-fetch": "^0.0.34",
     "@types/node": "^8.5.2",
-    "raxa-common": "^0.2.1"
+    "@types/node-fetch": "^1.6.9",
+    "apollo-boost": "^0.1.6",
+    "apollo-server-hapi": "^1.3.3",
+    "graphql": "^0.13.2",
+    "graphql-tools": "^2.23.1",
+    "graphql-type-json": "^0.2.0",
+    "hapi": "^17.4.0",
+    "inert": "^5.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "node-fetch": "^2.1.2",
+    "raxa-common": "^0.2.5"
   },
   "devDependencies": {
-    "tscomp": "^0.15.0"
+    "prettier": "^1.11.1",
+    "tscomp": "^0.15.1"
+  },
+  "resolutions": {
+    "graphql": "0.13.2"
   },
   "tscomp": {
     "mode": "lib"
