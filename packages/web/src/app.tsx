@@ -23,6 +23,10 @@ const Container = styled('div')<{}, Theme>(({theme}) => ({
   flex: 1,
   color: theme.background.text,
   backgroundColor: theme.background.main,
+
+  '&>div>div>div': {
+    display: 'flex',
+  },
 }))
 
 export const App = () => (

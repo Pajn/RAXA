@@ -29,15 +29,23 @@ export const pluginQueries = buildQueries({
   plugins: {
     type: [PluginType],
     validate: joi.object({
+      httpEndpoint: joi.boolean(),
       enabled: joi.boolean(),
     }),
-    resolve(_, {enabled}, {storage}: Context) {
+    resolve(_, {enabled, httpEndpoint}, {storage}: Context) {
       let plugins = Object.values(storage.getState().plugins).map(plugin => ({
         ...plugin,
         installed: true,
       }))
       if (enabled !== undefined) {
         plugins = plugins.filter(plugin => plugin.enabled === enabled)
+      }
+      if (httpEndpoint !== undefined) {
+        plugins = plugins.filter(
+          plugin =>
+            (plugin.httpForwarding && plugin.httpForwarding.showInSettings) ===
+            httpEndpoint,
+        )
       }
       return plugins.sort((a, b) => a.name.localeCompare(b.name))
     },

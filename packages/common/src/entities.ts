@@ -256,6 +256,7 @@ export interface PluginDefinition {
   httpForwarding?: {
     port: number
     basePath?: string
+    showInSettings?: boolean
   }
 }
 

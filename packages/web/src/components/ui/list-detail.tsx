@@ -17,6 +17,7 @@ import {IsMobileProps, withIsMobile} from './mediaQueries'
 
 const Container = styled('div')<{}, Theme>(({theme}) => ({
   ...row({}),
+  flexGrow: 1,
   color: theme.background.text,
   backgroundColor: theme.background.main,
 }))

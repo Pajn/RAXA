@@ -7,6 +7,7 @@ const plugin = {
   description: '',
   httpForwarding: {
     port: 13001,
+    showInSettings: true,
   },
   deviceClasses: {
     ControlFlowProgram: {

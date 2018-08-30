@@ -32,6 +32,6 @@
     "build": "tscomp build",
     "test": "tscomp test --env=jsdom",
     "eject": "tscomp eject",
-    "start": "tscomp start"
+    "start": "PORT=3001 tscomp start"
   }
 }

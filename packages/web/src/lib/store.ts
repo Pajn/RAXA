@@ -21,9 +21,11 @@ const port =
 
 const host = localStorage.getItem('debug:host') || `${location.hostname}${port}`
 
+export const baseHttpUrl = `${ssl ? 'https' : 'http'}://${host}`
+
 // Create an http link:
 const httpLink = new BatchHttpLink({
-  uri: `${ssl ? 'https' : 'http'}://${host}/graphql`,
+  uri: `${baseHttpUrl}/graphql`,
 })
 
 // Create a WebSocket link:
