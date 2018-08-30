@@ -36,7 +36,7 @@
     "nedb-persist": "^0.2.1",
     "node-fetch": "^2.1.2",
     "post-material": "^0.1.0",
-    "raxa-common": "^0.2.1",
+    "raxa-common": "^0.3.0",
     "redux": "^4.0.0",
     "redux-decorated": "^1.0.2",
     "redux-persist": "^4.8.2",
