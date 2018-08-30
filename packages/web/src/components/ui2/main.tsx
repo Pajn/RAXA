@@ -10,6 +10,7 @@ import {Theme} from '../../theme'
 import {ListWidget, WidgetConfiguration} from '../dashboard/widgets/list'
 
 const Ui2Container = styled('div')<{}, Theme>(({theme}) => ({
+  flexGrow: 1,
   boxSizing: 'border-box',
   paddingTop: 8,
   height: '100%',
