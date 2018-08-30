@@ -46,14 +46,18 @@ export class PluginManager extends Service {
     return plugin
   }
 
-  async installPlugin(id: string) {
-    this.log.info(`Installing plugin ${id}`)
+  async installPlugin(pluginId: string) {
+    this.log.info(`Installing plugin ${pluginId}`)
 
-    const pluginPackageJson = require(`${this.pluginPath(id)}/package.json`)
-    const pluginDefinitionModule = require(`${this.pluginPath(id)}/plugin`)
+    const pluginPackageJson = require(`${this.pluginPath(
+      pluginId,
+    )}/package.json`)
+    const pluginDefinitionModule = require(`${this.pluginPath(
+      pluginId,
+    )}/plugin`)
     const pluginDefinition = (pluginDefinitionModule.default ||
       pluginDefinitionModule) as PluginDefinition
-    let plugin = require(this.pluginPath(id))
+    let plugin = require(this.pluginPath(pluginId))
     if (plugin.default) {
       plugin = plugin.default
     }
@@ -65,27 +69,27 @@ export class PluginManager extends Service {
     }
 
     if (!semver.valid(pluginPackageJson.version)) {
-      throw Error(`Plugin ${id} has no valid semver version`)
+      throw Error(`Plugin ${pluginId} has no valid semver version`)
     }
 
     if (typeof plugin !== 'function') {
-      throw Error(`Plugin ${id} has no default exported class`)
+      throw Error(`Plugin ${pluginId} has no default exported class`)
     }
 
-    if (id !== pluginDefinition.id)
-      throw Error(`Invalid plugin id ${id} !== ${pluginDefinition.id}`)
+    if (pluginId !== pluginDefinition.id)
+      throw Error(`Invalid plugin id ${pluginId} !== ${pluginDefinition.id}`)
 
-    Object.entries(pluginDefinition.interfaces).forEach(([id, iface]) => {
-      if (id !== iface.id)
-        throw Error(`Invalid interface id ${id} !== ${iface.id}`)
-      iface.pluginId = id
+    Object.entries(pluginDefinition.interfaces).forEach(([ifaceId, iface]) => {
+      if (ifaceId !== iface.id)
+        throw Error(`Invalid interface id ${ifaceId} !== ${iface.id}`)
+      iface.pluginId = pluginId
     })
 
     Object.entries(pluginDefinition.deviceClasses).forEach(
       ([id, deviceClass]) => {
         if (id !== deviceClass.id)
           throw Error(`Invalid device class id ${id} !== ${deviceClass.id}`)
-        deviceClass.pluginId = pluginDefinition.id
+        deviceClass.pluginId = pluginId
       },
     )
 
@@ -99,7 +103,7 @@ export class PluginManager extends Service {
 
     this.storage.installPlugin({
       ...pluginDefinition,
-      id,
+      id: pluginId,
       enabled: false,
       version: pluginPackageJson.version,
     })
