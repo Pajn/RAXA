@@ -32,16 +32,16 @@ const deviceTypeOther = 'Other'
 
 const Title = styled('h3')(title)
 const ListHeader = styled('div')({...row({vertical: 'center'}), flexShrink: 0})
-const ListSubHeader = styled(MUIListSubheader)<{isMobile: boolean}, Theme>(
-  ({isMobile}) => ({
-    paddingLeft: isMobile ? '' : '0 !important',
+const ListSubHeader = styled(MUIListSubheader, {
+  shouldForwardProp: prop => prop !== 'isMobile',
+})<{isMobile: boolean}, Theme>(({isMobile}) => ({
+  paddingLeft: isMobile ? '' : '0 !important',
 
-    'div + div>&': {
-      margin: 0,
-      borderTop: isMobile ? `1px solid rgba(0, 0, 0, 0.12)` : '',
-    },
-  }),
-)
+  'div + div>&': {
+    margin: 0,
+    borderTop: isMobile ? `1px solid rgba(0, 0, 0, 0.12)` : '',
+  },
+}))
 
 export type DeviceSettingsProps = {}
 export type ListGraphQlData = {devices: Array<GraphQlDevice>}

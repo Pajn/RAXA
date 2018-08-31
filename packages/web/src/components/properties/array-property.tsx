@@ -12,8 +12,8 @@ import {
   NumberProperty,
 } from 'raxa-common/lib/entities'
 import React, {Component} from 'react'
+import {DropResult} from 'react-beautiful-dnd'
 import styled from 'react-emotion'
-import FlipMove from 'react-flip-move'
 import {compose, mapProps, withState} from 'recompose'
 import {updateIn} from 'redux-decorated'
 import {row} from 'style-definitions'
@@ -21,7 +21,15 @@ import {fadeIn} from '../../lib/styles'
 import {Theme} from '../../theme'
 import {InjectedIdProps, withIds} from '../../with-id'
 import {DeviceName} from '../device-name'
+import {
+  LazyDragDropContext,
+  LazyDraggable,
+  LazyDroppable,
+  reorder,
+} from '../ui/sorting'
 import {PropertyProps, PropertyView} from './property'
+
+export type ArrayInputProps<T = any> = PropertyProps<ArrayProperty<T>, Array<T>>
 
 const CardContainer = styled('div')<{}, Theme>(({theme}) => ({
   padding: 16,
@@ -77,7 +85,102 @@ const UndoDelete = ({onUndo}) => (
   </UndoContainer>
 )
 
-export type ArrayInputProps<T = any> = PropertyProps<ArrayProperty<T>, Array<T>>
+class PropertyCard extends React.PureComponent<
+  {
+    id: string
+    replace: (id: string, newValue: any) => void
+    index: number
+    didAdd: boolean
+    isLast: boolean
+    clearDidAdd: () => void
+    onDelete: (index: number) => void
+    item: any
+    undoItem?: {index: number; item: any}
+    clearUndoItem: () => void
+  } & Pick<ArrayInputProps, 'property' | 'onChange' | 'value'>,
+  {}
+> {
+  render() {
+    const {
+      id,
+      replace,
+      index,
+      didAdd,
+      isLast,
+      clearDidAdd,
+      property,
+      value,
+      onChange,
+      onDelete,
+      item,
+      undoItem,
+      clearUndoItem,
+    } = this.props
+
+    return (
+      <div
+        ref={
+          isLast && didAdd
+            ? e => {
+                if (e) {
+                  clearDidAdd()
+                  e.scrollIntoView({behavior: 'smooth'})
+                }
+              }
+            : undefined
+        }
+      >
+        <Card
+          style={{
+            position: 'relative',
+            overflow: 'visible',
+          }}
+        >
+          {property.modifiable && (
+            <div>
+              <ItemHeader>
+                {property.items.type === 'modification' && (
+                  <SubTitle>
+                    {(item as Modification).deviceId ? (
+                      <DeviceName id={(item as Modification).deviceId} />
+                    ) : (
+                      'Add Device'
+                    )}
+                  </SubTitle>
+                )}
+                <IconButton onClick={() => onDelete(index)}>
+                  <DeleteIcon />
+                </IconButton>
+              </ItemHeader>
+              <Divider />
+            </div>
+          )}
+          <div style={{padding: '8px 16px'}}>
+            <PropertyView
+              propertyId={property.items.id}
+              property={property.items}
+              value={item}
+              onChange={updated => {
+                const newValue = updateIn(index, updated, value)
+                replace(id, newValue[index])
+                onChange(newValue)
+              }}
+            />
+          </div>
+          {undoItem && (
+            <UndoDelete
+              onUndo={() => {
+                onChange(insert(undoItem.index, undoItem.item, value))
+                clearUndoItem()
+              }}
+            />
+          )}
+        </Card>
+      </div>
+    )
+  }
+}
+
 export type ArrayInputPrivateProps<T = any> = ArrayInputProps<T> &
   InjectedIdProps & {
     undoItem?: {index: number; item: T}
@@ -106,6 +209,42 @@ export const enhance = compose<ArrayInputPrivateProps, ArrayInputProps>(
 export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
   didAdd = false
 
+  clearDidAdd = () => (this.didAdd = false)
+  clearUndoItem = () => {
+    this.props.setUndoItem()
+  }
+
+  onDelete = (index: number) => {
+    const {property, value, onChange, setUndoItem} = this.props
+
+    onChange(remove(index, 1, value))
+    if (
+      value[index] &&
+      (property.items.type !== 'modification' || value[index].statusId)
+    ) {
+      setUndoItem({
+        index,
+        item: value[index],
+      })
+    } else {
+      setUndoItem()
+    }
+  }
+
+  onSortEnd = (result: DropResult) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return
+    }
+
+    const sorted = reorder(
+      this.props.value,
+      result.source.index,
+      result.destination.index,
+    )
+    this.props.onChange(sorted)
+  }
+
   render() {
     const {
       property,
@@ -113,118 +252,88 @@ export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
       valueWithUndo,
       onChange,
       undoItem,
-      setUndoItem,
       ids,
       replace,
     } = this.props
 
     return (
-      <div>
-        <TitleBar>
-          {property.name && <Title>{property.name}</Title>}
-          {property.modifiable && (
-            <IconButton
-              onClick={() => {
-                onChange([
-                  ...(value || []),
-                  (property.items as NumberProperty).defaultValue !== undefined
-                    ? (property.items as NumberProperty).defaultValue
-                    : property.items.type === 'modification'
-                      ? {}
-                      : undefined,
-                ])
-                this.didAdd = true
-              }}
-            >
-              <AddIcon />
-            </IconButton>
-          )}
-        </TitleBar>
-        <CardContainer>
-          <FlipMove>
-            {valueWithUndo.map((item, i) => {
-              const index = undoItem && undoItem.index < i ? i - 1 : i
+      <LazyDragDropContext onDragEnd={this.onSortEnd}>
+        <div>
+          <TitleBar>
+            {property.name && <Title>{property.name}</Title>}
+            {property.modifiable && (
+              <IconButton
+                onClick={() => {
+                  onChange([
+                    ...(value || []),
+                    (property.items as NumberProperty).defaultValue !==
+                    undefined
+                      ? (property.items as NumberProperty).defaultValue
+                      : property.items.type === 'modification'
+                        ? {}
+                        : undefined,
+                  ])
+                  this.didAdd = true
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            )}
+          </TitleBar>
+          <LazyDroppable
+            droppableId={`property-${property.id}`}
+            direction="vertical"
+          >
+            {provided => (
+              <CardContainer innerRef={provided.innerRef}>
+                {valueWithUndo.map((item, i) => {
+                  const index = undoItem && undoItem.index < i ? i - 1 : i
 
-              return (
-                <div key={ids[i]} style={{marginTop: i > 0 ? 24 : 0}}>
-                  <div
-                    ref={
-                      valueWithUndo.length - 1 === i && this.didAdd
-                        ? e => {
-                            if (e) {
-                              this.didAdd = false
-                              e.scrollIntoView({behavior: 'smooth'})
+                  return (
+                    <LazyDraggable
+                      key={ids[i]}
+                      draggableId={`property-${property.id}-${ids[i]}`}
+                      index={i}
+                    >
+                      {provided => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={{
+                            marginTop: i > 0 ? 24 : 0,
+                            ...provided.draggableProps.style,
+                          }}
+                        >
+                          <PropertyCard
+                            id={ids[i]}
+                            replace={replace}
+                            item={item}
+                            index={index}
+                            property={property}
+                            onChange={onChange}
+                            value={value}
+                            didAdd={this.didAdd}
+                            clearDidAdd={this.clearDidAdd}
+                            onDelete={this.onDelete}
+                            isLast={valueWithUndo.length - 1 === i}
+                            undoItem={
+                              undoItem && undoItem.index === i
+                                ? undoItem
+                                : undefined
                             }
-                          }
-                        : undefined
-                    }
-                  >
-                    <Card style={{position: 'relative', overflow: 'visible'}}>
-                      {property.modifiable && (
-                        <div>
-                          <ItemHeader>
-                            {property.items.type === 'modification' && (
-                              <SubTitle>
-                                {(item as Modification).deviceId ? (
-                                  <DeviceName
-                                    id={(item as Modification).deviceId}
-                                  />
-                                ) : (
-                                  'Add Device'
-                                )}
-                              </SubTitle>
-                            )}
-                            <IconButton
-                              onClick={() => {
-                                onChange(remove(index, 1, value))
-                                if (
-                                  value[index] &&
-                                  (property.items.type !== 'modification' ||
-                                    value[index].statusId)
-                                ) {
-                                  setUndoItem({index, item: value[index]})
-                                } else {
-                                  setUndoItem()
-                                }
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </ItemHeader>
-                          <Divider />
+                            clearUndoItem={this.clearUndoItem}
+                          />
                         </div>
                       )}
-                      <div style={{padding: '8px 16px'}}>
-                        <PropertyView
-                          propertyId={property.items.id}
-                          property={property.items}
-                          value={item}
-                          onChange={updated => {
-                            const newValue = updateIn(index, updated, value)
-                            replace(ids[i], newValue[index])
-                            onChange(newValue)
-                          }}
-                        />
-                      </div>
-                      {undoItem &&
-                        undoItem.index === i && (
-                          <UndoDelete
-                            onUndo={() => {
-                              onChange(
-                                insert(undoItem.index, undoItem.item, value),
-                              )
-                              setUndoItem()
-                            }}
-                          />
-                        )}
-                    </Card>
-                  </div>
-                </div>
-              )
-            })}
-          </FlipMove>
-        </CardContainer>
-      </div>
+                    </LazyDraggable>
+                  )
+                })}
+              </CardContainer>
+            )}
+          </LazyDroppable>
+        </div>
+      </LazyDragDropContext>
     )
   }
 }

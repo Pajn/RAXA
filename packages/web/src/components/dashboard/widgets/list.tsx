@@ -2,7 +2,6 @@ import IconButton from '@material-ui/core/IconButton'
 import ListSubheader from '@material-ui/core/ListSubheader'
 import DoneIcon from '@material-ui/icons/Done'
 import gql from 'graphql-tag'
-import loadable from 'loadable-components'
 import {shadow} from 'material-definitions'
 import {defaultInterfaces} from 'raxa-common/lib/default-interfaces'
 import {DeviceType, GraphQlDevice} from 'raxa-common/lib/entities'
@@ -21,53 +20,18 @@ import styled from 'react-emotion'
 import {compose, mapProps, withHandlers, withStateHandlers} from 'recompose'
 import {Theme} from '../../../theme'
 import {withInnerState} from '../../../with-lazy-reducer'
+import {
+  LazyDragDropContext,
+  LazyDraggable,
+  LazyDroppable,
+  reorder,
+} from '../../ui/sorting'
 import {WidgetComponent, WidgetProps} from '../widget'
 import {ButtonWidget} from './button'
 import {CurrentlyPlayingWidget} from './currently-playing'
 import {DisplayWidget} from './display'
 import {LightWidget} from './light'
 import {ReceiverWidget} from './receiver'
-
-const LazyDragDropContext = loadable(
-  () => import('react-beautiful-dnd').then(module => module.DragDropContext),
-  {
-    render: ({Component, loading, ownProps}) => {
-      if (loading) return (ownProps as any).children
-      return <Component {...ownProps} />
-    },
-  },
-)
-const LazyDraggable = loadable(
-  () => import('react-beautiful-dnd').then(module => module.Draggable),
-  {
-    render: ({Component, loading, ownProps}) => {
-      if (loading)
-        return ownProps.children(
-          {
-            draggableProps: {},
-            dragHandleProps: {},
-          } as any,
-          {isDragging: false},
-        )
-      return <Component {...ownProps} />
-    },
-  },
-)
-const LazyDroppable = loadable(
-  () => import('react-beautiful-dnd').then(module => module.Droppable),
-  {
-    render: ({Component, loading, ownProps}) => {
-      if (loading)
-        return ownProps.children(
-          {
-            droppableProps: {},
-          } as any,
-          {isDraggingOver: false},
-        )
-      return <Component {...ownProps} />
-    },
-  },
-)
 
 export type WidgetConfiguration = {
   hidden: Array<string>
@@ -118,14 +82,6 @@ function sortByOrder<K, T extends {id: K}>(
   }
 
   return [...out, ...data.values()]
-}
-
-function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
-  const result = Array.from(list)
-  const [removed] = result.splice(startIndex, 1)
-  result.splice(endIndex, 0, removed)
-
-  return result
 }
 
 const Container = styled('div')<{row: boolean}>(({row}) => ({
