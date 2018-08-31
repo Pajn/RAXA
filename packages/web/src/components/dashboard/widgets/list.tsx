@@ -192,7 +192,7 @@ const DeviceWrapper = ({
   inEditMode: boolean
   isHidden: boolean
   children: ReactNode
-  innerRef(element?: HTMLElement | null): any
+  innerRef?(element?: HTMLElement | null): any
 } & Partial<DraggableProvidedDraggableProps> &
   Partial<DraggableProvidedDragHandleProps>) => (
   <DeviceWrapperContainer
@@ -503,7 +503,10 @@ export const ListWidgetView = ({
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  style={dragContainerStyles(row)}
+                                  style={{
+                                    ...dragContainerStyles(row),
+                                    ...provided.draggableProps.style,
+                                  }}
                                   onClick={
                                     inEditMode
                                       ? e => {
@@ -528,10 +531,6 @@ export const ListWidgetView = ({
                                     row={row}
                                     big={big}
                                     border={i > 0}
-                                    innerRef={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={provided.draggableProps.style as any}
                                     inEditMode={inEditMode}
                                     isHidden={
                                       inEditMode &&
