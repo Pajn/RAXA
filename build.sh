@@ -9,7 +9,7 @@ else
 fi
 
 if [ "$1" = "--arm" ]; then
-  docker run -e BUILD_DATE="$BUILD_DATE" -e GIT_HASH="$GIT_HASH" -v "$PWD":/app -w /app node:alpine node --arm dockerfile.js > Dockerfile.gen.arm
+  docker run -e BUILD_DATE="$BUILD_DATE" -e GIT_HASH="$GIT_HASH" -v "$PWD":/app -w /app node:alpine node dockerfile.js --arm > Dockerfile.gen.arm
   docker build . -f Dockerfile.gen.arm -t raxa:arm
 else
   docker run -e BUILD_DATE="$BUILD_DATE" -e GIT_HASH="$GIT_HASH" -v "$PWD":/app -w /app node:alpine node dockerfile.js > Dockerfile.gen
