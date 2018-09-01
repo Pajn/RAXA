@@ -147,7 +147,7 @@ export const CurrentlyPlayingWidgetView = ({
       {hideComponent ? hideComponent(false) : null}
       <img
         src={status.CurrentlyPlaying.currentMedia.value.artwork}
-        style={{width: 96, height: 96}}
+        style={{width: 96, height: 96, objectFit: 'cover'}}
       />
       <div style={{...column(), flex: 1, paddingLeft: 16, overflow: 'hidden'}}>
         <span>{device.name}</span>
