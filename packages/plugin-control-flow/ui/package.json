@@ -4,26 +4,27 @@
   "private": true,
   "homepage": "/plugin/control-flow",
   "dependencies": {
-    "@types/react": "^16.0.40",
-    "@types/react-dom": "^16.0.4",
-    "@types/webpack-env": "^1.13.5",
-    "apollo-boost": "^0.1.4",
+    "@pajn/control-flow": "^0.1.2",
+    "@types/react": "^16.4.13",
+    "@types/react-dom": "^16.0.7",
+    "@types/webpack-env": "^1.13.6",
+    "apollo-boost": "^0.1.15",
     "gql": "^1.1.2",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.8.0",
-    "raxa-common": "^0.2.2",
-    "react": "^16.2.0",
-    "react-apollo": "^2.1.1",
-    "react-dom": "^16.2.0",
-    "react-hotkeys": "^0.10.0",
+    "raxa-common": "^0.3.0",
+    "react": "^16.4.2",
+    "react-apollo": "^2.1.11",
+    "react-dom": "^16.4.2",
+    "react-hotkeys": "^1.1.4",
     "react-redux": "^5.0.7",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
-    "@types/jest": "^22.2.0",
+    "@types/jest": "^23.3.1",
     "@types/react-redux": "^5.0.15",
-    "tscomp": "0.15.1"
+    "tscomp": "1.0.0-beta.4"
   },
   "tscomp": {
     "mode": "browser"
@@ -33,5 +34,17 @@
     "test": "tscomp test --env=jsdom",
     "eject": "tscomp eject",
     "start": "PORT=3001 tscomp start"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
   }
 }
