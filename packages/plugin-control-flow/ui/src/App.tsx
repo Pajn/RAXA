@@ -43,7 +43,7 @@ const store = createStore(
 ) as Store<EditorState>
 
 const keyMap = {
-  save: 'ctrl+s',
+  save: ['ctrl+s', 'command+s'],
   delete: 'del',
 }
 
