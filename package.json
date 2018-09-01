@@ -14,8 +14,14 @@
     "prettier": "^1.10.2",
     "tslint": "^5.9.1",
     "tslint-config-pajn": "^1.0.0",
-    "typescript": "^2.8.0-dev.20180217"
+    "typescript": "^3.1.0-dev.20180830"
   },
-  "workspaces1": ["packages/common", "packages/raxa", "packages/web"],
-  "workspaces2": ["packages/*"]
+  "workspaces1": [
+    "packages/common",
+    "packages/raxa",
+    "packages/web"
+  ],
+  "workspaces2": [
+    "packages/*"
+  ]
 }
