@@ -139,6 +139,7 @@ export const enhanceActionInput = compose<
             Object.values(selectedInterface.methods).map(a => ({
               ...a,
               id: `m${a.id}`,
+              name: a.name || a.id,
             })),
           )
         }
@@ -147,6 +148,7 @@ export const enhanceActionInput = compose<
             Object.values(selectedInterface.status).map(a => ({
               ...a,
               id: `s${a.id}`,
+              name: a.name || a.id,
             })),
           )
         }

@@ -139,7 +139,8 @@ class PropertyCard extends React.PureComponent<
           {property.modifiable && (
             <div>
               <ItemHeader>
-                {property.items.type === 'modification' && (
+                {(property.items.type === 'modification' ||
+                  property.items.type === 'action') && (
                   <SubTitle>
                     {(item as Modification).deviceId ? (
                       <DeviceName id={(item as Modification).deviceId} />
@@ -220,7 +221,9 @@ export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
     onChange(remove(index, 1, value))
     if (
       value[index] &&
-      (property.items.type !== 'modification' || value[index].statusId)
+      ((property.items.type !== 'modification' &&
+        property.items.type !== 'action') ||
+        value[index].statusId)
     ) {
       setUndoItem({
         index,
@@ -269,7 +272,8 @@ export class ArrayInputView extends Component<ArrayInputPrivateProps, {}> {
                     (property.items as NumberProperty).defaultValue !==
                     undefined
                       ? (property.items as NumberProperty).defaultValue
-                      : property.items.type === 'modification'
+                      : property.items.type === 'modification' ||
+                        property.items.type === 'action'
                         ? {}
                         : undefined,
                   ])

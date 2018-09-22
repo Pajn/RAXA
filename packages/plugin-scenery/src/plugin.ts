@@ -21,7 +21,7 @@ const plugin = {
           modifiable: true,
           items: {
             id: 'items',
-            type: 'modification' as 'modification',
+            type: 'action' as 'action',
           },
         },
       },
