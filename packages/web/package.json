@@ -38,7 +38,7 @@
     "material-definitions": "^0.3.3",
     "material-ui-time-picker": "^1.0.0",
     "prop-types": "^15.6.2",
-    "raxa-common": "^0.2.1",
+    "raxa-common": "^0.3.1",
     "react": "16.4.2",
     "react-apollo": "^2.1.11",
     "react-beautiful-dnd": "^9.0.1",

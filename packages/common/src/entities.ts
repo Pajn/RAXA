@@ -208,6 +208,7 @@ export interface ObjectProperty<T> extends PropertyBase {
 
 export interface StringProperty extends PropertyBase {
   type: 'string'
+  uiTypeHint?: 'cronExpression'
   defaultValue?: string
   unit?: string
 }

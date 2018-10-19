@@ -152,7 +152,7 @@ const types = {
       <GenericDisplay {...props} />
     )
   },
-  cron(props: PropertyProps<StringProperty>) {
+  cronExpression(props: PropertyProps<StringProperty>) {
     return props.property.modifiable ? (
       <ScheduleInput
         label={props.property.name || props.property.id}
@@ -182,8 +182,11 @@ const types = {
 }
 
 export const PropertyView = (props: PropertyProps<Property>) => {
-  if (props.propertyId === 'cron' && props.property.type === 'string') {
-    const Component = types.cron
+  if (
+    props.property.type === 'string' &&
+    props.property.uiTypeHint === 'cronExpression'
+  ) {
+    const Component = types.cronExpression
     return <Component {...props as any} />
   }
   const Component = types[props.property.type]

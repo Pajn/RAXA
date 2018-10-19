@@ -14,8 +14,9 @@ const plugin = {
       config: {
         cron: {
           id: 'cron',
-          name: 'Cron Expression',
+          name: 'Schedule',
           type: 'string' as 'string',
+          uiTypeHint: 'cronExpression' as 'cronExpression',
           modifiable: true,
         },
         action: {
