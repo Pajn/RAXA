@@ -142,6 +142,23 @@ export default class ChromecastPlugin extends Plugin {
         let device: Chromecast
         if (existingDevice) {
           device = existingDevice
+
+          if (
+            existingDevice.config.name !== cc.name ||
+            existingDevice.config.host !== cc.host ||
+            existingDevice.config.port !== cc.port
+          ) {
+            if (existingDevice.name === existingDevice.config.name) {
+              device.name = cc.name
+            }
+            device.config = {
+              id: cc.id,
+              name: cc.name,
+              host: cc.host,
+              port: cc.port,
+            }
+            this.upsertDevice(device)
+          }
         } else {
           device = {
             id: '',
