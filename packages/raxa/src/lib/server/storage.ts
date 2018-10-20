@@ -132,7 +132,19 @@ export class StorageService extends Service {
       }),
       compose(
         autoRehydrate<State>(),
-        applyMiddleware(_ => next => action => {
+        applyMiddleware(api => next => action => {
+          // Skip status updates with current value
+          if (action && action.type === actions.statusUpdated.type) {
+            const update = (action as typeof actions.statusUpdated).payload!
+            const state = api.getState() as State
+            if (
+              update.value === state.status[update.deviceId] &&
+              state.status[update.deviceId][update.interfaceId] &&
+              state.status[update.deviceId][update.interfaceId][update.statusId]
+            ) {
+              return
+            }
+          }
           const result = next(action)
           if (typeof action.type === 'string') {
             try {
