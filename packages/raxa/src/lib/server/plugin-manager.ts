@@ -190,10 +190,10 @@ export class PluginManager extends Service {
         .map(response => response.then(response => response.json())),
     ))
       .filter(hit => pluginPackageNamePattern.test(hit.name))
-      .map(hit => {
-        const [, id] = pluginPackageNamePattern.exec(hit.name)!
+      .map(({name, displayName, ...hit}) => {
+        const [, id] = pluginPackageNamePattern.exec(name)!
 
-        return {...hit, id}
+        return {...hit, id, name: displayName}
       })
     return packages
   }

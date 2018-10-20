@@ -222,7 +222,7 @@ export const AvaliblePluginsView = ({
         data.avaliblePlugins.map(plugin => (
           <ListItem key={plugin.id}>
             <ListItemText
-              primary={plugin.name}
+              primary={plugin.name || plugin.id}
               secondary={plugin.description || ''}
             />
             <ListItemSecondaryAction>
