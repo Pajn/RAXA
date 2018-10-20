@@ -55,6 +55,9 @@ export const pluginQueries = buildQueries({
       const plugins = (await pluginManager.listAvaliblePlugins())
         .map(plugin => ({
           ...plugin,
+          name: installedPlugins[plugin.id]
+            ? installedPlugins[plugin.id].name
+            : plugin.name,
           availableVersion: plugin.version,
           version:
             installedPlugins[plugin.id] && installedPlugins[plugin.id].version,
