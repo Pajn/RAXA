@@ -45,6 +45,7 @@ export async function main() {
   }
   registerSignalListener('SIGINT')
   registerSignalListener('SIGHUP')
+  registerSignalListener('SIGTERM')
 }
 
 export async function installDefaults() {
