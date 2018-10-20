@@ -9,10 +9,7 @@ export const PluginType = buildType<Plugin>({
   name: 'Plugin',
   fields: {
     id: {type: GraphQLString},
-    name: {
-      type: GraphQLString,
-      resolve: plugin => plugin.name || plugin.id,
-    },
+    name: {type: GraphQLString},
     shortDescription: {type: GraphQLString},
     description: {type: GraphQLString},
     version: {type: GraphQLString},
@@ -68,7 +65,7 @@ export const pluginQueries = buildQueries({
               semver.gt(plugin.version, installedPlugins[plugin.id].version)) ||
               process.env.NODE_ENV === 'development'),
         }))
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id))
       return plugins
     },
   },

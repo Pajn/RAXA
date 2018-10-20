@@ -290,8 +290,15 @@ export const deviceMutations = buildMutations({
       modification: Modification,
       context: Context,
     ): Promise<Array<DeviceStatus> | undefined> {
-      if (modification.interfaceId === "Power" && modification.value === "toggle") {
-        modification.value = !getValue(context.storage.getState().status, [modification.deviceId, modification.interfaceId, modification.statusId])
+      if (
+        modification.interfaceId === 'Power' &&
+        modification.value === 'toggle'
+      ) {
+        modification.value = !getValue(context.storage.getState().status, [
+          modification.deviceId,
+          modification.interfaceId,
+          modification.statusId,
+        ])
       }
       await context.pluginSupervisor.setDeviceStatus(modification)
       const device = context.storage.getState().devices[modification.deviceId]

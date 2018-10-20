@@ -1,10 +1,12 @@
 {
   "name": "raxa-plugin-scenery",
-  "version": "0.2.1",
+  "version": "0.2.4",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
-  "keywords": ["raxa-plugin"],
+  "keywords": [
+    "raxa-plugin"
+  ],
   "dependencies": {
     "@types/node": "^8.5.2",
     "raxa-common": "^0.3.0"
