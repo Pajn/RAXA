@@ -81,6 +81,7 @@ const plugin = {
           id: 'sender',
           type: 'device' as 'device',
           interfaceIds: [defaultInterfaces['433MHzPulse'].id],
+          name: 'Gateway',
           modifiable: true,
         },
         deviceCode: {
@@ -115,6 +116,7 @@ const plugin = {
           id: 'sender',
           type: 'device' as 'device',
           interfaceIds: [defaultInterfaces['433MHzPulse'].id],
+          name: 'Gateway',
           modifiable: true,
         },
         onLevel: {
@@ -122,6 +124,7 @@ const plugin = {
           type: 'integer' as 'integer',
           min: 0,
           max: 15,
+          name: 'Default Brightness',
           description: 'The dim level to set while turning on the lamp',
           modifiable: true,
         },
