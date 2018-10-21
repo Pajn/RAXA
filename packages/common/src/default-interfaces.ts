@@ -4,14 +4,17 @@ const mediaItem = {
   title: {
     id: 'title',
     type: 'string' as 'string',
+    name: 'Title',
   },
   artwork: {
     id: 'artwork',
     type: 'string' as 'string',
+    name: 'Artwork',
   },
   duration: {
     id: 'duration',
     type: 'number' as 'number',
+    name: 'Duration',
   },
 }
 
@@ -38,6 +41,7 @@ export const defaultInterfaces = {
         modifiable: true,
         defaultValue: false,
         interfaceId: 'Power',
+        name: 'Power',
       },
     },
   },
@@ -53,6 +57,7 @@ export const defaultInterfaces = {
         defaultValue: 0,
         unit: '%',
         interfaceId: 'Dimmer',
+        name: 'Brightness',
       },
     },
   },
@@ -67,6 +72,7 @@ export const defaultInterfaces = {
         min: 0,
         max: 0xffffff,
         interfaceId: 'Color',
+        name: 'Color',
       },
     },
   },
@@ -78,6 +84,7 @@ export const defaultInterfaces = {
         type: 'number' as 'number',
         unit: '°C',
         interfaceId: 'Temperature',
+        name: 'Temperature',
       },
     },
   },
@@ -130,6 +137,7 @@ export const defaultInterfaces = {
         id: 'currentMedia',
         type: 'object' as 'object',
         properties: mediaItem,
+        name: 'Current Media',
       },
       playerState: {
         id: 'playerState',
@@ -140,6 +148,7 @@ export const defaultInterfaces = {
           {name: 'paused', value: 'paused'},
           {name: 'buffering', value: 'buffering'},
         ],
+        name: 'Player State',
       },
     },
     methods: {
@@ -170,6 +179,7 @@ export const defaultInterfaces = {
         min: 0,
         max: 1,
         modifiable: true,
+        name: 'Volume',
       },
     },
     methods: {},
@@ -182,6 +192,7 @@ export const defaultInterfaces = {
         id: 'muted',
         type: 'boolean' as 'boolean',
         modifiable: true,
+        name: 'Muted',
       },
     },
     methods: {},
