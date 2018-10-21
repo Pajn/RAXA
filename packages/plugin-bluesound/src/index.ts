@@ -58,6 +58,7 @@ export default class BluesoundPlugin extends Plugin {
     }
 
     mdns.on('response', response => mdnsResponse.next(response))
+    const registeredPlayers = new Set<string>()
 
     const players = pipeValue(
       mdnsResponse,
@@ -67,11 +68,14 @@ export default class BluesoundPlugin extends Plugin {
           response.answers.some(answer => answer.type === 'A'),
       ),
       map(response => ({
-        ip: response.answers.find(answer => answer.type === 'A')!.data,
+        ip: response.answers.find(answer => answer.type === 'A')!
+          .data as string,
       })),
+      filter(({ip}) => !registeredPlayers.has(ip)),
     )
     ;(async () => {
       for await (const player of players) {
+        registeredPlayers.add(player.ip)
         const syncStatus = await query(player.ip, 'SyncStatus')
 
         const existingDevice: BluesoundPlayer | undefined = Object.values(

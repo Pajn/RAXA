@@ -1,6 +1,6 @@
 {
   "name": "raxa-plugin-bluesound",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Add support for controlling and monitoring Bluesound players to Raxa",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
