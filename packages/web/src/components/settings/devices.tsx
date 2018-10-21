@@ -2,9 +2,10 @@ import IconButton from '@material-ui/core/IconButton'
 import MUIListSubheader from '@material-ui/core/ListSubheader'
 import AddIcon from '@material-ui/icons/Add'
 import gql from 'graphql-tag'
-import {filter, first, flatMap, map} from 'iterates/lib/sync'
+import {filter, first, flatMap, map, sort} from 'iterates/lib/sync'
+import {pipeValue, tuple} from 'iterates/lib/utils'
 import {title} from 'material-definitions'
-import {GraphQlDevice} from 'raxa-common/lib/entities'
+import {DeviceType, GraphQlDevice} from 'raxa-common/lib/entities'
 import React from 'react'
 import {graphql} from 'react-apollo/graphql'
 import {DataProps} from 'react-apollo/types'
@@ -14,7 +15,6 @@ import {Section} from 'react-material-app/lib/scaffold/Section'
 import {Route, withRouter} from 'react-router'
 import {Link} from 'react-router-dom'
 import {compose, withStateHandlers} from 'recompose'
-import {compose as fnCompose} from 'redux'
 import {row} from 'style-definitions'
 import {Theme} from '../../theme'
 import {ListItem} from '../ui/list'
@@ -29,6 +29,17 @@ declare module '@material-ui/core/IconButton/IconButton' {
 }
 
 const deviceTypeOther = 'Other'
+const deviceTypeOrder: Record<string, number | undefined> = {
+  [DeviceType.Scenery]: 1,
+  [DeviceType.Group]: 2,
+  [DeviceType.Light]: 3,
+  [DeviceType.Outlet]: 4,
+  [DeviceType.Thermometer]: 5,
+  [DeviceType.Media]: 6,
+  [DeviceType.Automation]: 7,
+  [DeviceType.Connector]: 8,
+  [deviceTypeOther]: Infinity,
+}
 
 const Title = styled('h3')(title)
 const ListHeader = styled('div')({...row({vertical: 'center'}), flexShrink: 0})
@@ -134,17 +145,16 @@ const groupDevices = (devices: Array<GraphQlDevice>): Array<DeviceOrHeader> => {
   }
 
   return [
-    ...fnCompose(
+    ...pipeValue(
+      groups.keys(),
+      filter(type => groups.has(type)),
+      sort((a, b) => (deviceTypeOrder[a] || 99) - (deviceTypeOrder[b] || 99)),
+      map(type => tuple([type, groups.get(type)!])),
       flatMap(([type, devices]) => [
         {type: 'header' as 'header', value: type},
         ...devices.map(device => ({type: 'device' as 'device', value: device})),
       ]),
-      map(
-        (type: string) =>
-          [type, groups.get(type)!] as [string, Array<GraphQlDevice>],
-      ),
-      filter((type: string) => groups.has(type)),
-    )(groups.keys()),
+    ),
   ]
 }
 

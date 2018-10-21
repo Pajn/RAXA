@@ -1,27 +1,15 @@
 import gql from 'graphql-tag'
-import {title} from 'material-definitions'
 import React from 'react'
 import Query from 'react-apollo/Query'
-import styled from 'react-emotion'
 import {Section} from 'react-material-app/lib/scaffold/Section'
-import {compose} from 'recompose'
-import {row} from 'style-definitions'
+import {Route} from 'react-router'
 import {baseHttpUrl} from '../../lib/store'
 import {ListItem} from '../ui/list'
 import {ListDetail, ListDetailProps} from '../ui/list-detail'
-import {IsMobileProps, withIsMobile} from '../ui/mediaQueries'
 import {AppSettings} from './app'
 import {DeviceSettings} from './devices'
-import {PluginSettings} from './plugins'
+import {Filler, PluginSettings} from './plugins'
 import {SystemSettings} from './system'
-
-const Title = styled('h3')(title)
-const ListHeader = styled('div')(row({vertical: 'center'}))
-
-export type SettingsProps = {}
-export type PrivateSettingsProps = SettingsProps & IsMobileProps & {}
-
-const enhance = compose<PrivateSettingsProps, SettingsProps>(withIsMobile)
 
 const SettingsList = ListDetail as React.StatelessComponent<
   ListDetailProps<
@@ -49,7 +37,7 @@ const PluginContainer = ({pluginId}: {pluginId: string}) => (
   />
 )
 
-export const SettingsView = ({isMobile}: PrivateSettingsProps) => (
+export const Settings = () => (
   <Query query={listPluginsWithHttpEndpointQuery}>
     {({data}) => (
       <SettingsList
@@ -78,19 +66,12 @@ export const SettingsView = ({isMobile}: PrivateSettingsProps) => (
         )}
         renderActiveItem={setting => <setting.component {...setting.props} />}
         listHeader={
-          isMobile ? (
+          <>
             <Section title="Settings" onBack={history => history.goBack()} />
-          ) : (
-            <Section title="Settings" onBack={history => history.goBack()}>
-              <ListHeader>
-                <Title style={{flex: 1}}>Settings</Title>
-              </ListHeader>
-            </Section>
-          )
+            <Route path="/settings/plugins" render={() => <Filler />} />
+          </>
         }
       />
     )}
   </Query>
 )
-
-export const Settings = enhance(SettingsView)

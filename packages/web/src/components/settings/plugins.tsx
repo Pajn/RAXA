@@ -6,6 +6,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
+import {keyframes} from 'emotion'
 import gql from 'graphql-tag'
 import {PluginConfiguration} from 'raxa-common/lib/entities'
 import React, {Component} from 'react'
@@ -18,6 +19,29 @@ import {compose, withStateHandlers} from 'recompose'
 import {action} from 'redux-decorated'
 import {column} from 'style-definitions'
 import {actions} from '../../redux-snackbar'
+
+const expand = keyframes`
+  from {
+    transform: translateY(-100%);
+    transform-origin: center top;
+  }
+
+  to {
+    transform: translateY(0);
+    transform-origin: center top;
+  }
+`
+
+const expandAnimation = `${expand} 200ms`
+
+export const Filler = () => (
+  <div
+    style={{
+      height: 48,
+      animation: expandAnimation,
+    }}
+  />
+)
 
 const listPluginsQuery = gql`
   query getPlugins {
@@ -289,8 +313,25 @@ export const PluginSettingsView = ({
   tabIndex,
   setTabIndex,
 }: PluginSettingsPrivateProps) => (
-  <div style={{...column(), overflow: 'hidden'}}>
-    <AppBar position="static">
+  <div
+    style={{
+      ...column(),
+      marginLeft: -266,
+      paddingLeft: 266,
+      overflow: 'hidden',
+      pointerEvents: 'none',
+    }}
+  >
+    <AppBar
+      position="static"
+      style={{
+        marginLeft: -266,
+        paddingLeft: 266,
+        boxSizing: 'content-box',
+        pointerEvents: 'auto',
+        animation: expandAnimation,
+      }}
+    >
       <Tabs
         value={tabIndex}
         onChange={(_, tabIndex) => setTabIndex(tabIndex)}
@@ -302,7 +343,13 @@ export const PluginSettingsView = ({
       </Tabs>
     </AppBar>
 
-    {tabIndex === 0 ? <InstalledPlugins /> : <AvaliblePlugins />}
+    <div
+      style={{
+        pointerEvents: 'auto',
+      }}
+    >
+      {tabIndex === 0 ? <InstalledPlugins /> : <AvaliblePlugins />}
+    </div>
   </div>
 )
 
