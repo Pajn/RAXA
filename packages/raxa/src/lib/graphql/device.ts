@@ -66,7 +66,9 @@ export function statusesForDevice(
       ...flatMap(interfaceId => {
         const iface = state.interfaces[interfaceId]
         if (!iface) {
-          throw raxaError({type: 'missingInterface', interfaceId})
+          if (interfaces.length === 1)
+            throw raxaError({type: 'missingInterface', interfaceId})
+          return []
         }
         if (!iface.status) return []
         const statusIds = specifiedStatusIds || Object.keys(iface.status)
