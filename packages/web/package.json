@@ -67,7 +67,7 @@
     "globby": "^8.0.1",
     "lerna": "^2.11.0",
     "prettier": "^1.14.2",
-    "tscomp": "^1.0.0-beta.5",
+    "tscomp": "^1.0.0-beta.6",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1",
     "webpack-cli": "^3.1.2"
