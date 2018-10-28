@@ -1,14 +1,15 @@
-import {Server} from 'mosca'
+import createMqttBroker from 'aedes'
+import {IPublishPacket} from 'mqtt-packet'
+import {Server, createServer} from 'net'
 import {Plugin} from 'raxa-common'
 import plugin from './plugin'
 
 export default class MqttPlugin extends Plugin {
-  server: any
+  server: Server
 
   async start() {
-    const server = new Server({
-      port: 1883,
-    })
+    const broker = createMqttBroker()
+    const server = createServer(broker.handle)
     this.server = server
 
     this.listenOn(
@@ -30,17 +31,23 @@ export default class MqttPlugin extends Plugin {
           qos: 0,
           retain: false,
         })
-        server.publish({
+        const packet: IPublishPacket = {
+          cmd: 'publish',
           topic,
           payload: value,
           qos: 0,
           retain: false,
-          ...(clientId && {clientId}),
-        })
+          dup: false,
+        }
+        if (clientId) {
+          ;(broker.publish as any)(packet, clientId, () => {})
+        } else {
+          broker.publish(packet, () => {})
+        }
       },
     )
 
-    server.on('published', (packet, client) => {
+    broker.on('publish', (packet, client) => {
       this.log.debug('Received packet', {
         clientId: client && client.id,
         topic: packet.topic,
@@ -56,6 +63,8 @@ export default class MqttPlugin extends Plugin {
         },
       )
     })
+
+    await new Promise(resolve => server.listen(1883, resolve))
   }
 
   async stop() {
