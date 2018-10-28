@@ -1,4 +1,4 @@
-import 'babel-polyfill'
+import '@babel/polyfill'
 import bugsnag from 'bugsnag'
 import 'make-promises-safe'
 import {installDefaults, main} from './lib/server/app'
