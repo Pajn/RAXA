@@ -10174,10 +10174,10 @@ raw-body@2.3.2:
     iconv-lite "0.4.19"
     unpipe "1.0.0"
 
-raxa-common@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/raxa-common/-/raxa-common-0.3.3.tgz#47ad9b6bbc1e5115ffb186cd4ee0b67603ba9c11"
-  integrity sha512-CWVETl9YhcfPrmaVjeX/hoDVcWmppbZlEoJdv5oY8s7WcZOd6/jwLth9pT4lbqUW7EC30GuMN1ud0NqHVolHSg==
+raxa-common@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/raxa-common/-/raxa-common-0.3.4.tgz#54ba1e76b71aff5566e42cda4e62bf9c421cbc10"
+  integrity sha512-fi1r1njBy4k5kVs5wN+i+Gsqt/gYiqHnokn9ONe4eoOmYocMLy5pcXQUfLvvWoPif8uDXtALt7PHAZaiaAribQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@types/jest" "22.2.3"
@@ -12327,10 +12327,10 @@ ts-loader@5.2.2:
     micromatch "^3.1.4"
     semver "^5.0.1"
 
-tscomp@^1.0.0-beta.6:
-  version "1.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/tscomp/-/tscomp-1.0.0-beta.6.tgz#89627dbf580179d91b8569258cc784807cdb5247"
-  integrity sha512-N3E2dPJsys5u35CPMDaf2W9/qGToL5NOZAyflqfIN0DF7z7toQY1XTYoBcMQaMbAvS5JoQV4LlbrZXYf1bhQDQ==
+tscomp@^1.0.0-beta.7:
+  version "1.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/tscomp/-/tscomp-1.0.0-beta.7.tgz#682b8ce5aa24b4a5e919984fa2e16aae6c3ec760"
+  integrity sha512-e7QVAJeO4GOHph1aH3BBuvpkPGJ6tEn+d6xHPO8QkRToxqRWA4a35ftaGKSN8XoSa3KcoAfV3CNBcH8Z7Pxnvw==
   dependencies:
     "@babel/core" "7.1.2"
     "@babel/plugin-syntax-dynamic-import" "7.0.0"

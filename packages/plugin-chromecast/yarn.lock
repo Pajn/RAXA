@@ -8774,10 +8774,10 @@ raw-body@2.3.2:
     iconv-lite "0.4.19"
     unpipe "1.0.0"
 
-raxa-common@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/raxa-common/-/raxa-common-0.3.3.tgz#47ad9b6bbc1e5115ffb186cd4ee0b67603ba9c11"
-  integrity sha512-CWVETl9YhcfPrmaVjeX/hoDVcWmppbZlEoJdv5oY8s7WcZOd6/jwLth9pT4lbqUW7EC30GuMN1ud0NqHVolHSg==
+raxa-common@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/raxa-common/-/raxa-common-0.3.4.tgz#54ba1e76b71aff5566e42cda4e62bf9c421cbc10"
+  integrity sha512-fi1r1njBy4k5kVs5wN+i+Gsqt/gYiqHnokn9ONe4eoOmYocMLy5pcXQUfLvvWoPif8uDXtALt7PHAZaiaAribQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@types/jest" "22.2.3"

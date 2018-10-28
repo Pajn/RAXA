@@ -38,7 +38,7 @@
     "material-definitions": "^0.3.3",
     "material-ui-time-picker": "^1.0.0",
     "prop-types": "^15.6.2",
-    "raxa-common": "^0.3.3",
+    "raxa-common": "^0.3.4",
     "react": "16.6.0",
     "react-apollo": "^2.1.11",
     "react-beautiful-dnd": "^9.0.2",
@@ -67,7 +67,7 @@
     "globby": "^8.0.1",
     "lerna": "^2.11.0",
     "prettier": "^1.14.2",
-    "tscomp": "^1.0.0-beta.6",
+    "tscomp": "^1.0.0-beta.7",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1",
     "webpack-cli": "^3.1.2"

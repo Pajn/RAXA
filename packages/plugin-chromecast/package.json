@@ -9,7 +9,7 @@
   "dependencies": {
     "@types/node": "^8.5.2",
     "castv2-player": "^1.1.13",
-    "raxa-common": "^0.3.3"
+    "raxa-common": "^0.3.4"
   },
   "devDependencies": {
     "lerna": "^2.9.0",
