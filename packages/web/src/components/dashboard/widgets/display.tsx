@@ -19,6 +19,7 @@ const Container = styled('div')({
 const StatusRow = styled('div')({
   display: 'flex',
   alignItems: 'center',
+  paddingRight: 8,
   height: 40,
 })
 
@@ -118,9 +119,6 @@ export const DisplayWidgetView = ({
           ` ${statusDefinition.unit}`}
       </span>
     </StatusRow>
-    <div>
-      <span>{statusDefinition && statusDefinition.name}</span>
-    </div>
   </Container>
 )
 

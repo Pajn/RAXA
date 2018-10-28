@@ -1,20 +1,20 @@
 {
   "name": "raxa-common",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
   "dependencies": {
+    "@babel/runtime": "^7.1.2",
     "@types/jest": "22.2.3",
     "@types/joi": "^13.0.8",
     "@types/ramda": "^0.25.24",
-    "babel-runtime": "^6.26.0",
     "joi": "^13.1.2",
     "ramda": "^0.25.0",
     "redux-decorated": "^1.0.2"
   },
   "devDependencies": {
-    "tscomp": "^0.15.3"
+    "tscomp": "^1.0.0-beta.5"
   },
   "tscomp": {
     "mode": "lib"

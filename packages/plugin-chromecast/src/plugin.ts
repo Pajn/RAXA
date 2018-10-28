@@ -1,4 +1,4 @@
-import {DeviceType, PluginDefinition} from 'raxa-common'
+import {DeviceType, PluginDefinition, defaultInterfaces} from 'raxa-common'
 
 const config = {
   host: {id: 'host', type: 'string' as 'string'},
@@ -20,7 +20,13 @@ const plugin = {
       types: [DeviceType.Media],
       allowManualCreation: false,
       config,
-      interfaceIds: ['Chromecast', 'CurrentlyPlaying', 'Volume', 'Mute'],
+      interfaceIds: [
+        'Chromecast',
+        defaultInterfaces.CurrentlyPlaying.id,
+        defaultInterfaces.Volume.id,
+        defaultInterfaces.Mute.id,
+        defaultInterfaces.MediaPlaylist.id,
+      ],
     },
     ChromecastAudio: {
       id: 'ChromecastAudio',
@@ -29,7 +35,13 @@ const plugin = {
       types: [DeviceType.Media],
       allowManualCreation: false,
       config,
-      interfaceIds: ['Chromecast', 'CurrentlyPlaying', 'Volume', 'Mute'],
+      interfaceIds: [
+        'Chromecast',
+        defaultInterfaces.CurrentlyPlaying.id,
+        defaultInterfaces.Volume.id,
+        defaultInterfaces.Mute.id,
+        defaultInterfaces.MediaPlaylist.id,
+      ],
     },
   },
   interfaces: {

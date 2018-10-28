@@ -1,16 +1,15 @@
 {
   "name": "raxa-plugin-chromecast",
   "version": "0.2.3",
-  "description": "Add support for controlling and monitoring Chromecasts to Raxa",
+  "description":
+    "Add support for controlling and monitoring Chromecasts to Raxa",
   "author": "Rasmus Eneman <rasmus@eneman.eu>",
   "license": "AGPL-3.0",
-  "keywords": [
-    "raxa-plugin"
-  ],
+  "keywords": ["raxa-plugin"],
   "dependencies": {
     "@types/node": "^8.5.2",
     "castv2-player": "^1.1.13",
-    "raxa-common": "^0.3.0"
+    "raxa-common": "^0.3.3"
   },
   "devDependencies": {
     "lerna": "^2.9.0",

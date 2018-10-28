@@ -1,5 +1,18 @@
 import {Interface} from './entities'
 
+export type MediaItem = {
+  title: string
+  artwork?: string
+  duration?: number
+  artist?: string
+  album?: string
+}
+
+export type CurrentlyPlayingStatus = {
+  currentMedia: MediaItem
+  playerState: 'idle' | 'playing' | 'paused' | 'buffering'
+}
+
 const mediaItem = {
   title: {
     id: 'title',
@@ -15,6 +28,16 @@ const mediaItem = {
     id: 'duration',
     type: 'number' as 'number',
     name: 'Duration',
+  },
+  artist: {
+    id: 'artist',
+    type: 'string' as 'string',
+    name: 'Artist',
+  },
+  album: {
+    id: 'album',
+    type: 'string' as 'string',
+    name: 'Album',
   },
 }
 
@@ -196,6 +219,23 @@ export const defaultInterfaces = {
       },
     },
     methods: {},
+    events: {},
+  },
+  MediaPlaylist: {
+    id: 'MediaPlaylist',
+    status: {},
+    methods: {
+      next: {
+        id: 'next',
+        showInSettings: true,
+        arguments: {},
+      },
+      previous: {
+        id: 'previous',
+        showInSettings: true,
+        arguments: {},
+      },
+    },
     events: {},
   },
 }

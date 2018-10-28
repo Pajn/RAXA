@@ -2,6 +2,7 @@ import * as castv2 from 'castv2-player'
 import {
   Call,
   Device,
+  MediaItem,
   Modification,
   Plugin,
   actions,
@@ -20,26 +21,122 @@ export interface Chromecast extends Device {
   }
 }
 
-export type MediaItem = {
-  title: string
-  artwork: string
+export enum MetadataType {
+  // Generic template suitable for most media types. Used by cast.receiver.media.GenericMediaMetadata.
+  GENERIC = 0,
+
+  // A full length movie. Used by cast.receiver.media.MovieMediaMetadata.
+  MOVIE = 1,
+
+  // An episode of a TV series. Used by cast.receiver.media.TvShowMediaMetadata.
+  TV_SHOW = 2,
+
+  // A music track. Used by cast.receiver.media.MusicTrackMediaMetadata.
+  MUSIC_TRACK = 3,
+
+  // Photo. Used by cast.receiver.media.PhotoMediaMetadata.
+  PHOTO = 4,
+
+  // Audiobook chapter. Used by cast.receiver.media.AudiobookChapterMediaMetadata.
+  AUDIOBOOK_CHAPTER = 5,
+}
+
+export type CCImage = {url: string; height?: number; width?: number}
+
+/**
+ * See https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MusicTrackMediaMetadata
+ */
+export type CCMusicMetadata = {
+  metadataType: MetadataType.MUSIC_TRACK
+  title?: string
+  songName: string
+  albumName?: string
+  albumArtist?: string
+  artist?: string
+  composer?: string
+  trackNumber?: number
+  discNumber?: number
+  releaseDate?: string
+  images: Array<CCImage>
+}
+export type CCMediaMetadata =
+  | {
+      metadataType: MetadataType.GENERIC
+      title?: string
+      subtitle?: string
+      releaseDate?: string
+      images: Array<CCImage>
+    }
+  | {
+      metadataType: MetadataType.MOVIE
+      title?: string
+      subtitle?: string
+      studio?: string
+      releaseDate?: string
+      images: Array<CCImage>
+    }
+  | {
+      metadataType: MetadataType.TV_SHOW
+      title?: string
+      seriesTitle?: string
+      season?: number
+      episode?: number
+      studio?: string
+      originalAirdate?: string
+      images: Array<CCImage>
+    }
+  | CCMusicMetadata
+  | {
+      metadataType: MetadataType.PHOTO
+      title?: string
+      artist?: string
+      images: Array<CCImage>
+      height?: number
+      width?: number
+      creationDateTime?: string
+      location?: string
+      latitude?: number
+      longitude?: number
+    }
+  | {
+      metadataType: MetadataType.AUDIOBOOK_CHAPTER
+      title?: string
+      subtitle?: string
+      bookTitle: string
+      chapterTitle?: string
+      images: Array<CCImage>
+    }
+
+/**
+ * See https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation
+ */
+export type CCMediaInformation = {
+  contentId: string
+  contentUrl?: string
+  streamType: 'BUFFERED'
+  contentType: string
+  metadata: CCMediaMetadata
   duration: number
 }
 
-export type CCMedia = {
-  contentId: string
-  streamType: 'BUFFERED'
-  contentType: string
-  metadata: {
-    metadataType: 3
-    title: string
-    albumName: string
-    albumArtist: string
-    artist: string
-    images: Array<{url: string; height: number; width: number}>
-  }
-  duration: number
+/**
+ * See https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.QueueItem
+ */
+export type CCQueueItem = {
+  itemId: number
+  media: CCMediaInformation
+  autoplay?: boolean
+  preloadTime?: number
+  startTime?: number
+  playbackDuration?: number
+  customData?: object
 }
+
+export type RepeatMode =
+  | 'REPEAT_OFF'
+  | 'REPEAT_ALL'
+  | 'REPEAT_SINGLE'
+  | 'REPEAT_ALL_AND_SHUFFLE'
 
 export interface ClientStatusEvent {
   applications?: [
@@ -74,17 +171,10 @@ export interface PlayerStatusEvent {
   currentTime: number
   supportedMediaCommands: number
   volume: {level: number; muted: boolean}
-  media: CCMedia
+  media: CCMediaInformation
   currentItemId: number
-  items: [
-    {
-      itemId: number
-      media: CCMedia
-      autoplay: boolean
-      //  customData: [Object]
-    }
-  ]
-  repeatMode: 'REPEAT_OFF'
+  items: Array<CCQueueItem>
+  repeatMode: RepeatMode
   customData: {
     queueVersion: string
     itemId: string
@@ -93,7 +183,7 @@ export interface PlayerStatusEvent {
   idleReason: 'INTERRUPTED'
   extendedStatus: {
     playerState: 'LOADING'
-    media: CCMedia
+    media: CCMediaInformation
   }
 }
 
@@ -105,6 +195,8 @@ export interface MediaPlayer {
   pausePromise(): Promise<void>
   playPromise(): Promise<void>
   stopPromise(): Promise<void>
+
+  jumpInPlaylistPromise(jum: number): Promise<void>
 
   on(event: 'clientStatus', cb: (event: ClientStatusEvent) => void)
   on(event: 'playerStatus', cb: (event?: PlayerStatusEvent) => void)
@@ -230,10 +322,12 @@ export default class ChromecastPlugin extends Plugin {
                 e.media &&
                 e.media.metadata &&
                 assert<MediaItem>({
-                  title: e.media.metadata.title,
+                  title: e.media.metadata.title || '',
                   artwork:
                     e.media.metadata.images && e.media.metadata.images[0].url,
                   duration: e.media.duration,
+                  album: (e.media.metadata as CCMusicMetadata).albumName,
+                  artist: (e.media.metadata as CCMusicMetadata).artist,
                 }),
             })
             this.dispatch(actions.statusUpdated, {
@@ -284,6 +378,19 @@ export default class ChromecastPlugin extends Plugin {
           break
         case defaultInterfaces.CurrentlyPlaying.methods.stop.id:
           await mp.stopPromise()
+          break
+      }
+    }
+    if (call.interfaceId === defaultInterfaces.MediaPlaylist.id) {
+      const mp = this.mediaPlayers[device.id]
+      if (!mp) throw 'Can not connect to device'
+
+      switch (call.method) {
+        case defaultInterfaces.MediaPlaylist.methods.next.id:
+          await mp.jumpInPlaylistPromise(1)
+          break
+        case defaultInterfaces.MediaPlaylist.methods.previous.id:
+          await mp.jumpInPlaylistPromise(-1)
           break
       }
     }

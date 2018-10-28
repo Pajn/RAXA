@@ -126,7 +126,7 @@ const DeviceWrapperContainer = styled('div')<
   boxSizing: 'border-box',
   margin: row ? 8 : 0,
   padding: row ? 16 : 8,
-  height: row ? 48 : big ? 96 : 56,
+  height: (row ? 48 : big ? 96 : 56) + (border ? 1 : 0),
   overflow: 'hidden',
 
   backgroundColor: theme.dark ? theme.background.light : theme.background.main,
@@ -299,6 +299,8 @@ export const enhance = compose<ListWidgetPrivateProps, ListWidgetProps>(
   }),
 )
 
+let hiddenDevices = new Map<string, boolean>()
+
 export const ListWidgetView = ({
   header,
   data,
@@ -314,8 +316,8 @@ export const ListWidgetView = ({
   stopEditMode,
   configuration,
   setConfiguration,
-}: ListWidgetPrivateProps) =>
-  data.devices && data.devices.length > 0 ? (
+}: ListWidgetPrivateProps) => {
+  return data.devices && data.devices.length > 0 ? (
     <div onContextMenu={startEditMode}>
       <LazyDragDropContext onDragEnd={onSortEnd}>
         {header && (
@@ -432,10 +434,18 @@ export const ListWidgetView = ({
                       innerWidget,
                     ]: any,
                     i,
+                    collection,
                   ) => (
                     <Hideable key={device.id!}>
-                      {(hideComponent, isHidden) =>
-                        isHidden ? (
+                      {(hideComponent, isHidden) => {
+                        hiddenDevices.set(`${header}::${device.id}`, isHidden)
+                        const lastDeviceWashHidden = collection[i - 1]
+                          ? hiddenDevices.get(
+                              `${header}::${collection[i - 1]![1].id}`,
+                            )
+                          : false
+
+                        return isHidden ? (
                           cloneElement(innerWidget, {
                             hideComponent,
                           })
@@ -486,7 +496,7 @@ export const ListWidgetView = ({
                                   <DeviceWrapper
                                     row={row}
                                     big={big}
-                                    border={i > 0}
+                                    border={i > 0 && !lastDeviceWashHidden}
                                     inEditMode={inEditMode}
                                     isHidden={
                                       inEditMode &&
@@ -500,7 +510,7 @@ export const ListWidgetView = ({
                             )}
                           </LazyDraggable>
                         )
-                      }
+                      }}
                     </Hideable>
                   ),
                 )}
@@ -510,6 +520,7 @@ export const ListWidgetView = ({
       </LazyDragDropContext>
     </div>
   ) : null
+}
 
 export const ListWidget: WidgetComponent<
   ListWidgetConfiguration,

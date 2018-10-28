@@ -5,10 +5,9 @@ import {
   DeviceClass,
   Interface,
   Modification,
-  ObjectProperty,
   Property,
 } from './entities'
-import {RaxaError, raxaError} from './errors'
+import {raxaError} from './errors'
 import {State} from './state'
 
 export const propertiesSchema: joi.Schema = joi.object().pattern(
@@ -70,24 +69,24 @@ export const propertiesSchema: joi.Schema = joi.object().pattern(
     }),
 )
 
-function validateProperties(
-  error: RaxaError['type'],
-  properties: {[id: string]: Property},
-) {
-  const result = joi.validate(properties, propertiesSchema)
-  if (result.error) {
-    throw raxaError({type: error as any, joiError: result.error})
-  }
-  Object.values(properties)
-    .filter(prop => prop.type === 'object' && prop.defaultValue)
-    .forEach((prop: ObjectProperty<any>) => {
-      const schema = propertiesToJoi(prop.properties)
-      const result = joi.validate(prop.defaultValue, schema)
-      if (result.error) {
-        throw raxaError({type: error as any, joiError: result.error})
-      }
-    })
-}
+// function validateProperties(
+//   error: RaxaError['type'],
+//   properties: {[id: string]: Property},
+// ) {
+//   const result = joi.validate(properties, propertiesSchema)
+//   if (result.error) {
+//     throw raxaError({type: error as any, joiError: result.error})
+//   }
+//   Object.values(properties)
+//     .filter(prop => prop.type === 'object' && prop.defaultValue)
+//     .forEach((prop: ObjectProperty<any>) => {
+//       const schema = propertiesToJoi(prop.properties)
+//       const result = joi.validate(prop.defaultValue, schema)
+//       if (result.error) {
+//         throw raxaError({type: error as any, joiError: result.error})
+//       }
+//     })
+// }
 
 export function validateInterfaces(state: State, interfaceIds: Array<string>) {
   interfaceIds.forEach(iface => {
