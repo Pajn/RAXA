@@ -138,9 +138,12 @@ export class StorageService extends Service {
             const update = (action as typeof actions.statusUpdated).payload!
             const state = api.getState() as State
             if (
-              update.value === state.status[update.deviceId] &&
-              state.status[update.deviceId][update.interfaceId] &&
-              state.status[update.deviceId][update.interfaceId][update.statusId]
+              update.value ===
+              (state.status[update.deviceId] &&
+                state.status[update.deviceId][update.interfaceId] &&
+                state.status[update.deviceId][update.interfaceId][
+                  update.statusId
+                ])
             ) {
               return
             }
