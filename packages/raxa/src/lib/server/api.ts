@@ -1,13 +1,7 @@
+import {ApolloServer} from 'apollo-server-hapi'
 import {execute} from 'graphql'
-import {graphiqlHapi, graphqlHapi} from 'graphql-server-hapi'
 import {subscribe} from 'graphql/subscription'
-import {
-  Request,
-  ResponseObject,
-  ResponseToolkit,
-  Server,
-  ServerRegisterPluginObject,
-} from 'hapi'
+import {Request, ResponseObject, ResponseToolkit, Server} from 'hapi'
 import fetch from 'node-fetch'
 import {Awaitable, Service} from 'raxa-common/cjs'
 import {SubscriptionServer} from 'subscriptions-transport-ws'
@@ -38,28 +32,16 @@ export class ApiService extends Service {
         .PluginSupervisor as PluginSupervisor
       const context: Context = {storage, pluginManager, pluginSupervisor}
 
-      await server.register({
-        plugin: graphqlHapi,
-        options: {
-          path: '/graphql',
-          graphqlOptions: {
-            schema,
-            context,
-          },
-          subscriptionsEndpoint: `ws://localhost:9000/subscriptions`,
-        },
-      } as ServerRegisterPluginObject<any>)
+      const apolloServer = new ApolloServer({
+        schema,
+        context,
+        subscriptions: '/subscriptions',
+      })
 
-      await server.register({
-        plugin: graphiqlHapi,
-        options: {
-          path: '/graphiql',
-          graphiqlOptions: {
-            endpointURL: '/graphql',
-            subscriptionsEndpoint: `ws://localhost:9000/subscriptions`,
-          },
-        },
-      } as ServerRegisterPluginObject<any>)
+      await apolloServer.applyMiddleware({
+        app: server,
+      })
+      await apolloServer.installSubscriptionHandlers(server.listener)
 
       server.events.on('request', (_, event) => {
         if (event.error) {
@@ -83,10 +65,10 @@ export class ApiService extends Service {
         )
       })
 
-      async function pluginForwardHandler(
+      const pluginForwardHandler = async (
         request: Request,
         h: ResponseToolkit,
-      ) {
+      ) => {
         const {pluginId, path = ''} = request.params
         const pluginDefinition = storage.getState().plugins[pluginId]
         if (
@@ -94,6 +76,7 @@ export class ApiService extends Service {
           pluginDefinition.httpForwarding !== undefined
         ) {
           const {port, basePath = ''} = pluginDefinition.httpForwarding
+          this.log.debug(`Forwarding ${path} to plugin ${pluginId}`)
           const response = await fetch(
             `http://127.0.0.1:${port}${basePath}/${path}${request.url.search}`,
             {
